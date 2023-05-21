@@ -4,10 +4,15 @@
 package com.pms.controllers;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSTask;
@@ -53,14 +58,24 @@ public class PMSTaskController {
     }
     
     @PostMapping(value="")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PMSTask createTask(@RequestBody PMSTask task) {
-        return entityProvider.createTask(task);
+    //@ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<PMSTask> createTask(@RequestBody @Valid PMSTask task, 
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
+        } 
+        
+        return new ResponseEntity<>(entityProvider.createTask(task), HttpStatus.CREATED);
     }
     
     @PutMapping(value="/{taskId}")
-    public PMSTask updateTask(@PathVariable("taskId") Long taskId, @RequestBody PMSTask task) {
-        return entityProvider.updateTask(taskId, task);
+    public ResponseEntity<PMSTask> updateTask(@PathVariable("taskId") Long taskId, 
+            @RequestBody @Valid PMSTask task, BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.updateTask(taskId, task), HttpStatus.OK);
     }
     
     @DeleteMapping(value="/{taskId}")

@@ -4,10 +4,15 @@
 package com.pms.controllers;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSComment;
@@ -54,14 +59,24 @@ public class PMSProjectController {
     }
     
     @PostMapping(value="")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PMSProject createProject(@RequestBody PMSProject project) {
-    	return entityProvider.createProject(project);
+    //@ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<PMSProject> createProject(@RequestBody @Valid PMSProject project, 
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
+        }
+        
+    	return new ResponseEntity<>(entityProvider.createProject(project), HttpStatus.CREATED);
     }
     
     @PutMapping(value="/{projectId}")
-    public PMSProject updateProject(@PathVariable("projectId") Long projectId, @RequestBody PMSProject project) {
-        return entityProvider.updateProject(projectId, project);
+    public ResponseEntity<PMSProject> updateProject(@PathVariable("projectId") Long projectId, 
+            @RequestBody @Valid PMSProject project, BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.updateProject(projectId, project), HttpStatus.OK);
     }
     
     @DeleteMapping(value="/{projectId}")

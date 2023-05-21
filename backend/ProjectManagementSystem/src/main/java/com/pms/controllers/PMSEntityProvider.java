@@ -11,9 +11,6 @@ import java.util.HashSet;
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import com.pms.controllers.exceptions.ResourceNotFoundException;
 import com.pms.entities.PMSComment;
@@ -703,7 +700,7 @@ public class PMSEntityProvider {
         }
     }
     
-    public List<PMSProject> getProjectsByUserId(@PathVariable("id") Long userId) {
+    public List<PMSProject> getProjectsByUserId(Long userId) {
         List<PMSProject> ret = new ArrayList<>();
         
         List<PMSProject> allProjects = getProjects();
@@ -716,7 +713,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public List<List<PMSTask>> getTasksByUserId(@PathVariable("userId") Long userId) {
+    public List<List<PMSTask>> getTasksByUserId(Long userId) {
         List<List<PMSTask>> ret = new ArrayList<>();
         
         List<PMSProject> projects = getProjectsByUserId(userId);

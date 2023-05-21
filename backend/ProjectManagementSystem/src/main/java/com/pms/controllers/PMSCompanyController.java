@@ -4,10 +4,15 @@
 package com.pms.controllers;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSCompany;
@@ -40,9 +45,13 @@ public class PMSCompanyController {
     }
     
     @PostMapping(value="")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PMSCompany createCompany(@RequestBody PMSCompany comp) {
-        return entityProvider.createCompany(comp);
+    //@ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<PMSCompany> createCompany(@RequestBody @Valid PMSCompany comp, BindingResult result) {
+        if(result.hasErrors()) {
+            return new ResponseEntity<>(comp, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.createCompany(comp), HttpStatus.CREATED);
     }
     
     @GetMapping(value="/{id}")
@@ -53,8 +62,13 @@ public class PMSCompanyController {
     }
     
     @PutMapping(value="/{id}")
-    public PMSCompany updateCompany(@PathVariable("id") Long id, @RequestBody PMSCompany comp) {
-        return entityProvider.updateCompany(id, comp);
+    public ResponseEntity<PMSCompany> updateCompany(@PathVariable("id") Long id, 
+            @RequestBody @Valid PMSCompany comp, BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(comp, HttpStatus.BAD_REQUEST);
+        } 
+        
+        return new ResponseEntity<>(entityProvider.updateCompany(id, comp), HttpStatus.OK);
     }
     
     @DeleteMapping(value="/{id}")

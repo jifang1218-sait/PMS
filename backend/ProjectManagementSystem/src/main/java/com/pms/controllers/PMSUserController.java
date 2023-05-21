@@ -4,10 +4,15 @@
 package com.pms.controllers;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSProject;
@@ -41,9 +46,14 @@ public class PMSUserController {
     }
     
     @PostMapping("")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PMSUser createUser(@RequestBody PMSUser user) {
-        return entityProvider.createUser(user);
+    //@ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.createUser(user), HttpStatus.CREATED);
     }
     
     @GetMapping(value="/{id}")
@@ -54,8 +64,13 @@ public class PMSUserController {
     }
     
     @PutMapping("/{id}")
-    public PMSUser updateUser(@PathVariable("id") Long id, @RequestBody PMSUser user) {
-        return entityProvider.updateUser(id, user);
+    public ResponseEntity<PMSUser> updateUser(@PathVariable("id") Long id, 
+            @RequestBody @Valid PMSUser user, BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.updateUser(id, user), HttpStatus.OK);
     }
     
     @DeleteMapping(value="/{id}")

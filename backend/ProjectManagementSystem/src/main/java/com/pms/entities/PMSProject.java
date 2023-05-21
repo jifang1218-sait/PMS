@@ -45,7 +45,7 @@ public class PMSProject {
     private String avatar;
     
     @ElementCollection
-    @CollectionTable(name="PROJECT_DEPENDENT_PROJ_IDS")
+    @CollectionTable(name="PROJECT_DEPENDENT_PROJECTS")
     private List<Long> dependentProjectIds; 
     
     @Column(name="PROJ_DEFAULT_TASK_ID")

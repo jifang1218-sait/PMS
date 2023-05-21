@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author jifang
@@ -18,9 +19,11 @@ import javax.persistence.Lob;
 public class PMSComment {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="COMMENT_ID")
     private long id;
     
     @Column(name="COMMENT_TITLE")
+    @NotNull
     private String title;
     
     @Lob
@@ -32,6 +35,9 @@ public class PMSComment {
     
     @Column(name = "COMMENT_TIMESTAMP")
     private long timestamp;
+    
+    @Column(name = "COMMENT_TASK")
+    private long taskId;
     
     public Long getId() {
         return id;
@@ -67,5 +73,13 @@ public class PMSComment {
     
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public Long getTaskId() {
+        return taskId;
+    }
+    
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 }
