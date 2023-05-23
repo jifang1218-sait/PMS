@@ -10,6 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.pms.constants.EntityConstants;
 
 /**
  * @author jifang
@@ -24,6 +27,7 @@ public class PMSComment {
     
     @Column(name="COMMENT_TITLE")
     @NotNull
+    @Size(min=EntityConstants.kMinCommentTitleLen)
     private String title;
     
     @Lob
@@ -37,7 +41,12 @@ public class PMSComment {
     private long timestamp;
     
     @Column(name = "COMMENT_TASK")
+    @NotNull
     private long taskId;
+    
+    @Column(name= "COMMENT_USER")
+    @NotNull
+    private long userId;
     
     public Long getId() {
         return id;
@@ -81,5 +90,13 @@ public class PMSComment {
     
     public void setTaskId(long taskId) {
         this.taskId = taskId;
+    }
+    
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+    
+    public long getUserId() {
+        return userId;
     }
 }

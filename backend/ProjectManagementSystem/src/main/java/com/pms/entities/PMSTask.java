@@ -14,9 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.pms.constants.EntityConstants;
 
 /**
  * @author jifang
@@ -31,7 +32,7 @@ public class PMSTask {
     
     @Column(name="TASK_NAME", nullable=false)
     @NotNull
-    @Size(min=3)
+    @Size(min=EntityConstants.kMinTaskNameLen)
     private String name;
 
     @Lob
@@ -39,7 +40,6 @@ public class PMSTask {
     private String desc;
     
     @Column(name = "TASK_PROJECT")
-    @Min(0)
     private long projectId;
     
     @Column(name="TASK_AVATAR")
@@ -51,7 +51,7 @@ public class PMSTask {
     
     @ElementCollection
     @CollectionTable(name="TASK_USERS")
-    private List<Long> users;
+    private List<Long> userIds;
     
     @ElementCollection
     @CollectionTable(name="TASK_COMMENTS")
@@ -59,7 +59,7 @@ public class PMSTask {
     
     public PMSTask() {
     	dependentTaskIds = new ArrayList<>();
-        users = new ArrayList<>();
+    	userIds = new ArrayList<>();
         commentIds = new ArrayList<>();
     }
     
@@ -119,20 +119,24 @@ public class PMSTask {
         this.dependentTaskIds = dependentTaskIds;
     }
     
-    public void addUserId(long userId) {
-        if (!users.contains(userId)) {
-            users.add(userId);
+    public void addUserId(Long userId) {
+        if (!userIds.contains(userId)) {
+            userIds.add(userId);
         }
     }
     
-    public void removeUserId(long userId) {
-        if (users.contains(userId)) {
-            users.remove(userId);
+    public void removeUserId(Long userId) {
+        if (userIds.contains(userId)) {
+            userIds.remove(userId);
         }
     }
 
     public List<Long> getUserIds() {
-        return users;
+        return userIds;
+    }
+    
+    public void setUserIds(List<Long> userIds) {
+        this.userIds = userIds;
     }
     
     public List<Long> getCommentIds() {
@@ -141,5 +145,17 @@ public class PMSTask {
     
     public void setCommentIds(List<Long> commentIds) {
         this.commentIds = commentIds;
+    }
+    
+    public void addCommentId(Long commentId) {
+        if (!commentIds.contains(commentId)) {
+            commentIds.add(commentId);
+        }
+    }
+    
+    public void removeCommentId(Long commentId) {
+        if (commentIds.contains(commentId)) {
+            commentIds.remove(commentId);
+        }
     }
 }

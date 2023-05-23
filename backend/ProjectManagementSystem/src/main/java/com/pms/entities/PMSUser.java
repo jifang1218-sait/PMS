@@ -12,6 +12,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.pms.constants.EntityConstants;
+
 /**
  * @author jifang
  *
@@ -26,10 +28,12 @@ public class PMSUser {
     
     @Column(name="USER_FNAME", nullable=false)
     @NotNull
+    @Size(min=EntityConstants.kMinUserNameLen)
     private String firstName;
     
     @Column(name="USER_LNAME", nullable=false)
     @NotNull
+    @Size(min=EntityConstants.kMinUserNameLen)
     private String lastName;
     
     @Column(name="USER_MNAME")
@@ -42,7 +46,7 @@ public class PMSUser {
     
     @Column(name="USER_PASSWORD", nullable=false)
     @NotNull
-    @Size(min=5)
+    @Size(min=EntityConstants.kMinUserPasswordLen)
     private String password;
     
     @Column(name="USER_ROLE", nullable=false)

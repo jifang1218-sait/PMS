@@ -14,9 +14,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.pms.constants.EntityConstants;
 
 /**
  * @author jifang
@@ -31,7 +32,7 @@ public class PMSProject {
     
     @Column(name="PROJ_NAME", nullable=false)
     @NotNull
-    @Size(min=3)
+    @Size(min=EntityConstants.kMinProjectNameLen)
     private String name;
 
     @Lob
@@ -39,7 +40,7 @@ public class PMSProject {
     private String desc;
     
     @Column(name = "COMPANY_ID")
-    @Min(0)
+    @NotNull
     private long companyId;
     
     @Column(name="PROJ_AVATAR")
@@ -113,6 +114,10 @@ public class PMSProject {
         return dependentProjectIds;
     }
     
+    public void setDependentProjectIds(List<Long> dependentProjectIds) {
+        this.dependentProjectIds = dependentProjectIds;
+    }
+    
     public Long getDefaultTaskId() {
         return defaultTaskId;
     }
@@ -135,5 +140,9 @@ public class PMSProject {
     
     public List<Long> getTaskIds() {
         return taskIds;
+    }
+    
+    public void setTaskIds(List<Long> taskIds) {
+        this.taskIds = taskIds;
     }
 }

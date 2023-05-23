@@ -3,7 +3,12 @@
  */
 package com.pms.entities;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.pms.constants.EntityConstants;
 
 /**
  * @author jifang
@@ -25,7 +32,7 @@ public class PMSCompany {
     
     @Column(name="COMPANY_NAME", nullable=false)
     @NotNull
-    @Size(min=3)
+    @Size(min=EntityConstants.kMinCompanyNameLen)
     private String name;
 
     @Lob
@@ -34,6 +41,14 @@ public class PMSCompany {
     
     @Column(name="COMPANY_AVATAR")
     private String avatar;
+    
+    @ElementCollection
+    @CollectionTable(name="COMPANY_PROJECTS")
+    private List<Long> projectIds;
+    
+    public PMSCompany() {
+        projectIds = new ArrayList<>();
+    }
     
     public long getId() {
     	return id;
@@ -61,5 +76,25 @@ public class PMSCompany {
     
     public void setAvatar(String avatar) {
     	this.avatar = avatar;
+    }
+    
+    public List<Long> getProjectIds() {
+        return projectIds;
+    }
+    
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
+    }
+    
+    public void addProjectId(Long projectId) {
+        if (!projectIds.contains(projectId)) {
+            projectIds.add(projectId);
+        }
+    }
+    
+    public void removeProjectId(Long projectId) {
+        if (!projectIds.contains(projectId)) {
+            projectIds.remove(projectId);
+        }
     }
 }
