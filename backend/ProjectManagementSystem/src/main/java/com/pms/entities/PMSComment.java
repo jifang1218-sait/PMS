@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class PMSComment {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="COMMENT_ID")
     private long id;
     

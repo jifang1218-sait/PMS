@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
 @Entity
 public class PMSTask {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="TASK_ID")
     private long id;
     
@@ -58,8 +58,9 @@ public class PMSTask {
     private List<Long> commentIds;
     
     public PMSTask() {
-    	dependentTaskIds = new ArrayList<Long>();
-        users = new ArrayList<Long>();
+    	dependentTaskIds = new ArrayList<>();
+        users = new ArrayList<>();
+        commentIds = new ArrayList<>();
     }
     
     public Long getId() {

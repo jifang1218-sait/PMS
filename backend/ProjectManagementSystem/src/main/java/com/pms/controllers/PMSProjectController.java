@@ -5,6 +5,7 @@ package com.pms.controllers;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import java.util.ArrayList;
@@ -34,16 +35,17 @@ import com.pms.entities.PMSUser;
  */
 
 @RestController
-@RequestMapping(value="/projects",  
+@RequestMapping(value="/v1/entities/projects",  
         consumes="application/json", 
         produces="application/json")
+@Transactional
 public class PMSProjectController {
 
     @Autowired
     PMSEntityProvider entityProvider;
 
-    @GetMapping(value="")
-    public List<PMSProject> getProjects(@RequestParam(value="companyId") Long companyId) {
+    @GetMapping
+    public List<PMSProject> getProjects(@RequestParam(value="company_id", required=false) Long companyId) {
     	if (companyId == null) {
     	    return entityProvider.getProjects();
     	} else { 
@@ -58,7 +60,7 @@ public class PMSProjectController {
         return entityProvider.getProjectsByIds(ids);        
     }
     
-    @PostMapping(value="")
+    @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PMSProject> createProject(@RequestBody @Valid PMSProject project, 
             BindingResult result) {
@@ -146,6 +148,7 @@ public class PMSProjectController {
         return entityProvider.addCommentsToProject(projectId, comments);
     }
     
+    @DeleteMapping("/{projectId}/comments")
     public PMSProject deleteComments(@PathVariable("projectId") long projectId, 
             @RequestBody List<Long> commentIds) {
         return entityProvider.deleteCommentsFromProject(projectId, commentIds);

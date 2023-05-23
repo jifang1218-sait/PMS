@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-import javax.persistence.EntityManagerFactory;
+//import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,8 +32,8 @@ public class PMSEntityProvider {
     
     private static final String kDefaultTaskName = "__INNER_TASK__";
     
-    @Autowired
-    private EntityManagerFactory emf;
+//    @Autowired
+//    private EntityManagerFactory emf;
     
     @Autowired
     private PMSProjectRepo projRepo;
@@ -213,8 +213,8 @@ public class PMSEntityProvider {
                 ret.addDependentProjectId(dependentId);
             }
         }
-        
         projRepo.save(ret);
+        
         return ret;
     }
 
@@ -360,6 +360,9 @@ public class PMSEntityProvider {
             return ret;
         }
         
+        for (PMSComment comment : comments) {
+            comment.setTaskId(defaultTask.getId());
+        }
         commentRepo.saveAll(comments);
         
         for (PMSComment comment : comments) {
@@ -389,6 +392,61 @@ public class PMSEntityProvider {
         }
         taskRepo.save(defaultTask);
         commentRepo.deleteAllByIdInBatch(commentIds);
+        
+        return ret;
+    }
+    
+    public List<PMSComment> getCommentsByTask(long taskId) {
+        List<PMSComment> ret = new ArrayList<>();
+        
+        PMSTask task = taskRepo.findById(taskId).orElseThrow(
+                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+        
+        List<Long> commentIds = task.getCommentIds();
+        for (Long commentId : commentIds) {
+            PMSComment comment = commentRepo.findById(commentId).orElseGet(null);
+            if (comment != null) {
+                ret.add(comment);
+            }
+        }
+        
+        return ret;
+    }
+    
+    public PMSTask addCommentsToTask(long taskId, List<PMSComment> comments) {
+        PMSTask ret = null;
+        
+        ret = taskRepo.findById(taskId).orElseThrow(
+                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+        
+        for (PMSComment comment : comments) {
+            comment.setTaskId(ret.getId());
+        }
+        commentRepo.saveAll(comments);
+        
+        for (PMSComment comment : comments) {
+            ret.getCommentIds().add(comment.getId());
+        }
+        taskRepo.save(ret);
+        
+        return ret;
+    }
+    
+    public PMSTask deleteCommentsFromTask(long taskId, List<Long> commentIds) {
+        PMSTask ret = null;
+        
+        ret = taskRepo.findById(taskId).orElseThrow(
+                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+        
+        List<Long> origCommentIds = ret.getCommentIds();
+    
+        for (long commentId : commentIds) {
+            if (origCommentIds.contains(commentId)) {
+                origCommentIds.remove(commentId);
+            }
+        }
+        commentRepo.deleteAllByIdInBatch(commentIds);
+        taskRepo.save(ret);
         
         return ret;
     }
@@ -442,6 +500,12 @@ public class PMSEntityProvider {
         
         // save task
         ret = taskRepo.save(task);
+        PMSProject project = projRepo.findById(ret.getProjectId()).orElse(null);
+        if (project == null) {
+            return ret;
+        }
+        project.addTaskId(task.getId());
+        projRepo.save(project);
         
         return ret;
     }
@@ -497,6 +561,13 @@ public class PMSEntityProvider {
             
             taskRepo.findById(taskId);
             taskRepo.deleteById(taskId);
+            PMSTask task = taskRepo.findById(taskId).orElse(null);
+            if (task == null) {
+                continue;
+            }
+            PMSProject project = projRepo.findById(task.getProjectId()).orElse(null);
+            project.removeTaskId(taskId);
+            projRepo.save(project);
         }
     }
     

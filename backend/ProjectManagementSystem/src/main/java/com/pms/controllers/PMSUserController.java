@@ -5,6 +5,7 @@ package com.pms.controllers;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import java.util.ArrayList;
@@ -33,19 +34,20 @@ import com.pms.entities.PMSUser;
  */
 
 @RestController
-@RequestMapping(value="/users", 
+@RequestMapping(value="/v1/entities/users", 
         produces="application/json", consumes="application/json")
+@Transactional
 public class PMSUserController {
     
     @Autowired
     private PMSEntityProvider entityProvider;
     
-    @GetMapping("")
+    @GetMapping
     public List<PMSUser> getUsers() {
         return entityProvider.getUsers();
     }
     
-    @PostMapping("")
+    @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
             BindingResult result) {

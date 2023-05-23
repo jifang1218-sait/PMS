@@ -5,6 +5,7 @@ package com.pms.controllers;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pms.entities.PMSComment;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 
@@ -33,20 +35,21 @@ import com.pms.entities.PMSUser;
  */
 
 @RestController
-@RequestMapping(value="/tasks",
+@RequestMapping(value="/v1/entities/tasks",
 //            params={"project_id", "company_id"}, 
             produces="application/json", consumes="application/json")
+@Transactional
 public class PMSTaskController {
     
     @Autowired
     private PMSEntityProvider entityProvider;
     
-    @GetMapping(value="")
-    public List<PMSTask> getTasks(@RequestParam("projectId") Long projId) {
-        if (projId == null) {
+    @GetMapping
+    public List<PMSTask> getTasks(@RequestParam("project_id") Long projectId) {
+        if (projectId == null) {
             return entityProvider.getTasks();
         } else {
-            return entityProvider.getTasksByProjectId(projId);
+            return entityProvider.getTasksByProjectId(projectId);
         }
     }
     
@@ -57,7 +60,7 @@ public class PMSTaskController {
         return entityProvider.getTasksByIds(ids);
     }
     
-    @PostMapping(value="")
+    @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PMSTask> createTask(@RequestBody @Valid PMSTask task, 
             BindingResult result) {
@@ -131,5 +134,23 @@ public class PMSTaskController {
     @GetMapping(value="/{taskId}/users")
     public List<PMSUser> findUsers(@PathVariable("taskId") long taskId) {
         return entityProvider.getUsersForTask(taskId);
+    }
+    
+    // comments
+    @GetMapping("/{taskId}/comments")
+    public List<PMSComment> findComments(@PathVariable("taskId") long taskId) {
+        return entityProvider.getCommentsByTask(taskId);
+    }
+    
+    @PostMapping("/{taskId}/comments")
+    public PMSTask addComments(@PathVariable("taskId") long taskId, 
+            @RequestBody List<PMSComment> comments) {
+        return entityProvider.addCommentsToTask(taskId, comments);
+    }
+    
+    @DeleteMapping("/{taskId}/comments")
+    public PMSTask deleteComments(@PathVariable("taskId") long taskId, 
+            @RequestBody List<Long> commentIds) {
+        return entityProvider.deleteCommentsFromTask(taskId, commentIds);
     }
 }

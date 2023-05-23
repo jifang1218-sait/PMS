@@ -4,6 +4,7 @@
 package com.pms.entities;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -24,7 +25,7 @@ import javax.validation.constraints.Size;
 @Entity
 public class PMSProject {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="PROJ_ID")
     private long id;
     
@@ -46,10 +47,19 @@ public class PMSProject {
     
     @ElementCollection
     @CollectionTable(name="PROJECT_DEPENDENT_PROJECTS")
-    private List<Long> dependentProjectIds; 
+    private List<Long> dependentProjectIds;
     
-    @Column(name="PROJ_DEFAULT_TASK_ID")
+    @ElementCollection
+    @CollectionTable(name="PROJECT_TASKS")
+    private List<Long> taskIds;
+    
+    @Column(name="PROJ_DEFAULT_TASK")
     private long defaultTaskId;
+    
+    public PMSProject() {
+        dependentProjectIds = new ArrayList<>();
+        taskIds = new ArrayList<>();
+    }
     
     public Long getId() {
         return id;
@@ -87,13 +97,13 @@ public class PMSProject {
         return avatar;
     }
     
-    public void addDependentProjectId(long projId) {
+    public void addDependentProjectId(Long projId) {
         if (!dependentProjectIds.contains(projId)) {
         	dependentProjectIds.add(projId);
         }
     }
     
-    public void removeDependentProjectId(long projId) {
+    public void removeDependentProjectId(Long projId) {
         if (dependentProjectIds.contains(projId)) {
         	dependentProjectIds.remove(projId);
         }
@@ -107,7 +117,23 @@ public class PMSProject {
         return defaultTaskId;
     }
     
-    public void setDefaultTaskId(long defaultTaskId) {
+    public void setDefaultTaskId(Long defaultTaskId) {
         this.defaultTaskId = defaultTaskId;
+    }
+    
+    public void addTaskId(Long taskId) {
+        if (!taskIds.contains(taskId)) {
+            taskIds.add(taskId);
+        }
+    }
+    
+    public void removeTaskId(Long taskId) {
+        if (taskIds.contains(taskId)) {
+            taskIds.remove(taskId);
+        }
+    }
+    
+    public List<Long> getTaskIds() {
+        return taskIds;
     }
 }

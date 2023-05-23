@@ -4,14 +4,13 @@
 package com.pms.controllers;
 
 import java.util.List;
-
 import javax.validation.Valid;
-
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,20 +30,21 @@ import com.pms.entities.PMSCompany;
  */
 
 @RestController
-@RequestMapping(value="/companies", 
+@RequestMapping(value="/v1/entities/companies", 
             produces="application/json", 
             consumes="application/json")
+@Transactional
 public class PMSCompanyController {
     
     @Autowired
     private PMSEntityProvider entityProvider;
     
-    @GetMapping(value="")
+    @GetMapping
     public List<PMSCompany> getCompanies() {
     	return entityProvider.getCompanies();
     }
     
-    @PostMapping(value="")
+    @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PMSCompany> createCompany(@RequestBody @Valid PMSCompany comp, BindingResult result) {
         if(result.hasErrors()) {

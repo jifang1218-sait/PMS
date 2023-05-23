@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 public class PMSUser {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="USER_ID")
     private long id;
     
