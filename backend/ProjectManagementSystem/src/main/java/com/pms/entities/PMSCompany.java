@@ -19,11 +19,16 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 /**
  * @author jifang
  *
  */
 @Entity
+@Data
+@AllArgsConstructor
 public class PMSCompany {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
@@ -49,8 +54,8 @@ public class PMSCompany {
     public PMSCompany() {
         projectIds = new ArrayList<>();
     }
-    
-    public long getId() {
+    /*
+    public Long getId() {
     	return id;
     }
     
@@ -84,7 +89,7 @@ public class PMSCompany {
     
     public void setProjectIds(List<Long> projectIds) {
         this.projectIds = projectIds;
-    }
+    }*/
     
     public void addProjectId(Long projectId) {
         if (!projectIds.contains(projectId)) {

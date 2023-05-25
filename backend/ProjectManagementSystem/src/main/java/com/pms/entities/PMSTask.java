@@ -19,11 +19,16 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 /**
  * @author jifang
  *
  */
 @Entity
+@Data
+@AllArgsConstructor
 public class PMSTask {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
@@ -63,10 +68,16 @@ public class PMSTask {
         commentIds = new ArrayList<>();
     }
     
+    
     public Long getId() {
         return id;
-    } 
+    }
     
+    public Long getProjectId() {
+        return projectId;
+    }
+    
+    /*
     public String getName() {
         return name;
     }
@@ -83,10 +94,6 @@ public class PMSTask {
         this.desc = desc;
     }
     
-    public Long getProjectId() {
-        return projectId;
-    }
-    
     public void setProjectId(long projectId) {
         this.projectId = projectId;
     }
@@ -99,18 +106,6 @@ public class PMSTask {
         this.avatar = avatar;
     }
     
-    public void addDependentTaskId(long taskId) {
-        if (!dependentTaskIds.contains(taskId)) {
-        	dependentTaskIds.add(taskId);
-        }
-    }
-    
-    public void removeDependentTaskId(long taskId) {
-        if (dependentTaskIds.contains(taskId)) {
-        	dependentTaskIds.remove(taskId);
-        }
-    }
-    
     public List<Long> getDependentTaskIds() {
         return dependentTaskIds;
     }
@@ -119,18 +114,6 @@ public class PMSTask {
         this.dependentTaskIds = dependentTaskIds;
     }
     
-    public void addUserId(Long userId) {
-        if (!userIds.contains(userId)) {
-            userIds.add(userId);
-        }
-    }
-    
-    public void removeUserId(Long userId) {
-        if (userIds.contains(userId)) {
-            userIds.remove(userId);
-        }
-    }
-
     public List<Long> getUserIds() {
         return userIds;
     }
@@ -145,7 +128,7 @@ public class PMSTask {
     
     public void setCommentIds(List<Long> commentIds) {
         this.commentIds = commentIds;
-    }
+    }*/
     
     public void addCommentId(Long commentId) {
         if (!commentIds.contains(commentId)) {
@@ -156,6 +139,30 @@ public class PMSTask {
     public void removeCommentId(Long commentId) {
         if (commentIds.contains(commentId)) {
             commentIds.remove(commentId);
+        }
+    }
+    
+    public void addUserId(Long userId) {
+        if (!userIds.contains(userId)) {
+            userIds.add(userId);
+        }
+    }
+    
+    public void removeUserId(Long userId) {
+        if (userIds.contains(userId)) {
+            userIds.remove(userId);
+        }
+    }
+    
+    public void addDependentTaskId(long taskId) {
+        if (!dependentTaskIds.contains(taskId)) {
+        	dependentTaskIds.add(taskId);
+        }
+    }
+    
+    public void removeDependentTaskId(long taskId) {
+        if (dependentTaskIds.contains(taskId)) {
+        	dependentTaskIds.remove(taskId);
         }
     }
 }

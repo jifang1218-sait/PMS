@@ -14,11 +14,18 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @author jifang
  *
  */
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PMSUser {
     
     @Id
@@ -56,6 +63,7 @@ public class PMSUser {
     @Column(name="USER_AVATAR")
     private String avatar;
     
+    /*
     public Long getId() {
         return id;
     }
@@ -114,6 +122,6 @@ public class PMSUser {
     
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    }
+    }*/
 
 }

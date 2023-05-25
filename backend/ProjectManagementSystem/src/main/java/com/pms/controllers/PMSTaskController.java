@@ -133,7 +133,7 @@ public class PMSTaskController {
     
     @GetMapping(value="/{taskId}/users")
     public List<PMSUser> findUsers(@PathVariable("taskId") long taskId) {
-        return entityProvider.getUsersForTask(taskId);
+        return entityProvider.getUsersByTask(taskId);
     }
     
     // comments
@@ -143,14 +143,14 @@ public class PMSTaskController {
     }
     
     @PostMapping("/{taskId}/comments")
-    public PMSTask addComments(@PathVariable("taskId") long taskId, 
-            @RequestBody List<PMSComment> comments) {
-        return entityProvider.addCommentsToTask(taskId, comments);
+    public PMSComment addComments(@PathVariable("taskId") long taskId, 
+            @RequestBody PMSComment comment) {
+        return entityProvider.createCommentForTask(taskId, comment);
     }
     
     @DeleteMapping("/{taskId}/comments")
-    public PMSTask deleteComments(@PathVariable("taskId") long taskId, 
+    public void deleteComments(@PathVariable("taskId") long taskId, 
             @RequestBody List<Long> commentIds) {
-        return entityProvider.deleteCommentsFromTask(taskId, commentIds);
+        entityProvider.deleteComments(commentIds);
     }
 }

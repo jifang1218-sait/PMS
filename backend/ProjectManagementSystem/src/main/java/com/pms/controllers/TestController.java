@@ -33,7 +33,6 @@ public class TestController {
     
     //@Autowired
     //private EntityManagerFactory emf;
-    
     @GetMapping(value="/loadData")
     public void loadData() {
         for (int a=0; a<10; ++a) {
@@ -55,14 +54,16 @@ public class TestController {
                 for (int tmp=0; tmp<10; ++tmp) {
                     PMSComment comment = new PMSComment();
                     comment.setDesc("comment_desc_" + tmp);
-                    comment.setFilePath("comment_filepath_" + tmp);
+                    List<String> filePaths = new ArrayList<>();
+                    filePaths.add("comment_filepath_" + tmp);
+                    comment.setFilePaths(filePaths);
                     comment.setTaskId(project.getDefaultTaskId());
                     comment.setTimestamp(a * 1000 + b * 100 + tmp * 10);
                     comment.setTitle("comment_title_" + tmp);
-                    comments.add(comment);
+                    entityProvider.createCommentForProject(project.getId(), comment);
                 }
-                entityProvider.addCommentsToProject(project.getId(), comments);
                 
+                // add 10 comments to the tasks of the project.
                 for (int c=0; c<10; ++c) {
                     PMSTask task = new PMSTask();
                     task.setAvatar("task_avatar_" + c);
@@ -74,13 +75,14 @@ public class TestController {
                     for (int d=0; d<10; ++d) {
                         PMSComment comment = new PMSComment();
                         comment.setDesc("comment_desc_" + d);
-                        comment.setFilePath("comment_filepath_" + d);
+                        List<String> filePaths = new ArrayList<>();
+                        filePaths.add("comment_filepath_" + d);
+                        comment.setFilePaths(filePaths);
                         comment.setTaskId(task.getId());
                         comment.setTimestamp(a * 1000 + b * 100 + c * 10 + d);
                         comment.setTitle("comment_title_" + d);
-                        comments.add(comment);
+                        entityProvider.createCommentForTask(task.getId(), comment);
                     }
-                    entityProvider.addCommentsToTask(task.getId(), comments);
                 }
             }
         }

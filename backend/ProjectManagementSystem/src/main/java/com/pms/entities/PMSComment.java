@@ -3,7 +3,11 @@
  */
 package com.pms.entities;
 
+import java.util.List;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,11 +18,18 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * @author jifang
  *
  */
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PMSComment {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
@@ -34,8 +45,9 @@ public class PMSComment {
     @Column(name = "COMMENT_DESC", columnDefinition="TEXT")
     private String desc;
     
-    @Column(name = "COMMENT_FILEPATH")
-    private String filePath;
+    @ElementCollection
+    @CollectionTable(name = "COMMENT_FILEPATH")
+    private List<String> filePaths;
     
     @Column(name = "COMMENT_TIMESTAMP")
     private long timestamp;
@@ -52,6 +64,19 @@ public class PMSComment {
         return id;
     }
     
+    public Long getTaskId() {
+        return taskId;
+    }
+    
+    public Long getUserId() {
+        return userId;
+    }
+    
+    public Long getTimestamp() {
+        return timestamp;
+    }
+    
+    /*
     public String getDesc() {
         return desc;
     } 
@@ -60,12 +85,12 @@ public class PMSComment {
         this.desc = desc;
     }
     
-    public String getFilePath() {
-        return filePath;
+    public List<String> getFilePaths() {
+        return filePaths;
     }
     
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFilePaths(List<String> filePaths) {
+        this.filePaths = filePaths;
     }
     
     public String getTitle() {
@@ -76,16 +101,8 @@ public class PMSComment {
         this.title = title;
     }
     
-    public long getTimestamp() {
-        return timestamp;
-    }
-    
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-    
-    public Long getTaskId() {
-        return taskId;
     }
     
     public void setTaskId(long taskId) {
@@ -95,8 +112,5 @@ public class PMSComment {
     public void setUserId(long userId) {
         this.userId = userId;
     }
-    
-    public long getUserId() {
-        return userId;
-    }
+    */
 }

@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Scope;
 import com.pms.controllers.PMSEntityProvider;
 
 import com.pms.entities.IEntityPath;
+import com.pms.repositories.IPMSFileManager;
+import com.pms.repositories.PMSFileManagerImpl;
 
 /**
  * @author jifang
@@ -27,5 +29,10 @@ public class JavaConfig {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     PMSEntityProvider createEntityProvider() {
         return new PMSEntityProvider();
+    }
+    
+    @Bean 
+    IPMSFileManager fileManager() {
+    	return new PMSFileManagerImpl();
     }
 }

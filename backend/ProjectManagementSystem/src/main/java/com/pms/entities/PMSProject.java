@@ -19,11 +19,16 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 /**
  * @author jifang
  *
  */
 @Entity
+@Data
+@AllArgsConstructor
 public class PMSProject {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
@@ -61,7 +66,7 @@ public class PMSProject {
         dependentProjectIds = new ArrayList<>();
         taskIds = new ArrayList<>();
     }
-    
+    /*
     public Long getId() {
         return id;
     }
@@ -82,10 +87,6 @@ public class PMSProject {
         this.desc = desc;
     }
     
-    public Long getCompanyId() {
-        return companyId;
-    }
-    
     public void setCompanyId(long companyId) {
         this.companyId = companyId;
     }
@@ -96,6 +97,34 @@ public class PMSProject {
     
     public String getAvatar() {
         return avatar;
+    }
+    
+    public List<Long> getTaskIds() {
+        return taskIds;
+    }
+    
+    public void setTaskIds(List<Long> taskIds) {
+        this.taskIds = taskIds;
+    }
+    
+    public List<Long> getDependentProjectIds() {
+        return dependentProjectIds;
+    }
+    
+    public void setDependentProjectIds(List<Long> dependentProjectIds) {
+        this.dependentProjectIds = dependentProjectIds;
+    }
+    
+    public void setDefaultTaskId(Long defaultTaskId) {
+        this.defaultTaskId = defaultTaskId;
+    }*/
+    
+    public Long getDefaultTaskId() {
+        return defaultTaskId;
+    }
+    
+    public Long getCompanyId() {
+        return companyId;
     }
     
     public void addDependentProjectId(Long projId) {
@@ -110,22 +139,6 @@ public class PMSProject {
         }
     }
     
-    public List<Long> getDependentProjectIds() {
-        return dependentProjectIds;
-    }
-    
-    public void setDependentProjectIds(List<Long> dependentProjectIds) {
-        this.dependentProjectIds = dependentProjectIds;
-    }
-    
-    public Long getDefaultTaskId() {
-        return defaultTaskId;
-    }
-    
-    public void setDefaultTaskId(Long defaultTaskId) {
-        this.defaultTaskId = defaultTaskId;
-    }
-    
     public void addTaskId(Long taskId) {
         if (!taskIds.contains(taskId)) {
             taskIds.add(taskId);
@@ -138,11 +151,4 @@ public class PMSProject {
         }
     }
     
-    public List<Long> getTaskIds() {
-        return taskIds;
-    }
-    
-    public void setTaskIds(List<Long> taskIds) {
-        this.taskIds = taskIds;
-    }
 }

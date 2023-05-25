@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSProject;
+import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 
 /**
@@ -114,13 +115,13 @@ public class PMSProjectController {
     
     // assign users
     @PostMapping(value="/{projectId}/users")
-    public PMSProject addUsers(@PathVariable("projectId") long projectId, 
+    public PMSTask addUsers(@PathVariable("projectId") long projectId, 
                 @RequestBody List<Long> userIds) {
         return entityProvider.addUsersToProject(projectId, userIds);
     }
     
     @PutMapping(value="/{projectId}/users")
-    public PMSProject setUsers(@PathVariable("projectId") long projectId, 
+    public PMSTask setUsers(@PathVariable("projectId") long projectId, 
                 @RequestBody List<Long> userIds) {
         return entityProvider.setUsersToProject(projectId, userIds);
     }
@@ -138,20 +139,20 @@ public class PMSProjectController {
     
     // comments
     @GetMapping("/{projectId}/comments")
-    public List<PMSComment> findComments(@PathVariable("projectId") long projectId) {
+    public List<List<PMSComment>> findComments(@PathVariable("projectId") long projectId) {
         return entityProvider.getCommentsByProject(projectId);
     }
     
     @PostMapping("/{projectId}/comments")
-    public PMSProject addComments(@PathVariable("projectId") long projectId, 
-            @RequestBody List<PMSComment> comments) {
-        return entityProvider.addCommentsToProject(projectId, comments);
+    public PMSComment addComments(@PathVariable("projectId") long projectId, 
+            @RequestBody PMSComment comment) {
+        return entityProvider.createCommentForProject(projectId, comment);
     }
     
     @DeleteMapping("/{projectId}/comments")
-    public PMSProject deleteComments(@PathVariable("projectId") long projectId, 
+    public void deleteComments(@PathVariable("projectId") long projectId, 
             @RequestBody List<Long> commentIds) {
-        return entityProvider.deleteCommentsFromProject(projectId, commentIds);
+        entityProvider.deleteComments(commentIds);
     }
     
 }
