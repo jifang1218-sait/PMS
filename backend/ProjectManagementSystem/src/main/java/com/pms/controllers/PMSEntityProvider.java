@@ -244,16 +244,36 @@ public class PMSEntityProvider {
     		
     		// delete its tasks
         	List<Long> taskIds = project.getTaskIds();
-            taskIds.add(project.getDefaultTaskId());
             deleteTasks(taskIds);
+            deleteDefaultTask(project);
             
             beDeletedProjectIds.add(project.getId());
         }
     	
     	// delete projects
-    	projRepo.deleteAllByIdInBatch(beDeletedProjectIds);
+    	for (Long beDeletedProjectId : beDeletedProjectIds) {
+    	    projRepo.deleteById(beDeletedProjectId);
+    	}
+    	//projRepo.deleteAllByIdInBatch(beDeletedProjectIds);
     }
     
+    /**
+     * @param project
+     */
+    private void deleteDefaultTask(PMSProject project) {
+        if (project == null) {
+            return;
+        }
+        Long defaultTaskId = project.getDefaultTaskId();
+        PMSTask defaultTask = taskRepo.findById(defaultTaskId).orElse(null);
+        if (defaultTask != null) {
+            List<Long> commentIds = defaultTask.getCommentIds();
+            deleteComments(commentIds);
+        }
+        
+        taskRepo.deleteById(defaultTaskId);
+    }
+
     public PMSProject addDependentProjects(long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
@@ -447,7 +467,8 @@ public class PMSEntityProvider {
         	}
         }
         // delete old comments
-        commentRepo.deleteAllByIdInBatch(beRemovedCommentIds);
+        deleteComments(beRemovedCommentIds);
+        //commentRepo.deleteAllByIdInBatch(beRemovedCommentIds);
 
         return taskRepo.save(ret);
     }
@@ -478,11 +499,13 @@ public class PMSEntityProvider {
     		
     		// delete its comments
         	List<Long> commentIds = task.getCommentIds();
-        	commentRepo.deleteAllByIdInBatch(commentIds);
-            
+        	deleteComments(commentIds);
             beDeletedTaskIds.add(task.getId());
         }
-        taskRepo.deleteAllByIdInBatch(beDeletedTaskIds);            
+        for (Long beDeletedTaskId : beDeletedTaskIds) {
+            taskRepo.deleteById(beDeletedTaskId);
+        }
+//        taskRepo.deleteAllByIdInBatch(beDeletedTaskIds);            
     }
     
     public PMSTask addDependentTasks(long taskId, List<Long> dependentIds) {
@@ -597,13 +620,51 @@ public class PMSEntityProvider {
         }
         
         // delete comments
-        commentRepo.deleteAllByIdInBatch(beRemovedCommentIds);
+        for (Long beRemovedCommentId : beRemovedCommentIds) {
+            commentRepo.deleteById(beRemovedCommentId);
+        }
+        //commentRepo.deleteAllByIdInBatch(beRemovedCommentIds);
     }
     
+    // return: [task0, task1, ...]
     public List<PMSComment> getCommentsByTask(long taskId) {
     	PMSTask task = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
     	
+        List<PMSComment> ret = new ArrayList<>();
+        List<Long> commentIds = task.getCommentIds();
+        for (Long commentId : commentIds) {
+            PMSComment comment = commentRepo.findById(commentId).orElseGet(null);
+            if (comment != null) {
+                ret.add(comment);
+            }
+        }
+        
+        return ret;
+    }
+    
+    public List<PMSComment> getComments(List<Long> commentIds) {
+        if (commentIds == null) {
+            return commentRepo.findAll();
+        } else {
+            List<PMSComment> ret = new ArrayList<>();
+            for (Long commentId : commentIds) {
+                PMSComment comment = commentRepo.findById(commentId).orElseThrow(
+                        ()->new ResourceNotFoundException("No comment found with id=" + commentId));
+                ret.add(comment);
+            }
+            return ret;
+        }
+    } 
+    
+    // return: [task0, task1, ...]
+    public List<PMSComment> getCommentsForProjectOnly(long projectId) {
+        PMSProject project = projRepo.findById(projectId).orElseThrow(()
+                ->new ResourceNotFoundException("No project found with id=" + projectId));
+        
+        PMSTask task = taskRepo.findById(project.getDefaultTaskId()).orElseThrow(
+                ()->new ResourceNotFoundException("No task found with id=" + project.getDefaultTaskId()));
+        
         List<PMSComment> ret = new ArrayList<>();
         List<Long> commentIds = task.getCommentIds();
         for (Long commentId : commentIds) {

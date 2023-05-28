@@ -98,7 +98,7 @@ public class PMSCompany {
     }
     
     public void removeProjectId(Long projectId) {
-        if (!projectIds.contains(projectId)) {
+        if (projectIds.contains(projectId)) {
             projectIds.remove(projectId);
         }
     }

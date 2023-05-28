@@ -28,6 +28,9 @@ produces="application/json",
 consumes="application/json")
 @Transactional
 public class TestController {
+    
+    private static final int kSize = 10;
+    
     @Autowired
     private PMSEntityProvider entityProvider;
     
@@ -35,13 +38,13 @@ public class TestController {
     //private EntityManagerFactory emf;
     @GetMapping(value="/loadData")
     public void loadData() {
-        for (int a=0; a<10; ++a) {
+        for (int a=0; a<kSize; ++a) {
             PMSCompany company = new PMSCompany();
             company.setAvatar("company_avatar_" + a);
             company.setName("company_name_" + a);
             company.setDesc("company_desc_" + a);
             entityProvider.createCompany(company);
-            for (int b=0; b<10; ++b) {
+            for (int b=0; b<kSize; ++b) {
                 PMSProject project = new PMSProject();
                 project.setCompanyId(company.getId());
                 project.setAvatar("project_avatar_" + b);
@@ -51,20 +54,20 @@ public class TestController {
                 
                 // add 10 comments to the project
                 List<PMSComment> comments = new ArrayList<>();
-                for (int tmp=0; tmp<10; ++tmp) {
+                for (int tmp=0; tmp<kSize; ++tmp) {
                     PMSComment comment = new PMSComment();
                     comment.setDesc("comment_desc_" + tmp);
                     List<String> filePaths = new ArrayList<>();
                     filePaths.add("comment_filepath_" + tmp);
                     comment.setFilePaths(filePaths);
                     comment.setTaskId(project.getDefaultTaskId());
-                    comment.setTimestamp(a * 1000 + b * 100 + tmp * 10);
+                    comment.setTimestamp(a * kSize*kSize*kSize + b * kSize*kSize + tmp * kSize);
                     comment.setTitle("comment_title_" + tmp);
                     entityProvider.createCommentForProject(project.getId(), comment);
                 }
                 
                 // add 10 comments to the tasks of the project.
-                for (int c=0; c<10; ++c) {
+                for (int c=0; c<kSize; ++c) {
                     PMSTask task = new PMSTask();
                     task.setAvatar("task_avatar_" + c);
                     task.setDesc("avatar_desc_" + c);
@@ -72,19 +75,30 @@ public class TestController {
                     task.setProjectId(project.getId());
                     entityProvider.createTask(task);
                     comments.clear();
-                    for (int d=0; d<10; ++d) {
+                    for (int d=0; d<kSize; ++d) {
                         PMSComment comment = new PMSComment();
                         comment.setDesc("comment_desc_" + d);
                         List<String> filePaths = new ArrayList<>();
                         filePaths.add("comment_filepath_" + d);
                         comment.setFilePaths(filePaths);
                         comment.setTaskId(task.getId());
-                        comment.setTimestamp(a * 1000 + b * 100 + c * 10 + d);
+                        comment.setTimestamp(a * kSize*kSize*kSize + b * kSize*kSize + c * kSize + d);
                         comment.setTitle("comment_title_" + d);
                         entityProvider.createCommentForTask(task.getId(), comment);
                     }
                 }
             }
         }
+    }
+    
+    @GetMapping("/deleteData")
+    public void deleteData() {
+        // delete companies
+        List<Long> companyIds = new ArrayList<>();
+        List<PMSCompany> companies = entityProvider.getCompanies();
+        for (PMSCompany company : companies) {
+            companyIds.add(company.getId());
+        }
+        entityProvider.deleteCompanies(companyIds);
     }
 }
