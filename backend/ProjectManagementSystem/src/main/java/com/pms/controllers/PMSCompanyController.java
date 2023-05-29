@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSCompany;
@@ -30,7 +29,7 @@ import com.pms.entities.PMSCompany;
  */
 
 @RestController
-@RequestMapping(value="/v1/entities/companies", 
+@RequestMapping(value="/v1/old/entities", 
             produces="application/json", 
             consumes="application/json")
 @Transactional
@@ -39,29 +38,36 @@ public class PMSCompanyController {
     @Autowired
     private PMSEntityProvider entityProvider;
     
-    @GetMapping
+    /**
+     * the uniform url
+     */
+    @GetMapping(value="/companies")
     public List<PMSCompany> getCompanies() {
-    	return entityProvider.getCompanies();
+        return entityProvider.getCompanies();
     }
     
-    @PostMapping
-    //@ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value="/companies")
     public ResponseEntity<PMSCompany> createCompany(@RequestBody @Valid PMSCompany comp, BindingResult result) {
         if(result.hasErrors()) {
             return new ResponseEntity<>(comp, HttpStatus.BAD_REQUEST);
         }
         
         return new ResponseEntity<>(entityProvider.createCompany(comp), HttpStatus.CREATED);
+    } 
+    
+    @PostMapping(value="/companies")
+    public void deleteCompanies(@RequestBody List<Long> companyIds) {
+        entityProvider.deleteCompanies(companyIds);
     }
     
-    @GetMapping(value="/{id}")
-    public List<PMSCompany> findCompany(@PathVariable("id") Long id) {
+    @GetMapping(value="/companies/{id}")
+    public PMSCompany getCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();
         ids.add(id);
-        return entityProvider.getCompaniesByIds(ids);
+        return entityProvider.getCompaniesByIds(ids).get(0);
     }
     
-    @PutMapping(value="/{id}")
+    @PutMapping(value="/companies/{id}")
     public ResponseEntity<PMSCompany> updateCompany(@PathVariable("id") Long id, 
             @RequestBody @Valid PMSCompany comp, BindingResult result) {
         if (result.hasErrors()) {
@@ -71,11 +77,11 @@ public class PMSCompanyController {
         return new ResponseEntity<>(entityProvider.updateCompany(id, comp), HttpStatus.OK);
     }
     
-    @DeleteMapping(value="/{id}")
+    @DeleteMapping(value="/companies/{id}")
     public void deleteCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();
         ids.add(id);
         entityProvider.deleteCompanies(ids);
     }
-
+    
 }

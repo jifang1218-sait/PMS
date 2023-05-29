@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pms.entities.PMSComment;
 
 @RestController
-@RequestMapping(value="/v1/entities/comments",
+@RequestMapping(value="/v1/old/entities/comments",
 		consumes="application/json", produces="application/json")
 @Transactional
 public class PMSCommentController {

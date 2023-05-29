@@ -36,7 +36,7 @@ import com.pms.entities.PMSUser;
  */
 
 @RestController
-@RequestMapping(value="/v1/entities/projects",  
+@RequestMapping(value="/v1/old/entities/projects",  
         consumes="application/json", 
         produces="application/json")
 @Transactional
