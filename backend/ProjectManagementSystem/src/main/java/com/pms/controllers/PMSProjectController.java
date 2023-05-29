@@ -10,6 +10,8 @@ import javax.validation.Valid;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,9 @@ public class PMSProjectController {
 
     @Autowired
     PMSEntityProvider entityProvider;
+    
+    private final static Logger logger =
+            LoggerFactory.getLogger(PMSProjectController.class);
 
     @GetMapping
     public List<PMSProject> getProjects(@RequestParam(value="company_id", required=false) Long companyId) {

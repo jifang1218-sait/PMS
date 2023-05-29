@@ -6,6 +6,7 @@ package com.pms.entities;
 import java.util.List;
 import java.util.ArrayList;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -13,7 +14,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -59,8 +62,9 @@ public class PMSProject {
     @CollectionTable(name="PROJECT_TASKS")
     private List<Long> taskIds;
     
-    @Column(name="PROJ_DEFAULT_TASK")
-    private long defaultTaskId;
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="PROJECT_DEFAULT_TASK", nullable=false)
+    private PMSTask defaultTask;
     
     public PMSProject() {
         dependentProjectIds = new ArrayList<>();
@@ -119,8 +123,8 @@ public class PMSProject {
         this.defaultTaskId = defaultTaskId;
     }*/
     
-    public Long getDefaultTaskId() {
-        return defaultTaskId;
+    public PMSTask getDefaultTask() {
+        return defaultTask;
     }
     
     public Long getCompanyId() {

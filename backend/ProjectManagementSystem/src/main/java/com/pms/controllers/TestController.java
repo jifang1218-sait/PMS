@@ -60,7 +60,7 @@ public class TestController {
                     List<String> filePaths = new ArrayList<>();
                     filePaths.add("comment_filepath_" + tmp);
                     comment.setFilePaths(filePaths);
-                    comment.setTaskId(project.getDefaultTaskId());
+                    comment.setTaskId(project.getDefaultTask().getId());
                     comment.setTimestamp(a * kSize*kSize*kSize + b * kSize*kSize + tmp * kSize);
                     comment.setTitle("comment_title_" + tmp);
                     entityProvider.createCommentForProject(project.getId(), comment);

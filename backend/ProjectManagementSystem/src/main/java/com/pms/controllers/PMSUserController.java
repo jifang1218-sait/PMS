@@ -10,6 +10,8 @@ import javax.validation.Valid;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +44,15 @@ public class PMSUserController {
     @Autowired
     private PMSEntityProvider entityProvider;
     
+    private final static Logger logger =
+            LoggerFactory.getLogger(PMSUserController.class);
+    
     @GetMapping
     public List<PMSUser> getUsers() {
         return entityProvider.getUsers();
     }
     
     @PostMapping
-    //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
             BindingResult result) {
         if (result.hasErrors()) {

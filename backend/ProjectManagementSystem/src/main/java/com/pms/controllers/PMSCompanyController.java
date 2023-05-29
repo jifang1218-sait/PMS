@@ -7,6 +7,8 @@ import java.util.List;
 import javax.validation.Valid;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,9 @@ public class PMSCompanyController {
     @Autowired
     private PMSEntityProvider entityProvider;
     
+    private final static Logger logger =
+            LoggerFactory.getLogger(PMSCompanyController.class);
+    
     /**
      * the uniform url
      */
@@ -55,7 +60,7 @@ public class PMSCompanyController {
         return new ResponseEntity<>(entityProvider.createCompany(comp), HttpStatus.CREATED);
     } 
     
-    @PostMapping(value="/companies")
+    @DeleteMapping(value="/companies")
     public void deleteCompanies(@RequestBody List<Long> companyIds) {
         entityProvider.deleteCompanies(companyIds);
     }

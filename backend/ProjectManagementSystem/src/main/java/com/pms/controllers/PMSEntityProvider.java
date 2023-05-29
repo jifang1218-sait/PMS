@@ -9,6 +9,9 @@ import java.util.Set;
 
 import java.util.HashSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,9 @@ public class PMSEntityProvider {
     
 //    @Autowired
 //    private EntityManagerFactory emf;
+    
+    private final static Logger logger =
+            LoggerFactory.getLogger(PMSEntityProvider.class);
     
     @Autowired
     private PMSProjectRepo projRepo;
@@ -153,14 +159,15 @@ public class PMSEntityProvider {
     public PMSProject createProject(PMSProject project) {
     	PMSCompany company = compRepo.findById(project.getCompanyId())
     			.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + project.getCompanyId()));
-    	PMSProject ret = projRepo.save(project);
+    	//PMSProject ret = projRepo.save(project);
+    	PMSProject ret = project;
         
         // create default task for the project then update the project.
-        PMSTask innerTask = new PMSTask();
-        innerTask.setProjectId(ret.getId());
-        innerTask.setName(EntityConstants.kDefaultTaskName);
-        taskRepo.save(innerTask);
-        ret.setDefaultTaskId(innerTask.getId());
+    	PMSTask defaultTask = new PMSTask();
+    	defaultTask.setName(EntityConstants.kDefaultTaskName);
+//    	taskRepo.save(defaultTask);
+//    	defaultTask.setProjectId(ret.getId());
+    	ret.setDefaultTask(defaultTask);
         ret = projRepo.save(ret);
         
         // update company. 
@@ -190,20 +197,17 @@ public class PMSEntityProvider {
         if (project.getName() != null) {
             ret.setName(project.getName());
         }
-        if (project.getDefaultTaskId() != null) {
-        	ret.setDefaultTaskId(project.getDefaultTaskId());
-        }
         
-        if (project.getDependentProjectIds() != null) {
+        /*if (project.getDependentProjectIds() != null) {
             List<Long> dependentIds = project.getDependentProjectIds();
             for (long dependentId : dependentIds) {
                 if (projRepo.existsById(dependentId)) {
                     ret.addDependentProjectId(dependentId);
                 }
             }
-        }
+        }*/
         
-        if (project.getTaskIds() != null) {
+        /*if (project.getTaskIds() != null) {
 	        List<Long> oldTaskIds = ret.getTaskIds();
 	        List<Long> newTaskIds = project.getTaskIds();
 	        List<Long> beRemovedTasks = new ArrayList<>();
@@ -214,7 +218,7 @@ public class PMSEntityProvider {
 	        }
 	        this.deleteTasks(beRemovedTasks);
 	        ret.setTaskIds(newTaskIds);
-        }
+        }*/
         
         
         return projRepo.save(ret);
@@ -264,14 +268,14 @@ public class PMSEntityProvider {
         if (project == null) {
             return;
         }
-        Long defaultTaskId = project.getDefaultTaskId();
-        PMSTask defaultTask = taskRepo.findById(defaultTaskId).orElse(null);
+        PMSTask defaultTask = project.getDefaultTask();
         if (defaultTask != null) {
             List<Long> commentIds = defaultTask.getCommentIds();
             deleteComments(commentIds);
         }
         
-        taskRepo.deleteById(defaultTaskId);
+        // default will be deleted when the project is deleted.
+//        taskRepo.deleteById(defaultTask.getId());
     }
 
     public PMSProject addDependentProjects(long projectId, List<Long> dependentProjectIds) {
@@ -573,8 +577,7 @@ public class PMSEntityProvider {
     public PMSComment createCommentForProject(Long projectId, PMSComment comment) {
     	PMSProject project = projRepo.findById(projectId)
     			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
-    	PMSTask defaultTask = taskRepo.findById(project.getDefaultTaskId())
-    			.orElse(null);
+    	PMSTask defaultTask = project.getDefaultTask();
     	if (defaultTask == null) {
     		return null;
     	}
@@ -662,8 +665,7 @@ public class PMSEntityProvider {
         PMSProject project = projRepo.findById(projectId).orElseThrow(()
                 ->new ResourceNotFoundException("No project found with id=" + projectId));
         
-        PMSTask task = taskRepo.findById(project.getDefaultTaskId()).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + project.getDefaultTaskId()));
+        PMSTask task = project.getDefaultTask();
         
         List<PMSComment> ret = new ArrayList<>();
         List<Long> commentIds = task.getCommentIds();
@@ -822,7 +824,7 @@ public class PMSEntityProvider {
     public PMSTask addUsersToProject(long projectId, List<Long> userIds) {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
-    	PMSTask ret = taskRepo.findById(project.getDefaultTaskId()).orElse(null);
+    	PMSTask ret = project.getDefaultTask();
     	if (ret == null) {
     		return ret;
     	}
@@ -860,7 +862,7 @@ public class PMSEntityProvider {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
-    	PMSTask ret = taskRepo.findById(project.getDefaultTaskId()).orElse(null);
+    	PMSTask ret = project.getDefaultTask();
     	if (ret == null) {
     		return ret;
     	}
@@ -895,7 +897,7 @@ public class PMSEntityProvider {
     public PMSTask removeUsersFromProject(long projectId, List<Long> userIds) {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
-    	PMSTask ret = taskRepo.findById(project.getDefaultTaskId()).orElse(null);
+    	PMSTask ret = project.getDefaultTask();
     	if (ret == null) {
     		return ret;
     	}
@@ -949,7 +951,7 @@ public class PMSEntityProvider {
     	for (PMSProject project : allProjects) {
     		// remove users from project's default tasks and other tasks. 
     		List<Long> taskIds = project.getTaskIds();
-    		taskIds.add(project.getDefaultTaskId());
+    		taskIds.add(project.getDefaultTask().getId());
     		for (Long taskId : taskIds) {
     			this.removeUsersFromTask(taskId, userIds);
     		}

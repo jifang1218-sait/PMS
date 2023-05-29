@@ -5,6 +5,8 @@ package com.pms.controllers;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +34,9 @@ import com.pms.entities.PMSUser;
 public class PMSActionsController {
     @Autowired
     private PMSEntityProvider entityProvider;
+    
+    private final static Logger logger =
+            LoggerFactory.getLogger(PMSActionsController.class);
     
     // project dependencies
     @GetMapping(value="/depend/projects/{project_id}")
