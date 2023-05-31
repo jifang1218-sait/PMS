@@ -107,7 +107,7 @@ public class PMSActionsController {
     
     @GetMapping(value="/assign/tasks/{taskId}")
     public List<PMSUser> getUsersByTask(@PathVariable("taskId") Long taskId) {
-        return entityProvider.getUsersByTask(taskId);
+        return entityProvider.getUsersByTaskId(taskId);
     }
  
     // assign users to project.

@@ -37,22 +37,10 @@ public class PMSProject {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="PROJ_ID")
     private long id;
-    
-    @Column(name="PROJ_NAME", nullable=false)
-    @NotNull
-    @Size(min=EntityConstants.kMinProjectNameLen)
-    private String name;
-
-    @Lob
-    @Column(name = "PROJ_DESC", columnDefinition="TEXT")
-    private String desc;
-    
+       
     @Column(name = "COMPANY_ID")
     @NotNull
     private long companyId;
-    
-    @Column(name="PROJ_AVATAR")
-    private String avatar;
     
     @ElementCollection
     @CollectionTable(name="PROJECT_DEPENDENT_PROJECTS")
@@ -69,60 +57,33 @@ public class PMSProject {
     public PMSProject() {
         dependentProjectIds = new ArrayList<>();
         taskIds = new ArrayList<>();
-    }
-    /*
-    public Long getId() {
-        return id;
+        defaultTask = new PMSTask();
     }
     
     public String getName() {
-        return name;
+        return defaultTask.getName();
     }
     
     public void setName(String name) {
-        this.name = name;
+        defaultTask.setName(name);
     }
     
-    public  String getDesc() {
-        return desc;
+    public String getDesc() {
+        return defaultTask.getDesc();
     }
     
     public void setDesc(String desc) {
-        this.desc = desc;
-    }
-    
-    public void setCompanyId(long companyId) {
-        this.companyId = companyId;
-    }
-    
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        defaultTask.setDesc(desc);
     }
     
     public String getAvatar() {
-        return avatar;
+        return defaultTask.getAvatar();
     }
     
-    public List<Long> getTaskIds() {
-        return taskIds;
+    public void setAvatar(String filePath) {
+        defaultTask.setAvatar(filePath);
     }
-    
-    public void setTaskIds(List<Long> taskIds) {
-        this.taskIds = taskIds;
-    }
-    
-    public List<Long> getDependentProjectIds() {
-        return dependentProjectIds;
-    }
-    
-    public void setDependentProjectIds(List<Long> dependentProjectIds) {
-        this.dependentProjectIds = dependentProjectIds;
-    }
-    
-    public void setDefaultTaskId(Long defaultTaskId) {
-        this.defaultTaskId = defaultTaskId;
-    }*/
-    
+
     public PMSTask getDefaultTask() {
         return defaultTask;
     }

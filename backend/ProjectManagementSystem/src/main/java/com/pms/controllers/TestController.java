@@ -50,7 +50,7 @@ public class TestController {
                 project.setAvatar("project_avatar_" + b);
                 project.setDesc("project_desc_" + b);
                 project.setName("project_name_" + b);
-                entityProvider.createProject(project);
+                entityProvider.createProject(company.getId(), project);
                 
                 // add 10 comments to the project
                 List<PMSComment> comments = new ArrayList<>();
@@ -73,7 +73,7 @@ public class TestController {
                     task.setDesc("avatar_desc_" + c);
                     task.setName("task_name_" + c);
                     task.setProjectId(project.getId());
-                    entityProvider.createTask(task);
+                    entityProvider.createTask(project.getId(), task);
                     comments.clear();
                     for (int d=0; d<kSize; ++d) {
                         PMSComment comment = new PMSComment();
@@ -99,6 +99,6 @@ public class TestController {
         for (PMSCompany company : companies) {
             companyIds.add(company.getId());
         }
-        entityProvider.deleteCompanies(companyIds);
+        entityProvider.cleanupCompanies(companyIds);
     }
 }

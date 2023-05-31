@@ -66,7 +66,7 @@ public class PMEntitiesController {
     
     @DeleteMapping(value="/companies")
     public void deleteCompanies(@RequestBody List<Long> companyIds) {
-        entityProvider.deleteCompanies(companyIds);
+        entityProvider.cleanupCompanies(companyIds);
     }
     
     @GetMapping(value="/companies/{id}")
@@ -90,7 +90,7 @@ public class PMEntitiesController {
     public void deleteCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();
         ids.add(id);
-        entityProvider.deleteCompanies(ids);
+        entityProvider.cleanupCompanies(ids);
     }
     
     @GetMapping(value="/companies/{company_id}/projects")
@@ -99,18 +99,20 @@ public class PMEntitiesController {
     }
     
     @PostMapping(value="/companies/{company_id}/projects")
-    public ResponseEntity<PMSProject> createProject(@RequestBody @Valid PMSProject project, 
+    public ResponseEntity<PMSProject> createProject(@PathVariable("company_id") Long companyId, 
+            @RequestBody @Valid PMSProject project, 
             BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
         }
         
-        return new ResponseEntity<>(entityProvider.createProject(project), HttpStatus.CREATED);
+        return new ResponseEntity<>(entityProvider.createProject(companyId, project), HttpStatus.CREATED);
     }
     
     @DeleteMapping(value="/companies/{company_id}/projects")
-    public void deleteProjects(@PathVariable("company_id") Long companyId, @RequestBody List<Long> projectIds) {
-        entityProvider.deleteProjects(projectIds);
+    public void deleteProjects(@PathVariable("company_id") Long companyId, 
+            @RequestBody List<Long> projectIds) {
+        entityProvider.cleanupProjects(projectIds);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{project_id}")
@@ -137,7 +139,7 @@ public class PMEntitiesController {
             @PathVariable("project_id") Long projectId) {
         List<Long> ids = new ArrayList<>();
         ids.add(projectId);
-        entityProvider.deleteProjects(ids);
+        entityProvider.cleanupProjects(ids);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{projectId}/tasks")
@@ -159,13 +161,13 @@ public class PMEntitiesController {
             return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
         } 
         
-        return new ResponseEntity<>(entityProvider.createTask(task), HttpStatus.CREATED);
+        return new ResponseEntity<>(entityProvider.createTask(projectId, task), HttpStatus.CREATED);
     }
     
     @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/tasks")
     public void deleteTasks(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, @RequestBody List<Long> taskIds) {
-        entityProvider.deleteTasks(taskIds);
+        entityProvider.cleanupTasks(taskIds);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}")
@@ -195,7 +197,7 @@ public class PMEntitiesController {
             @PathVariable("task_id") Long taskId) {
         List<Long> ids = new ArrayList<>();
         ids.add(taskId);
-        entityProvider.deleteTasks(ids);
+        entityProvider.cleanupTasks(ids);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/comments")
@@ -229,7 +231,7 @@ public class PMEntitiesController {
     public void deleteComments(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @RequestBody List<Long> commentIds) {
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/comments/{comment_id}")
@@ -260,7 +262,7 @@ public class PMEntitiesController {
             @PathVariable("project_id") Long projectId) {
         List<Long> commentIds = new ArrayList<>();
         commentIds.add(commentId);
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments")
@@ -288,7 +290,7 @@ public class PMEntitiesController {
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId, 
             @RequestBody List<Long> commentIds) {
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}")
@@ -322,7 +324,7 @@ public class PMEntitiesController {
             @PathVariable("task_id") Long taskId) {
         List<Long> commentIds = new ArrayList<>();
         commentIds.add(commentId);
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
     
     // users

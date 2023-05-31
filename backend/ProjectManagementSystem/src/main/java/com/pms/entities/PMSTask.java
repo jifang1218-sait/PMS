@@ -66,6 +66,9 @@ public class PMSTask {
     	dependentTaskIds = new ArrayList<>();
     	userIds = new ArrayList<>();
         commentIds = new ArrayList<>();
+        // set project id of the default task to -1, 
+        // as the relationship is managed in column pmsproject_default_task in table pmsproject
+        projectId = -1L; 
     }
     
     

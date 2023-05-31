@@ -79,6 +79,6 @@ public class PMSCommentController {
 	public void deleteComment(@PathVariable("comment_id") Long commentId) {
 	    List<Long> commentIds = new ArrayList<>();
 	    commentIds.add(commentId);
-	    entityProvider.deleteComments(commentIds);
+	    entityProvider.cleanupComments(commentIds);
 	}
 }

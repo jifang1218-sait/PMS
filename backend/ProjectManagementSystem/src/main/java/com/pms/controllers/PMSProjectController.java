@@ -74,7 +74,7 @@ public class PMSProjectController {
             return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
         }
         
-    	return new ResponseEntity<>(entityProvider.createProject(project), HttpStatus.CREATED);
+    	return new ResponseEntity<>(entityProvider.createProject(project.getCompanyId(), project), HttpStatus.CREATED);
     }
     
     @PutMapping(value="/{projectId}")
@@ -91,7 +91,7 @@ public class PMSProjectController {
     public void deleteProject(@PathVariable("projectId") Long projectId) {
         List<Long> ids = new ArrayList<>();
         ids.add(projectId);
-        entityProvider.deleteProjects(ids);
+        entityProvider.cleanupProjects(ids);
     }
     
     // dependencies
@@ -157,7 +157,7 @@ public class PMSProjectController {
     @DeleteMapping("/{projectId}/comments")
     public void deleteComments(@PathVariable("projectId") long projectId, 
             @RequestBody List<Long> commentIds) {
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
     
 }

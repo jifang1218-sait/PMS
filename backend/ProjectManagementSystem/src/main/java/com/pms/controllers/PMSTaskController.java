@@ -72,7 +72,7 @@ public class PMSTaskController {
             return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
         } 
         
-        return new ResponseEntity<>(entityProvider.createTask(task), HttpStatus.CREATED);
+        return new ResponseEntity<>(entityProvider.createTask(task.getProjectId(), task), HttpStatus.CREATED);
     }
     
     @PutMapping(value="/{taskId}")
@@ -89,7 +89,7 @@ public class PMSTaskController {
     public void deleteTask(@PathVariable("taskId") Long taskId) {
         List<Long> ids = new ArrayList<>();
         ids.add(taskId);
-        entityProvider.deleteTasks(ids);
+        entityProvider.cleanupTasks(ids);
     }
     
     // dependencies
@@ -137,7 +137,7 @@ public class PMSTaskController {
     
     @GetMapping(value="/{taskId}/users")
     public List<PMSUser> findUsers(@PathVariable("taskId") long taskId) {
-        return entityProvider.getUsersByTask(taskId);
+        return entityProvider.getUsersByTaskId(taskId);
     }
     
     // comments
@@ -155,6 +155,6 @@ public class PMSTaskController {
     @DeleteMapping("/{taskId}/comments")
     public void deleteComments(@PathVariable("taskId") long taskId, 
             @RequestBody List<Long> commentIds) {
-        entityProvider.deleteComments(commentIds);
+        entityProvider.cleanupComments(commentIds);
     }
 }

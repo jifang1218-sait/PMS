@@ -62,7 +62,7 @@ public class PMSCompanyController {
     
     @DeleteMapping(value="/companies")
     public void deleteCompanies(@RequestBody List<Long> companyIds) {
-        entityProvider.deleteCompanies(companyIds);
+        entityProvider.cleanupCompanies(companyIds);
     }
     
     @GetMapping(value="/companies/{id}")
@@ -86,7 +86,7 @@ public class PMSCompanyController {
     public void deleteCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();
         ids.add(id);
-        entityProvider.deleteCompanies(ids);
+        entityProvider.cleanupCompanies(ids);
     }
     
 }

@@ -14,7 +14,8 @@ public interface EntityConstants {
     static final int kMinProjectNameLen = 3;
     static final int kMaxProjectNameLen = 255;
     
-    static final String kDefaultTaskName = "__DEFAULT_TASK__";
+//    static final String kDefaultTaskName = "__DEFAULT_TASK__";
+    static final long kDefaultTaskProjectId = -1L;
     static final int kMinTaskNameLen = 3;
     static final int kMaxTaskNameLen = 255;
     
