@@ -109,20 +109,6 @@ public class PMEntitiesController {
         return new ResponseEntity<>(entityProvider.createProject(companyId, project), HttpStatus.CREATED);
     }
     
-    @DeleteMapping(value="/companies/{company_id}/projects")
-    public void deleteProjects(@PathVariable("company_id") Long companyId, 
-            @RequestBody List<Long> projectIds) {
-        entityProvider.cleanupProjects(projectIds);
-    }
-    
-    @GetMapping(value="/companies/{company_id}/projects/{project_id}")
-    public PMSProject getProject(@PathVariable("company_id") Long companyId, 
-            @PathVariable("project_id") Long projectId) {
-        List<Long> ids = new ArrayList<>();
-        ids.add(projectId);
-        return entityProvider.getProjectsByIds(ids).get(0);        
-    }
-    
     @PutMapping(value="/companies/{company_id}/projects/{projectId}")
     public ResponseEntity<PMSProject> updateProject(@PathVariable("company_id") Long companyId, 
             @PathVariable("projectId") Long projectId, 
@@ -140,6 +126,20 @@ public class PMEntitiesController {
         List<Long> ids = new ArrayList<>();
         ids.add(projectId);
         entityProvider.cleanupProjects(ids);
+    }
+    
+    @DeleteMapping(value="/companies/{company_id}/projects")
+    public void deleteProjects(@PathVariable("company_id") Long companyId, 
+            @RequestBody List<Long> projectIds) {
+        entityProvider.cleanupProjects(projectIds);
+    }
+    
+    @GetMapping(value="/companies/{company_id}/projects/{project_id}")
+    public PMSProject getProject(@PathVariable("company_id") Long companyId, 
+            @PathVariable("project_id") Long projectId) {
+        List<Long> ids = new ArrayList<>();
+        ids.add(projectId);
+        return entityProvider.getProjectsByIds(ids).get(0);        
     }
     
     @GetMapping(value="/companies/{company_id}/projects/{projectId}/tasks")

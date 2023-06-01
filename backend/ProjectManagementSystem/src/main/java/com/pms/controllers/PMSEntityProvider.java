@@ -796,13 +796,20 @@ public class PMSEntityProvider {
         ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
+        List<Long> beRemovedUserIds = new ArrayList<>();
         // update task.userIds
         for (Long userId : userIds) {
         	if (userRepo.existsById(userId)) {
                 ret.addUserId(userId);
+                // as we have assigned the user to a certain task, 
+                // we need to remove the user from the project default task. 
+                if (ret.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+                    beRemovedUserIds.add(userId);
+                }
             }
         }
-        taskRepo.save(ret);        
+        taskRepo.save(ret);
+        removeUsersFromProject(ret.getProjectId(), beRemovedUserIds);
         
         return ret;
     }
@@ -823,13 +830,22 @@ public class PMSEntityProvider {
         ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
+        List<Long> beRemovedUserIds = new ArrayList<>();
+        
+        // clear task.userIds
         ret.getUserIds().clear();
         for (Long userId : userIds) {
             if (userRepo.existsById(userId)) {
                 ret.addUserId(userId);
+                // as we have assigned the user to a certain task, 
+                // we need to remove the user from the project default task. 
+                if (ret.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+                    beRemovedUserIds.add(userId);
+                }
             } 
         }
         taskRepo.save(ret);
+        removeUsersFromProject(ret.getProjectId(), beRemovedUserIds);
         
         return ret;
     }
@@ -839,7 +855,14 @@ public class PMSEntityProvider {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
-    	PMSTask ret = setUsersToTask(project.getDefaultTask().getId(), userIds);
+    	List<Long> beAddedUserIds = new ArrayList<>();
+    	for (Long userId : userIds) {
+    	    if (!isUserExistsInProject(userId, projectId)) {
+    	        beAddedUserIds.add(userId);
+    	    }
+    	}
+    	
+    	PMSTask ret = setUsersToTask(project.getDefaultTask().getId(), beAddedUserIds);
     	
     	return ret;
     }

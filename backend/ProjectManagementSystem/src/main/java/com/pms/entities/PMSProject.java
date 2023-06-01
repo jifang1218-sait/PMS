@@ -35,7 +35,7 @@ import lombok.Data;
 public class PMSProject {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="PROJ_ID")
+    @Column(name="PROJECT_ID")
     private long id;
        
     @Column(name = "COMPANY_ID")
