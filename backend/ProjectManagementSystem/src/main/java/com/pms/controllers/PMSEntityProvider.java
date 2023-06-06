@@ -388,16 +388,7 @@ public class PMSEntityProvider {
     
     // task operations
     public List<PMSTask> getTasks() {
-        List<PMSTask> allTasks = taskRepo.findAll();
-        
-        List<PMSTask> ret = new ArrayList<>();
-        for (PMSTask task : allTasks) {
-            if (task.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
-                ret.add(task);
-            }
-        }
-        
-        return ret;
+        return taskRepo.findAllWithoutDefault();
     }
     
     public List<PMSTask> getTasksByProjectId(Long projId) {
@@ -405,15 +396,7 @@ public class PMSEntityProvider {
             throw new ResourceNotFoundException("No project found with id=" + projId);
         }
         
-        List<PMSTask> allTasks = taskRepo.findAllByProjectId(projId);
-        List<PMSTask> ret = new ArrayList<>();
-        for (PMSTask task : allTasks) {
-            if (task.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
-                ret.add(task);
-            }
-        }
-        
-        return ret;
+        return taskRepo.findAllByProjectId(projId);
     }
     
     public List<PMSTask> getTasksByIds(List<Long> taskIds) {
@@ -509,7 +492,10 @@ public class PMSEntityProvider {
     		
     		// delete its comments
         	cleanupComments(task.getCommentIds());
-            beDeletedTaskIds.add(task.getId());
+        	// we won't delete the project default task as it is managed by the project.
+        	if (task.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+        	    beDeletedTaskIds.add(task.getId());
+        	}
             
             // update project, remove task from the project
             project.removeTaskId(task.getId());
@@ -518,10 +504,7 @@ public class PMSEntityProvider {
         
         // finally delete tasks. 
         for (Long beDeletedTaskId : beDeletedTaskIds) {
-            // we won't delete the project default task as it is managed by the project. 
-            if (beDeletedTaskId != EntityConstants.kDefaultTaskProjectId) {
-                taskRepo.deleteById(beDeletedTaskId);
-            }
+            taskRepo.deleteById(beDeletedTaskId);
         }            
     }
     

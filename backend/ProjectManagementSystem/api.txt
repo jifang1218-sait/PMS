@@ -1,0 +1,12 @@
+@(value="/companies") ==> get, post
+@(value="/companies/{id}") ==> get, put, delete
+@(value="/companies/{company_id}/projects") ==> get, post
+@(value="/companies/{company_id}/projects/{project_id}") ==> get, put, delete
+@(value="/companies/{company_id}/projects/{projectId}/tasks") ==> get, post
+@(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}") ==> get, put, delete
+@(value="/companies/{company_id}/projects/{project_id}/comments") ==> get, post
+@(value="/companies/{company_id}/projects/{project_id}/comments/{comment_id}") ==> get, put, delete
+@(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments") ==> get, post
+@(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}") ==> get, put, delete
+@(value="/actions/projects/{project_id1}/depends) ==> put, post
+@(value="/actions/tasks/{task_id1}/depends) ==> put, post
