@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 //import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pms.constants.EntityConstants;
 import com.pms.controllers.exceptions.DeletionFailureException;
@@ -36,6 +38,9 @@ import com.pms.repositories.PMSUserRepo;
  * @author jifang
  *
  */
+
+@Service
+@Transactional
 public class PMSEntityProvider {
     
 //    @Autowired
@@ -218,7 +223,7 @@ public class PMSEntityProvider {
         
         if (project.getDependentProjectIds() != null) {
             List<Long> dependentIds = project.getDependentProjectIds();
-            for (long dependentId : dependentIds) {
+            for (Long dependentId : dependentIds) {
                 if (projRepo.existsById(dependentId)) {
                     ret.addDependentProjectId(dependentId);
                 }
@@ -282,13 +287,13 @@ public class PMSEntityProvider {
         // taskRepo.deleteById(defaultTask.getId());
     }
 
-    public PMSProject addDependentProjects(long projectId, List<Long> dependentProjectIds) {
+    public PMSProject addDependentProjects(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
 
-        for (long dependentProjectId : dependentProjectIds) {
+        for (Long dependentProjectId : dependentProjectIds) {
             // a project cannot dependent on itself.
-            if (ret.getId() != dependentProjectId 
+            if (!ret.getId().equals(dependentProjectId) 
                     && projRepo.existsById(dependentProjectId)) {
                 ret.addDependentProjectId(dependentProjectId);
             }
@@ -298,14 +303,14 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSProject setDependentProjects(long projectId, List<Long> dependentProjectIds) {
+    public PMSProject setDependentProjects(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
         
         ret.getDependentProjectIds().clear();
-        for (long dependentProjectId : dependentProjectIds) {
+        for (Long dependentProjectId : dependentProjectIds) {
             // a project cannot dependent on itself.
-            if (ret.getId() != dependentProjectId 
+            if (!ret.getId().equals(dependentProjectId) 
                     && projRepo.existsById(dependentProjectId)) {
                 ret.addDependentProjectId(dependentProjectId);
             }
@@ -315,7 +320,7 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSProject removeDependentProjects(long projectId, List<Long> dependentProjectIds) {
+    public PMSProject removeDependentProjects(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
         
@@ -330,7 +335,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public List<PMSProject> getDependentProjectsById(long projectId) {
+    public List<PMSProject> getDependentProjectsById(Long projectId) {
         List<PMSProject> projects = new ArrayList<PMSProject>();
         PMSProject proj = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
@@ -346,7 +351,7 @@ public class PMSEntityProvider {
         return projects;
     }
     
-    public boolean isUserExistsInProject(long userId, long projectId) {
+    public boolean isUserExistsInProject(Long userId, Long projectId) {
         boolean ret = false;
         
         PMSProject project = projRepo.findById(projectId).orElseThrow(
@@ -369,7 +374,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public boolean isUserExistsInTask(long userId, long taskId) {
+    public boolean isUserExistsInTask(Long userId, Long taskId) {
     	if (!userRepo.existsById(userId)) {
     		throw new ResourceNotFoundException("No user found with id=" + userId);
     	}
@@ -484,7 +489,7 @@ public class PMSEntityProvider {
         	List<PMSTask> allTasks = this.getTasksByIds(allTaskIds);
         	for (PMSTask allTask : allTasks) {
         	    // if one of the dependent sets of other tasks contain the task, it can't be removed.
-        		if (allTask.getId() != task.getId() 
+        		if (!allTask.getId().equals(task.getId()) 
         		        && allTask.getDependentTaskIds().contains(task.getId())) {
         			throw new DeletionFailureException("Cannot delete the task (" + task.getId() + ") as other tasks depend on it.");
         		}
@@ -508,13 +513,13 @@ public class PMSEntityProvider {
         }            
     }
     
-    public PMSTask addDependentTasks(long taskId, List<Long> dependentIds) {
+    public PMSTask addDependentTasks(Long taskId, List<Long> dependentIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
 
-        for (long dependentId : dependentIds) {
+        for (Long dependentId : dependentIds) {
             // a task cannot dependent on itself.
-            if (ret.getId() != dependentId 
+            if (!ret.getId().equals(dependentId) 
                     && taskRepo.existsById(dependentId)) {
                 ret.addDependentTaskId(dependentId);
             }
@@ -524,14 +529,14 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public PMSTask setDependentTasks(long taskId, List<Long> dependentIds) {
+    public PMSTask setDependentTasks(Long taskId, List<Long> dependentIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
         ret.getDependentTaskIds().clear();
-        for (long dependentId : dependentIds) {
+        for (Long dependentId : dependentIds) {
             // a task cannot dependent on itself.
-            if (ret.getId() != dependentId 
+            if (!ret.getId().equals(dependentId) 
                     && taskRepo.existsById(dependentId)) {
                 ret.addDependentTaskId(dependentId);
             }
@@ -541,7 +546,7 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSTask removeDependentTasks(long taskId, List<Long> dependentIds) {
+    public PMSTask removeDependentTasks(Long taskId, List<Long> dependentIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
@@ -556,7 +561,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public List<PMSTask> getDependentTasks(long taskId) {
+    public List<PMSTask> getDependentTasks(Long taskId) {
         List<PMSTask> tasks = new ArrayList<>();
         
         PMSTask task = taskRepo.findById(taskId).orElseThrow(
@@ -618,7 +623,7 @@ public class PMSEntityProvider {
     }
     
     // return: [task0, task1, ...]
-    public List<PMSComment> getCommentsByTask(long taskId) {
+    public List<PMSComment> getCommentsByTask(Long taskId) {
     	PMSTask task = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
     	
@@ -652,7 +657,7 @@ public class PMSEntityProvider {
     } 
     
     // return: [comment0, comment1, ...]
-    public List<PMSComment> getCommentsForProjectOnly(long projectId) {
+    public List<PMSComment> getCommentsForProjectOnly(Long projectId) {
         PMSProject project = projRepo.findById(projectId).orElseThrow(()
                 ->new ResourceNotFoundException("No project found with id=" + projectId));
         
@@ -662,7 +667,7 @@ public class PMSEntityProvider {
     }
 
     // return: [project, task0, task1, task2...]
-    public List<List<PMSComment>> getCommentsByProject(long projectId) {
+    public List<List<PMSComment>> getCommentsByProject(Long projectId) {
     	PMSProject project = projRepo.findById(projectId)
     			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
@@ -727,7 +732,7 @@ public class PMSEntityProvider {
         return userRepo.save(user);
     }
     
-    public List<PMSUser> getUsersByProject(long projectId) {
+    public List<PMSUser> getUsersByProject(Long projectId) {
         PMSProject project = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
         
@@ -746,7 +751,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public List<PMSUser> getUsersByTaskId(long taskId) {
+    public List<PMSUser> getUsersByTaskId(Long taskId) {
         PMSTask task = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
@@ -762,7 +767,7 @@ public class PMSEntityProvider {
     public List<PMSUser> getUsersByIds(List<Long> ids) {
         List<PMSUser> ret = new ArrayList<>();
         
-        for (long id : ids) {
+        for (Long id : ids) {
             PMSUser user = userRepo.findById(id).orElseThrow(
                         () -> new ResourceNotFoundException("No user found with id="+id));
             if (!ret.contains(user)) {
@@ -773,7 +778,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public PMSTask addUsersToTask(long taskId, List<Long> userIds) {
+    public PMSTask addUsersToTask(Long taskId, List<Long> userIds) {
         PMSTask ret = null;
         
         ret = taskRepo.findById(taskId).orElseThrow(
@@ -798,7 +803,7 @@ public class PMSEntityProvider {
     }
     
     // return the default task
-    public PMSTask addUsersToProject(long projectId, List<Long> userIds) {
+    public PMSTask addUsersToProject(Long projectId, List<Long> userIds) {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
@@ -807,7 +812,7 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public PMSTask setUsersToTask(long taskId, List<Long> userIds) {
+    public PMSTask setUsersToTask(Long taskId, List<Long> userIds) {
         PMSTask ret = null;
         
         ret = taskRepo.findById(taskId).orElseThrow(
@@ -834,7 +839,7 @@ public class PMSEntityProvider {
     }
     
     // return the default task
-    public PMSTask setUsersToProject(long projectId, List<Long> userIds) {
+    public PMSTask setUsersToProject(Long projectId, List<Long> userIds) {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
@@ -850,7 +855,7 @@ public class PMSEntityProvider {
     	return ret;
     }
     
-    public PMSTask removeUsersFromTask(long taskId, List<Long> userIds) {
+    public PMSTask removeUsersFromTask(Long taskId, List<Long> userIds) {
         PMSTask task = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
@@ -866,7 +871,7 @@ public class PMSEntityProvider {
     }
     
     // remove users from the project's default task. return the default task
-    public PMSTask removeUsersFromProject(long projectId, List<Long> userIds) {
+    public PMSTask removeUsersFromProject(Long projectId, List<Long> userIds) {
     	PMSProject project = projRepo.findById(projectId).orElseThrow(
     			()->new ResourceNotFoundException("No project found with id=" + projectId));
     	

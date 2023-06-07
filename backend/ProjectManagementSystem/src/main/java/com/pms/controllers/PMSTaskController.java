@@ -39,7 +39,6 @@ import com.pms.entities.PMSUser;
 @RestController
 @RequestMapping(value="/v1/old/entities/tasks", 
             produces="application/json", consumes="application/json")
-@Transactional
 public class PMSTaskController {
     
     @Autowired

@@ -14,9 +14,11 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author jifang
@@ -31,7 +33,8 @@ public class PMSUser {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="USER_ID")
-    private long id;
+    @Setter(AccessLevel.NONE)
+    private Long id;
     
     @Column(name="USER_FNAME", nullable=false)
     @NotNull
@@ -62,66 +65,4 @@ public class PMSUser {
     
     @Column(name="USER_AVATAR")
     private String avatar;
-    
-    /*
-    public Long getId() {
-        return id;
-    }
-    
-    public String getFirstName() {
-        return firstName;
-    }
-    
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    
-    public String getLastName() {
-        return lastName;
-    }
-    
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    
-    public String getMidName() {
-        return midName;
-    }
-    
-    public void setMidName(String midName) {
-        this.midName = midName;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getRole() {
-        return role;
-    }
-    
-    public void setRole(String role) {
-        this.role = role;
-    }
-    
-    public String getAvatar() {
-        return avatar;
-    }
-    
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }*/
-
 }

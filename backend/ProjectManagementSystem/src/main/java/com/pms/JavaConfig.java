@@ -25,11 +25,11 @@ import com.pms.repositories.PMSFileManagerImpl;
 @EntityScan(basePackageClasses=IEntityPath.class)
 public class JavaConfig {
 
-    @Bean
+    /*@Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     PMSEntityProvider createEntityProvider() {
         return new PMSEntityProvider();
-    }
+    }*/
     
     @Bean 
     IPMSFileManager fileManager() {

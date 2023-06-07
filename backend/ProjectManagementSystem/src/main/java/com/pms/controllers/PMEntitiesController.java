@@ -39,7 +39,6 @@ import com.pms.entities.PMSUser;
 @RequestMapping(value="/v1/entities", 
             produces="application/json", 
             consumes="application/json")
-@Transactional
 public class PMEntitiesController {
     @Autowired
     private PMSEntityProvider entityProvider;

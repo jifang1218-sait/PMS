@@ -26,7 +26,6 @@ import com.pms.entities.PMSTask;
 @RequestMapping(value="/v1/test", 
 produces="application/json", 
 consumes="application/json")
-@Transactional
 public class TestController {
     
     private static final int kSize = 10;
@@ -61,7 +60,7 @@ public class TestController {
                     filePaths.add("comment_filepath_" + tmp);
                     comment.setFilePaths(filePaths);
                     comment.setTaskId(project.getDefaultTask().getId());
-                    comment.setTimestamp(a * kSize*kSize*kSize + b * kSize*kSize + tmp * kSize);
+                    comment.setTimestamp(Long.valueOf(a * kSize*kSize*kSize + b * kSize*kSize + tmp * kSize));
                     comment.setTitle("comment_title_" + tmp);
                     entityProvider.createCommentForProject(project.getId(), comment);
                 }
@@ -82,7 +81,7 @@ public class TestController {
                         filePaths.add("comment_filepath_" + d);
                         comment.setFilePaths(filePaths);
                         comment.setTaskId(task.getId());
-                        comment.setTimestamp(a * kSize*kSize*kSize + b * kSize*kSize + c * kSize + d);
+                        comment.setTimestamp(Long.valueOf(a * kSize*kSize*kSize + b * kSize*kSize + c * kSize + d));
                         comment.setTitle("comment_title_" + d);
                         entityProvider.createCommentForTask(task.getId(), comment);
                     }

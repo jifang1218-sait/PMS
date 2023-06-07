@@ -19,8 +19,10 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 
 /**
  * @author jifang
@@ -33,7 +35,8 @@ public class PMSTask {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="TASK_ID")
-    private long id;
+    @Setter(AccessLevel.NONE)
+    private Long id;
     
     @Column(name="TASK_NAME", nullable=false)
     @NotNull
@@ -45,7 +48,7 @@ public class PMSTask {
     private String desc;
     
     @Column(name = "TASK_PROJECT")
-    private long projectId;
+    private Long projectId;
     
     @Column(name="TASK_AVATAR")
     private String avatar;
@@ -71,68 +74,6 @@ public class PMSTask {
         projectId = -1L; 
     }
     
-    
-    public Long getId() {
-        return id;
-    }
-    
-    public Long getProjectId() {
-        return projectId;
-    }
-    
-    /*
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getDesc() {
-        return desc;
-    }
-    
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-    
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
-    }
-    
-    public String getAvatar() {
-        return avatar;
-    }
-    
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-    
-    public List<Long> getDependentTaskIds() {
-        return dependentTaskIds;
-    }
-    
-    public void setDependentTaskIds(List<Long> dependentTaskIds) {
-        this.dependentTaskIds = dependentTaskIds;
-    }
-    
-    public List<Long> getUserIds() {
-        return userIds;
-    }
-    
-    public void setUserIds(List<Long> userIds) {
-        this.userIds = userIds;
-    }
-    
-    public List<Long> getCommentIds() {
-        return commentIds;
-    }
-    
-    public void setCommentIds(List<Long> commentIds) {
-        this.commentIds = commentIds;
-    }*/
-    
     public void addCommentId(Long commentId) {
         if (!commentIds.contains(commentId)) {
             commentIds.add(commentId);
@@ -157,13 +98,13 @@ public class PMSTask {
         }
     }
     
-    public void addDependentTaskId(long taskId) {
+    public void addDependentTaskId(Long taskId) {
         if (!dependentTaskIds.contains(taskId)) {
         	dependentTaskIds.add(taskId);
         }
     }
     
-    public void removeDependentTaskId(long taskId) {
+    public void removeDependentTaskId(Long taskId) {
         if (dependentTaskIds.contains(taskId)) {
         	dependentTaskIds.remove(taskId);
         }

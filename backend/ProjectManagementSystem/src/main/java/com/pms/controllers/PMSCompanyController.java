@@ -34,7 +34,6 @@ import com.pms.entities.PMSCompany;
 @RequestMapping(value="/v1/old/entities", 
             produces="application/json", 
             consumes="application/json")
-@Transactional
 public class PMSCompanyController {
     
     @Autowired

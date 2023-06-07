@@ -18,9 +18,11 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author jifang
@@ -29,12 +31,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class PMSComment {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="COMMENT_ID")
-    private long id;
+    @Setter(AccessLevel.NONE)
+    private Long id;
     
     @Column(name="COMMENT_TITLE")
     @NotNull
@@ -50,67 +52,18 @@ public class PMSComment {
     private List<String> filePaths;
     
     @Column(name = "COMMENT_TIMESTAMP")
-    private long timestamp;
+    private Long timestamp;
     
     @Column(name = "COMMENT_TASK")
     @NotNull
-    private long taskId;
+    private Long taskId;
     
     @Column(name= "COMMENT_USER")
     @NotNull
-    private long userId;
+    private Long userId;
     
-    public Long getId() {
-        return id;
+    public PMSComment() {
+        userId = -1L;
+        timestamp = -1L;
     }
-    
-    public Long getTaskId() {
-        return taskId;
-    }
-    
-    public Long getUserId() {
-        return userId;
-    }
-    
-    public Long getTimestamp() {
-        return timestamp;
-    }
-    
-    /*
-    public String getDesc() {
-        return desc;
-    } 
-    
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-    
-    public List<String> getFilePaths() {
-        return filePaths;
-    }
-    
-    public void setFilePaths(List<String> filePaths) {
-        this.filePaths = filePaths;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-    
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
-    }
-    
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-    */
 }

@@ -27,7 +27,6 @@ import com.pms.entities.PMSComment;
 @RestController
 @RequestMapping(value="/v1/old/entities/comments",
 		consumes="application/json", produces="application/json")
-@Transactional
 public class PMSCommentController {
 	@Autowired
 	private PMSEntityProvider entityProvider;

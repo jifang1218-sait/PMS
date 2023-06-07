@@ -41,7 +41,6 @@ import com.pms.entities.PMSUser;
 @RequestMapping(value="/v1/old/entities/projects",  
         consumes="application/json", 
         produces="application/json")
-@Transactional
 public class PMSProjectController {
 
     @Autowired

@@ -22,8 +22,11 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author jifang
@@ -36,11 +39,12 @@ public class PMSProject {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="PROJECT_ID")
-    private long id;
+    @Setter(AccessLevel.NONE)
+    private Long id;
        
     @Column(name = "COMPANY_ID")
     @NotNull
-    private long companyId;
+    private Long companyId;
     
     @ElementCollection
     @CollectionTable(name="PROJECT_DEPENDENT_PROJECTS")
@@ -86,10 +90,6 @@ public class PMSProject {
 
     public PMSTask getDefaultTask() {
         return defaultTask;
-    }
-    
-    public Long getCompanyId() {
-        return companyId;
     }
     
     public void addDependentProjectId(Long projId) {
