@@ -3,7 +3,7 @@
  */
 package com.pms.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -11,10 +11,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
+import com.pms.JavaConfig;
 import com.pms.repositories.PMSCompanyRepo;
 
 /**
@@ -22,14 +24,20 @@ import com.pms.repositories.PMSCompanyRepo;
  *
  */
 
+@ContextConfiguration(classes=JavaConfig.class)
 @DataJpaTest
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 class PMSCompanyControllerTest {
     
+
     @Autowired
     private TestEntityManager testEntityManager;
     
     @Autowired
     private PMSCompanyRepo companyRepo;
+    
+    @Autowired
+    private PMSEntityProvider entityProvider;
     
     /**
      * @throws java.lang.Exception

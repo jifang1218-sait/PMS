@@ -58,6 +58,10 @@ public class PMSProject {
     @JoinColumn(name="PROJECT_DEFAULT_TASK", nullable=false)
     private PMSTask defaultTask;
     
+    // TODO
+    /*long start; 
+    long end;*/
+    
     public PMSProject() {
         dependentProjectIds = new ArrayList<>();
         taskIds = new ArrayList<>();

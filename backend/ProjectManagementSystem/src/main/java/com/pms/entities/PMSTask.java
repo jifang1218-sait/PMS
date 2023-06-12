@@ -65,6 +65,13 @@ public class PMSTask {
     @CollectionTable(name="TASK_COMMENTS")
     private List<Long> commentIds;
     
+    // TODO
+    /*long start;
+    long end;
+    List<String> tags;
+    int priority;
+    List<String> attachments;*/
+    
     public PMSTask() {
     	dependentTaskIds = new ArrayList<>();
     	userIds = new ArrayList<>();
