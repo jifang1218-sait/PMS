@@ -3,8 +3,8 @@
  */
 package com.pms.entities;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -19,10 +19,9 @@ import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import lombok.AccessLevel;
 
 /**
  * @author jifang
@@ -30,32 +29,36 @@ import lombok.AccessLevel;
  */
 @Entity
 @Data
-@AllArgsConstructor
 public class PMSCompany {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="COMPANY_ID")
+    @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
     
-    @Column(name="COMPANY_NAME", nullable=false)
+    @Column(name="NAME", nullable=false)
     @NotNull
     @Size(min=EntityConstants.kMinCompanyNameLen)
     private String name;
 
-    @Lob
-    @Column(name="COMPANY_DESC", columnDefinition="TEXT")
+    @Lob 
+    @Column(name="DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
-    @Column(name="COMPANY_AVATAR")
+    @Column(name="AVATAR")
     private String avatar;
     
     @ElementCollection
     @CollectionTable(name="COMPANY_PROJECTS")
     private List<Long> projectIds;
     
+    @ElementCollection
+    @CollectionTable(name="COMPANY_USERS")
+    private List<Long> userIds;
+    
     public PMSCompany() {
         projectIds = new ArrayList<>();
+        userIds = new ArrayList<>();
     }
     
     public void addProjectId(Long projectId) {

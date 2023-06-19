@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSCompany;
+import com.pms.services.PMSEntityProvider;
 
 /**
  * @author jifang

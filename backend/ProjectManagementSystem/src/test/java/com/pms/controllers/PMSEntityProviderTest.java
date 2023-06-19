@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.pms.JavaConfig;
 import com.pms.entities.PMSCompany;
+import com.pms.services.PMSEntityProvider;
 
 
 /**
@@ -69,7 +70,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getCompanies()}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getCompanies()}.
      */
     @Test
     void testGetCompanies() {
@@ -93,7 +94,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createCompany(com.pms.entities.PMSCompany)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createCompany(com.pms.entities.PMSCompany)}.
      */
     @Test
     void testCreateCompany() {
@@ -101,7 +102,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getCompaniesByIds(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getCompaniesByIds(java.util.List)}.
      */
     @Test
     void testGetCompaniesByIds() {
@@ -109,7 +110,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#updateCompany(java.lang.Long, com.pms.entities.PMSCompany)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#updateCompany(java.lang.Long, com.pms.entities.PMSCompany)}.
      */
     @Test
     void testUpdateCompany() {
@@ -117,7 +118,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#cleanupCompanies(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#cleanupCompanies(java.util.List)}.
      */
     @Test
     void testCleanupCompanies() {
@@ -125,7 +126,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getProjects()}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getProjects()}.
      */
     @Test
     void testGetProjects() {
@@ -133,7 +134,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getProjectsByCompanyId(java.lang.Long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getProjectsByCompanyId(java.lang.Long)}.
      */
     @Test
     void testGetProjectsByCompanyId() {
@@ -141,7 +142,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getProjectsByIds(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getProjectsByIds(java.util.List)}.
      */
     @Test
     void testGetProjectsByIds() {
@@ -149,7 +150,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createProject(java.lang.Long, com.pms.entities.PMSProject)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createProject(java.lang.Long, com.pms.entities.PMSProject)}.
      */
     @Test
     void testCreateProject() {
@@ -157,7 +158,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#updateProject(java.lang.Long, com.pms.entities.PMSProject)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#updateProject(java.lang.Long, com.pms.entities.PMSProject)}.
      */
     @Test
     void testUpdateProject() {
@@ -165,7 +166,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#cleanupProjects(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#cleanupProjects(java.util.List)}.
      */
     @Test
     void testCleanupProjects() {
@@ -173,7 +174,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#addDependentProjects(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#addDependentProjects(long, java.util.List)}.
      */
     @Test
     void testAddDependentProjects() {
@@ -181,7 +182,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#setDependentProjects(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#setDependentProjects(long, java.util.List)}.
      */
     @Test
     void testSetDependentProjects() {
@@ -189,7 +190,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#removeDependentProjects(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#removeDependentProjects(long, java.util.List)}.
      */
     @Test
     void testRemoveDependentProjects() {
@@ -197,7 +198,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getDependentProjectsById(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getDependentProjectsById(long)}.
      */
     @Test
     void testGetDependentProjectsById() {
@@ -205,7 +206,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#isUserExistsInProject(long, long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#isUserExistsInProject(long, long)}.
      */
     @Test
     void testIsUserExistsInProject() {
@@ -213,7 +214,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#isUserExistsInTask(long, long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#isUserExistsInTask(long, long)}.
      */
     @Test
     void testIsUserExistsInTask() {
@@ -221,7 +222,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getTasks()}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getTasks()}.
      */
     @Test
     void testGetTasks() {
@@ -229,7 +230,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getTasksByProjectId(java.lang.Long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getTasksByProjectId(java.lang.Long)}.
      */
     @Test
     void testGetTasksByProjectId() {
@@ -237,7 +238,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getTasksByIds(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getTasksByIds(java.util.List)}.
      */
     @Test
     void testGetTasksByIds() {
@@ -245,7 +246,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createTask(java.lang.Long, com.pms.entities.PMSTask)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createTask(java.lang.Long, com.pms.entities.PMSTask)}.
      */
     @Test
     void testCreateTask() {
@@ -253,7 +254,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#updateTask(java.lang.Long, com.pms.entities.PMSTask)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#updateTask(java.lang.Long, com.pms.entities.PMSTask)}.
      */
     @Test
     void testUpdateTask() {
@@ -261,7 +262,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#cleanupTasks(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#cleanupTasks(java.util.List)}.
      */
     @Test
     void testCleanupTasks() {
@@ -269,7 +270,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#addDependentTasks(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#addDependentTasks(long, java.util.List)}.
      */
     @Test
     void testAddDependentTasks() {
@@ -277,7 +278,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#setDependentTasks(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#setDependentTasks(long, java.util.List)}.
      */
     @Test
     void testSetDependentTasks() {
@@ -285,7 +286,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#removeDependentTasks(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#removeDependentTasks(long, java.util.List)}.
      */
     @Test
     void testRemoveDependentTasks() {
@@ -293,7 +294,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getDependentTasks(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getDependentTasks(long)}.
      */
     @Test
     void testGetDependentTasks() {
@@ -301,7 +302,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createCommentForProject(java.lang.Long, com.pms.entities.PMSComment)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createCommentForProject(java.lang.Long, com.pms.entities.PMSComment)}.
      */
     @Test
     void testCreateCommentForProject() {
@@ -309,7 +310,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createCommentForTask(java.lang.Long, com.pms.entities.PMSComment)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createCommentForTask(java.lang.Long, com.pms.entities.PMSComment)}.
      */
     @Test
     void testCreateCommentForTask() {
@@ -317,7 +318,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#cleanupComments(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#cleanupComments(java.util.List)}.
      */
     @Test
     void testCleanupComments() {
@@ -325,7 +326,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getCommentsByTask(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getCommentsByTask(long)}.
      */
     @Test
     void testGetCommentsByTask() {
@@ -333,7 +334,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getComments(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getComments(java.util.List)}.
      */
     @Test
     void testGetComments() {
@@ -341,7 +342,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getCommentsForProjectOnly(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getCommentsForProjectOnly(long)}.
      */
     @Test
     void testGetCommentsForProjectOnly() {
@@ -349,7 +350,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getCommentsByProject(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getCommentsByProject(long)}.
      */
     @Test
     void testGetCommentsByProject() {
@@ -357,7 +358,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#updateComment(java.lang.Long, com.pms.entities.PMSComment)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#updateComment(java.lang.Long, com.pms.entities.PMSComment)}.
      */
     @Test
     void testUpdateComment() {
@@ -365,7 +366,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#createUser(com.pms.entities.PMSUser)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#createUser(com.pms.entities.PMSUser)}.
      */
     @Test
     void testCreateUser() {
@@ -373,7 +374,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getUsersByProject(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getUsersByProject(long)}.
      */
     @Test
     void testGetUsersByProject() {
@@ -381,7 +382,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getUsersByTaskId(long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getUsersByTaskId(long)}.
      */
     @Test
     void testGetUsersByTaskId() {
@@ -389,7 +390,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getUsers()}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getUsers()}.
      */
     @Test
     void testGetUsers() {
@@ -397,7 +398,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getUsersByIds(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getUsersByIds(java.util.List)}.
      */
     @Test
     void testGetUsersByIds() {
@@ -405,7 +406,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#addUsersToTask(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#addUsersToTask(long, java.util.List)}.
      */
     @Test
     void testAddUsersToTask() {
@@ -413,7 +414,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#addUsersToProject(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#addUsersToProject(long, java.util.List)}.
      */
     @Test
     void testAddUsersToProject() {
@@ -421,7 +422,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#setUsersToTask(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#setUsersToTask(long, java.util.List)}.
      */
     @Test
     void testSetUsersToTask() {
@@ -429,7 +430,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#setUsersToProject(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#setUsersToProject(long, java.util.List)}.
      */
     @Test
     void testSetUsersToProject() {
@@ -437,7 +438,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#removeUsersFromTask(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#removeUsersFromTask(long, java.util.List)}.
      */
     @Test
     void testRemoveUsersFromTask() {
@@ -445,7 +446,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#removeUsersFromProject(long, java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#removeUsersFromProject(long, java.util.List)}.
      */
     @Test
     void testRemoveUsersFromProject() {
@@ -453,7 +454,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#updateUser(java.lang.Long, com.pms.entities.PMSUser)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#updateUser(java.lang.Long, com.pms.entities.PMSUser)}.
      */
     @Test
     void testUpdateUser() {
@@ -461,7 +462,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#deleteUsers(java.util.List)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#deleteUsers(java.util.List)}.
      */
     @Test
     void testDeleteUsers() {
@@ -469,7 +470,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getProjectsByUserId(java.lang.Long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getProjectsByUserId(java.lang.Long)}.
      */
     @Test
     void testGetProjectsByUserId() {
@@ -477,7 +478,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getTasksByUserId(java.lang.Long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getTasksByUserId(java.lang.Long)}.
      */
     @Test
     void testGetTasksByUserIdLong() {
@@ -485,7 +486,7 @@ class PMSEntityProviderTest {
     }
 
     /**
-     * Test method for {@link com.pms.controllers.PMSEntityProvider#getTasksByUserId(java.lang.Long, java.lang.Long)}.
+     * Test method for {@link com.pms.services.PMSEntityProvider#getTasksByUserId(java.lang.Long, java.lang.Long)}.
      */
     @Test
     void testGetTasksByUserIdLongLong() {

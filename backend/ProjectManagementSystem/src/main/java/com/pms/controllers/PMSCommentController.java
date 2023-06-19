@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.entities.PMSComment;
+import com.pms.services.PMSEntityProvider;
 
 @RestController
 @RequestMapping(value="/v1/old/entities/comments",

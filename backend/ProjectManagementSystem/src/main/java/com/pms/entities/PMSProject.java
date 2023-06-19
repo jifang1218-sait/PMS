@@ -3,8 +3,8 @@
  */
 package com.pms.entities;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -15,17 +15,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSPriority;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -34,11 +30,10 @@ import lombok.Setter;
  */
 @Entity
 @Data
-@AllArgsConstructor
 public class PMSProject {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="PROJECT_ID")
+    @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
        
@@ -55,12 +50,12 @@ public class PMSProject {
     private List<Long> taskIds;
     
     @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="PROJECT_DEFAULT_TASK", nullable=false)
+    @JoinColumn(name="DEFAULT_TASK", nullable=false)
     private PMSTask defaultTask;
     
-    // TODO
-    /*long start; 
-    long end;*/
+    private Long created;
+    private Long start;
+    private Long end;
     
     public PMSProject() {
         dependentProjectIds = new ArrayList<>();
@@ -94,6 +89,14 @@ public class PMSProject {
 
     public PMSTask getDefaultTask() {
         return defaultTask;
+    }
+    
+    public PMSPriority getPriority() {
+    	return defaultTask.getPriority();
+    }
+    
+    public void setPriority(PMSPriority priority) {
+    	defaultTask.setPriority(priority);
     }
     
     public void addDependentProjectId(Long projId) {

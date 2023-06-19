@@ -33,6 +33,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
         <dependency>
            <groupId>org.hibernate.validator</groupId>
@@ -45,6 +50,13 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-jwt -->
+		<dependency>
+		    <groupId>cn.hutool</groupId>
+		    <artifactId>hutool-jwt</artifactId>
+		    <version>5.8.19</version>
+		</dependency>
         
         <!-- junit -->
 		<dependency>

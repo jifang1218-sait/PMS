@@ -3,11 +3,19 @@
  */
 package com.pms.entities;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,9 +23,7 @@ import javax.validation.constraints.Size;
 import com.pms.constants.EntityConstants;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,43 +32,51 @@ import lombok.Setter;
  */
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class PMSUser {
     
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="USER_ID")
+    @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
     
-    @Column(name="USER_FNAME", nullable=false)
+    @Column(name="FNAME", nullable=false)
     @NotNull
     @Size(min=EntityConstants.kMinUserNameLen)
     private String firstName;
     
-    @Column(name="USER_LNAME", nullable=false)
+    @Column(name="LNAME", nullable=false)
     @NotNull
     @Size(min=EntityConstants.kMinUserNameLen)
     private String lastName;
     
-    @Column(name="USER_MNAME")
+    @Column(name="MNAME")
     private String midName;
     
-    @Column(name="USER_EMAIL", nullable=false)
+    @Column(name="EMAIL", nullable=false, unique=true)
     @NotNull
     @Email
     private String email;
     
-    @Column(name="USER_PASSWORD", nullable=false)
+    @Column(name="USERNAME", nullable=false)
+    @NotNull
+    @Size(min=EntityConstants.kMinUserNameLen, max=EntityConstants.kMaxUserNameLen)
+    private String username;
+    
+    @Column(name="PASSWORD", nullable=false)
     @NotNull
     @Size(min=EntityConstants.kMinUserPasswordLen)
     private String password;
     
-    @Column(name="USER_ROLE", nullable=false)
-    @NotNull
-    private String role;
-    
-    @Column(name="USER_AVATAR")
+    @Column(name="AVATAR")
     private String avatar;
+    
+    @ManyToMany(cascade=CascadeType.MERGE)
+    @JoinTable(
+          name="USERS_ROLES",
+//          joinColumns={@JoinColumn(name="USER_ID",
+//                        referencedColumnName="ID")},
+                joinColumns={@JoinColumn(name="USER_ID")},
+          inverseJoinColumns={@JoinColumn(name="ROLE_ID")})
+    private Set<PMSRole> roles = new HashSet<>();
 }

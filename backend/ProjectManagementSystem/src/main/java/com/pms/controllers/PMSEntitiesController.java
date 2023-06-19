@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +30,7 @@ import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
+import com.pms.services.PMSEntityProvider;
 
 /**
  * @author jifang
@@ -39,12 +40,12 @@ import com.pms.entities.PMSUser;
 @RequestMapping(value="/v1/entities", 
             produces="application/json", 
             consumes="application/json")
-public class PMEntitiesController {
+public class PMSEntitiesController {
     @Autowired
     private PMSEntityProvider entityProvider;
     
     private final static Logger logger =
-            LoggerFactory.getLogger(PMEntitiesController.class);
+            LoggerFactory.getLogger(PMSEntitiesController.class);
     
     /**
      * the uniform url
@@ -68,6 +69,7 @@ public class PMEntitiesController {
         entityProvider.cleanupCompanies(companyIds);
     }
     
+    @PreAuthorize("hasRole('admin')")
     @GetMapping(value="/companies/{id}")
     public PMSCompany getCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();

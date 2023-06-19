@@ -19,9 +19,7 @@ import javax.validation.constraints.Size;
 import com.pms.constants.EntityConstants;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -30,35 +28,35 @@ import lombok.Setter;
  */
 @Entity
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 public class PMSComment {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="COMMENT_ID")
+    @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
     
-    @Column(name="COMMENT_TITLE")
+    @Column(name="TITLE")
     @NotNull
     @Size(min=EntityConstants.kMinCommentTitleLen)
     private String title;
     
     @Lob
-    @Column(name = "COMMENT_DESC", columnDefinition="TEXT")
+    @Column(name = "DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
     @ElementCollection
-    @CollectionTable(name = "COMMENT_FILEPATH")
-    private List<String> filePaths;
+    @CollectionTable(name = "COMMENT_ATTACHMENTS")
+    private List<String> attachments;
     
-    @Column(name = "COMMENT_TIMESTAMP")
+    @Column(name = "TIMESTAMP")
     private Long timestamp;
     
-    @Column(name = "COMMENT_TASK")
+    @Column(name = "TASK")
     @NotNull
     private Long taskId;
     
-    @Column(name= "COMMENT_USER")
+    @Column(name= "USER")
     @NotNull
     private Long userId;
     

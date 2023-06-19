@@ -3,13 +3,15 @@
  */
 package com.pms.entities;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSPriority;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,23 +37,23 @@ import lombok.Setter;
 public class PMSTask {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
-    @Column(name="TASK_ID")
+    @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
     
-    @Column(name="TASK_NAME", nullable=false)
+    @Column(name="NAME", nullable=false)
     @NotNull
     @Size(min=EntityConstants.kMinTaskNameLen)
     private String name;
 
     @Lob
-    @Column(name = "TASK_DESC", columnDefinition="TEXT")
+    @Column(name = "DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
-    @Column(name = "TASK_PROJECT")
+    @Column(name = "PROJECT")
     private Long projectId;
     
-    @Column(name="TASK_AVATAR")
+    @Column(name="AVATAR")
     private String avatar;
     
     @ElementCollection
@@ -65,12 +68,20 @@ public class PMSTask {
     @CollectionTable(name="TASK_COMMENTS")
     private List<Long> commentIds;
     
-    // TODO
-    /*long start;
-    long end;
-    List<String> tags;
-    int priority;
-    List<String> attachments;*/
+    private Long start;
+    private Long end;
+    private Long created;
+    
+    @ElementCollection
+    @CollectionTable(name="TASK_TAGS")
+    private List<String> tags;
+    
+    @Enumerated(EnumType.STRING)
+    private PMSPriority priority;
+    
+    @ElementCollection
+    @CollectionTable(name="TASK_ATTACHMENTS")
+    private List<String> attachments;
     
     public PMSTask() {
     	dependentTaskIds = new ArrayList<>();

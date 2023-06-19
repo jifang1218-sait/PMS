@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
+import com.pms.services.PMSEntityProvider;
+import com.pms.services.PMSUserDetailsService;
 
 /**
  * @author jifang

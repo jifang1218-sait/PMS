@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.pms.controllers;
+package com.pms.services;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 //import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +27,14 @@ import com.pms.controllers.exceptions.ResourceNotFoundException;
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSProject;
+import com.pms.entities.PMSRole;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 import com.pms.repositories.IPMSFileManager;
 import com.pms.repositories.PMSCommentRepo;
 import com.pms.repositories.PMSCompanyRepo;
 import com.pms.repositories.PMSProjectRepo;
+import com.pms.repositories.PMSRoleRepo;
 import com.pms.repositories.PMSTaskRepo;
 import com.pms.repositories.PMSUserRepo;
 
@@ -50,10 +54,10 @@ public class PMSEntityProvider {
             LoggerFactory.getLogger(PMSEntityProvider.class);
     
     @Autowired
-    private PMSProjectRepo projRepo;
+    private PMSCompanyRepo compRepo;
     
     @Autowired
-    private PMSCompanyRepo compRepo;
+    private PMSProjectRepo projRepo;
     
     @Autowired
     private PMSTaskRepo taskRepo;
@@ -62,10 +66,16 @@ public class PMSEntityProvider {
     private PMSUserRepo userRepo;
     
     @Autowired
+    private PMSRoleRepo roleRepo;
+    
+    @Autowired
     private PMSCommentRepo commentRepo;
     
     @Autowired
     private IPMSFileManager fileMgr;
+    
+    @Autowired
+    private PasswordEncoder passwdEncoder;
     
     private List<Long> updateIdSets(List<Long> oldIds, List<Long> newIds) {
         List<Long> beRemovedIdSet = new ArrayList<>();
@@ -701,13 +711,13 @@ public class PMSEntityProvider {
     	if (comment.getDesc() != null) {
     		ret.setDesc(comment.getDesc());
     	}
-    	if (comment.getFilePaths() != null) {
+    	if (comment.getAttachments() != null) {
     		// remove old files. 
-    		List<String> oldFiles = ret.getFilePaths();
-    		List<String> newFiles = comment.getFilePaths();
+    		List<String> oldFiles = ret.getAttachments();
+    		List<String> newFiles = comment.getAttachments();
     		List<String> beRemovedFiles = updateStringSets(oldFiles, newFiles);
     		cleanupFiles(beRemovedFiles);
-    		ret.setFilePaths(comment.getFilePaths());
+    		ret.setAttachments(comment.getAttachments());
     	}
     	if (comment.getTimestamp() != null) {
     		ret.setTimestamp(comment.getTimestamp());
@@ -729,6 +739,7 @@ public class PMSEntityProvider {
     
     // users operation
     public PMSUser createUser(PMSUser user) {
+    	user.setPassword(passwdEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
     
@@ -901,11 +912,15 @@ public class PMSEntityProvider {
         	ret.setEmail(user.getEmail());
         }
         if (user.getPassword() != null) {
-        	ret.setPassword(user.getPassword());
+        	ret.setPassword(passwdEncoder.encode(user.getPassword()));
         }
+        
+        /*
+         * TODO
         if (user.getRole() != null) {
         	ret.setRole(user.getRole());
-        }
+        }*/
+        
         if (user.getAvatar() != null) {
         	ret.setAvatar(user.getAvatar());
         }
@@ -989,5 +1004,12 @@ public class PMSEntityProvider {
         }
         
         return ret;
+    }
+    
+    public PMSRole createRole(PMSRole role) {
+    	
+    	roleRepo.save(role);
+    	
+    	return role;
     }
 }
