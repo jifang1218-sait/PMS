@@ -10,10 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.pms.entities.PMSUser;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
-@Slf4j
 public class PMSUserDetailsImpl implements UserDetails {
 
 	private static final long serialVersionUID = 1L;

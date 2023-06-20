@@ -3,13 +3,14 @@
  */
 package com.pms.controllers;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,16 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pms.constants.EntityConstants;
 import com.pms.entities.PMSLoginInfo;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 import com.pms.services.PMSEntityProvider;
+import com.pms.services.PMSSecurityService;
 
-import cn.hutool.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,7 +44,7 @@ public class PMSActionsController {
     private PMSEntityProvider entityProvider;
     
     @Autowired
-    AuthenticationManager authenticationManager;
+    private PMSSecurityService securityService;
     
     // project dependencies
     @GetMapping(value="/depend/projects/{project_id}")
@@ -142,20 +143,19 @@ public class PMSActionsController {
     }
     
     @PostMapping(value="/login")
-    public String login(@RequestBody PMSLoginInfo loginInfo) {
-    	UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginInfo.getUsername(), loginInfo.getPassword());
-        authenticationManager.authenticate(authenticationToken);
-
-        Date expireTime = new Date(System.currentTimeMillis() + (1000 * 30));
-        byte[] signKey = EntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8);
-        String token = JWT.create()
-                .setExpiresAt(expireTime)
-                .setPayload("username", loginInfo.getUsername())
-                .setKey(signKey)
-                .sign();
-
-        return token;
+    public ResponseEntity<String> login(@RequestParam(value="logout", required=false, defaultValue="false") boolean logout, 
+    		@RequestBody @Valid PMSLoginInfo loginInfo, BindingResult result) {
+    	if (logout) {
+    		log.debug("logout");
+    		return new ResponseEntity<>(securityService.logout(), HttpStatus.OK);
+    	}
+    	
+    	log.debug("login");
+    	if (result.hasErrors()) {
+            return new ResponseEntity<>("", HttpStatus.BAD_REQUEST);
+        } 
+    	
+    	return new ResponseEntity<>(securityService.login(loginInfo.getUsername(), loginInfo.getPassword()), HttpStatus.OK);
     }
     
 }

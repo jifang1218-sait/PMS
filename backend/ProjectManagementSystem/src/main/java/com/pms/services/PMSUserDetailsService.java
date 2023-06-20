@@ -25,6 +25,7 @@ public class PMSUserDetailsService implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
     	try {
+    		log.debug("load user:{}", userName);
     		PMSUser user = userRepo.findByUsername(userName).orElseThrow(
         		()->new ResourceNotFoundException("No user found with userName=" + userName));
     		return new PMSUserDetailsImpl(user);

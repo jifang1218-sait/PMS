@@ -167,6 +167,7 @@ public class PMSEntityProvider {
      
     public List<PMSProject> getProjectsByCompanyId(Long companyId) {
         if (!compRepo.existsById(companyId)) {
+        	log.error("No company found with id={}", companyId);
             throw new ResourceNotFoundException("No company found with id=" + companyId);
         }
         

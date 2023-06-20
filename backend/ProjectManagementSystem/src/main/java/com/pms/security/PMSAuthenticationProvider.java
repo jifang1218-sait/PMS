@@ -25,12 +25,14 @@ public class PMSAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = String.valueOf(authentication.getPrincipal());
         String password = String.valueOf(authentication.getCredentials());
+        log.info("authenticate, username:{}, password:{}", username, password);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if(passwordEncoder.matches(password,userDetails.getPassword())){
            return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
         }
 
+        log.error("authenticate failed.");
         throw new BadCredentialsException("Error!!");
     }
 

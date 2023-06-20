@@ -29,5 +29,8 @@ public interface EntityConstants {
     static final int kMinRoleNameLen = 3;
     static final int kMaxRoleNameLen = 255;
     
-    static final String kPMSSecuritySignKey = "SAIT"; 
+    static final String kPMSSecuritySignKey = "1301, 16 Ave NW Calgary, Alberta T2M 0L4, Canada"; 
+    
+    // the session timeout in milliseconds, 30 minutes
+    static final long kSessionTimeout = 1000 * 60 * 30;
 }

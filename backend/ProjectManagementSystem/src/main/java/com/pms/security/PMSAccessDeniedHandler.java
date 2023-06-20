@@ -10,10 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * 当访问接口没有权限时回调
- */
-
 @Slf4j
 @Component
 public class PMSAccessDeniedHandler implements AccessDeniedHandler {
@@ -22,7 +18,7 @@ public class PMSAccessDeniedHandler implements AccessDeniedHandler {
         log.error("access error", accessDeniedException);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.getWriter().println("禁止访问");
+        response.getWriter().println("Access Denied.");
         response.getWriter().flush();
     }
 }

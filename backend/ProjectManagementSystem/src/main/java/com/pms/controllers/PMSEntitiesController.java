@@ -203,12 +203,14 @@ public class PMSEntitiesController {
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/comments")
     public List<List<PMSComment>> getCommentsForProject(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
-            @RequestParam(value="project_only", required=false) Boolean projectOnly) {
+            @RequestParam(value="project_only", required=false, defaultValue="false") boolean projectOnly) {
         List<List<PMSComment>> ret = null;
-        if (projectOnly !=null && projectOnly == true) {
+        if (projectOnly == true) {
+        	log.debug("only get comments for the project, comments in its tasks are excluded.");
             ret = new ArrayList<>();
             ret.add(entityProvider.getCommentsForProjectOnly(projectId));
         } else {
+        	log.debug("get comments for the project and its tasks.");
             ret = entityProvider.getCommentsByProject(projectId);
         }
         

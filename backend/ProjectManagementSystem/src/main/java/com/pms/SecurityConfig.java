@@ -1,28 +1,17 @@
 package com.pms;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -65,35 +54,35 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        //由于使用的是JWT，这里不需要csrf防护
+        // no need to use crsf protection as we use JWT. 
         httpSecurity.csrf().disable()
-                //基于token，所以不需要session
+        		// we use token, don't need session. 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                //允许对于网站静态资源的无授权访问
+                // public to static resources. 
                 .antMatchers(HttpMethod.GET,
                         "/",
                         "/*.html"
                 ).permitAll()
-                //对登录注册允许匿名访问
-                .antMatchers("/user/login", "/user/register").permitAll()
-                //跨域请求会先进行一次options请求
+                // public to login/register.
+                .antMatchers("/api/v1/actions/login", "/user/register").permitAll()
+                // cross domain request
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                //测试时全部运行访问.permitAll();
+                // public to test
                 .antMatchers("/v1/test/**").permitAll()
-                .anyRequest()// 除上面外的所有请求全部需要鉴权认证
+                // requires authentication for other requests. 
+                .anyRequest()
                 .authenticated();
-        // 禁用缓存
+        // turn off cache. 
         httpSecurity.headers().cacheControl();
-        //使用自定义provider
         httpSecurity.authenticationProvider(pmsAuthenticationProvider());
-        //添加JWT filter
         httpSecurity.addFilterBefore(pmsAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        //添加自定义未授权和未登录结果返回
         httpSecurity.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(unauthorizedHandler);
+        httpSecurity.logout()
+        	.permitAll();
 
         return httpSecurity.build();
     }
