@@ -3,9 +3,8 @@
  */
 package com.pms.entities;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -74,9 +73,9 @@ public class PMSUser {
     @ManyToMany(cascade=CascadeType.MERGE)
     @JoinTable(
           name="USERS_ROLES",
-//          joinColumns={@JoinColumn(name="USER_ID",
-//                        referencedColumnName="ID")},
-                joinColumns={@JoinColumn(name="USER_ID")},
-          inverseJoinColumns={@JoinColumn(name="ROLE_ID")})
-    private Set<PMSRole> roles = new HashSet<>();
+          joinColumns={@JoinColumn(name="USER_ID",
+                        referencedColumnName="ID")},
+          inverseJoinColumns={@JoinColumn(name="ROLE_ID", 
+        		  		referencedColumnName="ID")})
+    private List<PMSRole> roles = new ArrayList<>();
 }

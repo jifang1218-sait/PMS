@@ -6,8 +6,6 @@ package com.pms.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,10 +33,9 @@ public class TestController {
     
     @Autowired
     private PMSEntityProvider entityProvider;
-
-    @GetMapping(value="/loadData")
-    public void loadData() {
-    	/*
+    
+    @GetMapping(value="/loadEntities")
+    public void loadEntities() {
     	// add company, project, task, comment etc.
         for (int a=0; a<kSize; ++a) {
             PMSCompany company = new PMSCompany();
@@ -90,8 +87,11 @@ public class TestController {
                     }
                 }
             }
-        }*/
-    	
+        }
+    }
+    
+    @GetMapping(value="/loadRolesAndUsers")
+    public void loadRolesAndUsers() {
     	// add role
     	PMSRole userRole = new PMSRole();
     	userRole.setName("user");
@@ -107,9 +107,8 @@ public class TestController {
 		techRole.setName("technician");
 		techRole.setDesc("technician role");
 		entityProvider.createRole(techRole);
-    	
-        // add user
-        for (int i=0; i<10; ++i) {
+		
+		for (int i=0; i<kSize; ++i) {
         	PMSUser user = new PMSUser();
         	user.setAvatar("avatar" + i);
         	user.setEmail("email" + i + "@sait.com");
@@ -135,7 +134,12 @@ public class TestController {
         	}
         	entityProvider.createUser(user);
         }
-        
+    }
+    
+    @GetMapping(value="/loadData")
+    public void loadData() {
+    	loadEntities();
+    	loadRolesAndUsers();
     }
     
     @GetMapping("/deleteData")

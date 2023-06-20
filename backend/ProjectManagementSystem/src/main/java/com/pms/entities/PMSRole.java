@@ -1,7 +1,7 @@
 package com.pms.entities;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,5 +38,5 @@ public class PMSRole
     
     @Setter(AccessLevel.NONE)
     @ManyToMany(mappedBy="roles")
-    private Set<PMSUser> users = new HashSet<>();
+    private List<PMSUser> users = new ArrayList<>();
 }
