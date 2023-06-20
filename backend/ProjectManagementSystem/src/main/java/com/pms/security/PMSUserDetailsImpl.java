@@ -10,9 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.pms.entities.PMSUser;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
-public class UserDetailsImpl implements UserDetails {
+@Slf4j
+public class PMSUserDetailsImpl implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -37,25 +39,21 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 }

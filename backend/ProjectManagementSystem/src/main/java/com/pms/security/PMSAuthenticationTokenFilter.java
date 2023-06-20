@@ -2,6 +2,7 @@ package com.pms.security;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Objects;
 
 import javax.servlet.FilterChain;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,7 +41,7 @@ public class PMSAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        String authToken = authHeader.split(" ")[1];
+        String authToken = authHeader.split("\\s+")[1];
         log.info("authToken:{}" , authToken);
         //verify token
         if (!JWTUtil.verify(authToken, EntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8))) {
@@ -50,13 +52,15 @@ public class PMSAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //JWTValidator.of(authToken).validateDate();
 
-        final String userName = (String) JWTUtil.parseToken(authToken).getPayload("username");
+        final String userName = (String)JWTUtil.parseToken(authToken).getPayload("username");
         UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        Object principle = userDetails.getUsername();
+        Object credential = userDetails.getPassword();
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(principle, credential, authorities);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

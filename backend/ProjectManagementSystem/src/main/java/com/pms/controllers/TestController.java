@@ -108,6 +108,8 @@ public class TestController {
 		techRole.setDesc("technician role");
 		entityProvider.createRole(techRole);
 		
+		List<PMSCompany> companies = entityProvider.getCompanies();
+		int companyCount = companies.size();
 		for (int i=0; i<kSize; ++i) {
         	PMSUser user = new PMSUser();
         	user.setAvatar("avatar" + i);
@@ -132,7 +134,8 @@ public class TestController {
         		user.getRoles().add(userRole);
         	} break;
         	}
-        	entityProvider.createUser(user);
+        	int companyIndex = i % companyCount;
+        	entityProvider.createUser(user, companies.get(companyIndex).getId());
         }
     }
     

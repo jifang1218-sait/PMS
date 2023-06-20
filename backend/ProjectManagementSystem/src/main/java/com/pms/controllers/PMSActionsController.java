@@ -3,11 +3,13 @@
  */
 package com.pms.controllers;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,26 +19,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pms.constants.EntityConstants;
+import com.pms.entities.PMSLoginInfo;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 import com.pms.services.PMSEntityProvider;
-import com.pms.services.PMSUserDetailsService;
+
+import cn.hutool.jwt.JWT;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author jifang
  *
  */
 @RestController
-@RequestMapping(value="/v1/actions", 
+@RequestMapping(value="/api/v1/actions", 
             produces="application/json", 
             consumes="application/json")
+@Slf4j
 public class PMSActionsController {
     @Autowired
     private PMSEntityProvider entityProvider;
     
-    private final static Logger logger =
-            LoggerFactory.getLogger(PMSActionsController.class);
+    @Autowired
+    AuthenticationManager authenticationManager;
     
     // project dependencies
     @GetMapping(value="/depend/projects/{project_id}")
@@ -132,6 +139,23 @@ public class PMSActionsController {
     @GetMapping(value="/assign/projects/{projectId}")
     public List<PMSUser> getUsersByProject(@PathVariable("projectId") Long projectId) {
         return entityProvider.getUsersByProject(projectId);
+    }
+    
+    @PostMapping(value="/login")
+    public String login(@RequestBody PMSLoginInfo loginInfo) {
+    	UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginInfo.getUsername(), loginInfo.getPassword());
+        authenticationManager.authenticate(authenticationToken);
+
+        Date expireTime = new Date(System.currentTimeMillis() + (1000 * 30));
+        byte[] signKey = EntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8);
+        String token = JWT.create()
+                .setExpiresAt(expireTime)
+                .setPayload("username", loginInfo.getUsername())
+                .setKey(signKey)
+                .sign();
+
+        return token;
     }
     
 }

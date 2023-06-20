@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,20 +30,20 @@ import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 import com.pms.services.PMSEntityProvider;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author jifang
  *
  */
 @RestController
-@RequestMapping(value="/v1/entities", 
+@RequestMapping(value="/api/v1/entities", 
             produces="application/json", 
             consumes="application/json")
+@Slf4j
 public class PMSEntitiesController {
     @Autowired
     private PMSEntityProvider entityProvider;
-    
-    private final static Logger logger =
-            LoggerFactory.getLogger(PMSEntitiesController.class);
     
     /**
      * the uniform url
@@ -69,7 +67,8 @@ public class PMSEntitiesController {
         entityProvider.cleanupCompanies(companyIds);
     }
     
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAuthority('user')")
+    //@PreAuthorize("hasRole('user')")
     @GetMapping(value="/companies/{id}")
     public PMSCompany getCompany(@PathVariable("id") Long id) {
         List<Long> ids = new ArrayList<>();
@@ -336,12 +335,13 @@ public class PMSEntitiesController {
     
     @PostMapping(value="/users")
     public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
+    		@RequestParam(name="company_id", required=true) Long companyId, 
             BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         }
         
-        return new ResponseEntity<>(entityProvider.createUser(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(entityProvider.createUser(user, companyId), HttpStatus.CREATED);
     }
     
     @DeleteMapping(value="/users")

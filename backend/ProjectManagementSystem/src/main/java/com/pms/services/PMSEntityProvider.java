@@ -3,19 +3,14 @@
  */
 package com.pms.services;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-
 import java.util.HashSet;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.Set;
 
 //import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +33,8 @@ import com.pms.repositories.PMSRoleRepo;
 import com.pms.repositories.PMSTaskRepo;
 import com.pms.repositories.PMSUserRepo;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author jifang
  *
@@ -45,13 +42,8 @@ import com.pms.repositories.PMSUserRepo;
 
 @Service
 @Transactional
+@Slf4j
 public class PMSEntityProvider {
-    
-//    @Autowired
-//    private EntityManagerFactory emf;
-    
-    private final static Logger logger =
-            LoggerFactory.getLogger(PMSEntityProvider.class);
     
     @Autowired
     private PMSCompanyRepo compRepo;
@@ -738,9 +730,16 @@ public class PMSEntityProvider {
     }
     
     // users operation
-    public PMSUser createUser(PMSUser user) {
+    public PMSUser createUser(PMSUser user, Long companyId) {
     	user.setPassword(passwdEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        PMSUser ret = userRepo.save(user);
+        
+        PMSCompany comp = compRepo.findById(companyId).orElseThrow(
+        		()->new ResourceNotFoundException("No company found with id=" + companyId));
+        comp.getUserIds().add(ret.getId());
+        compRepo.save(comp);
+        
+        return ret;
     }
     
     public List<PMSUser> getUsersByProject(Long projectId) {
@@ -914,12 +913,6 @@ public class PMSEntityProvider {
         if (user.getPassword() != null) {
         	ret.setPassword(passwdEncoder.encode(user.getPassword()));
         }
-        
-        /*
-         * TODO
-        if (user.getRole() != null) {
-        	ret.setRole(user.getRole());
-        }*/
         
         if (user.getAvatar() != null) {
         	ret.setAvatar(user.getAvatar());
