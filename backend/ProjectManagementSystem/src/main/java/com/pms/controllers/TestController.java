@@ -24,7 +24,7 @@ import com.pms.services.PMSEntityProvider;
  *
  */
 @RestController
-@RequestMapping(value="/v1/test", 
+@RequestMapping(value="/api/v1/test", 
 produces="application/json", 
 consumes="application/json")
 public class TestController {

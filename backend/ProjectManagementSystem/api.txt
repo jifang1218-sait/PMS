@@ -1,12 +1,103 @@
-@(value="/companies") ==> get, post
-@(value="/companies/{id}") ==> get, put, delete
-@(value="/companies/{company_id}/projects") ==> get, post
-@(value="/companies/{company_id}/projects/{project_id}") ==> get, put, delete
-@(value="/companies/{company_id}/projects/{projectId}/tasks") ==> get, post
-@(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}") ==> get, put, delete
-@(value="/companies/{company_id}/projects/{project_id}/comments") ==> get, post
-@(value="/companies/{company_id}/projects/{project_id}/comments/{comment_id}") ==> get, put, delete
-@(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments") ==> get, post
-@(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}") ==> get, put, delete
-@(value="/actions/projects/{project_id1}/depends) ==> put, post
-@(value="/actions/tasks/{task_id1}/depends) ==> put, post
+1. Get all companies
+Method: GET
+URL: /api/v1/entities/companies
+Params: none
+Roles: admin, technician, user
+Login required: true
+
+Example:
+curl -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA" http://localhost:8080/api/v1/entities/companies
+
+Return:
+[ {
+  "id" : 1,
+  "name" : "company_name_0",
+  "desc" : "company_desc_0",
+  "avatar" : "company_avatar_0",
+  "projectIds" : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+  "userIds" : [ 1 ]
+}, {
+  "id" : 2,
+  "name" : "company_name_1",
+  "desc" : "company_desc_1",
+  "avatar" : "company_avatar_1",
+  "projectIds" : [ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ],
+  "userIds" : [ 2 ]
+}, {
+  "id" : 3,
+  "name" : "company_name_2",
+  "desc" : "company_desc_2",
+  "avatar" : "company_avatar_2",
+  "projectIds" : [ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 ],
+  "userIds" : [ 3 ]
+}, {
+  "id" : 4,
+  "name" : "company_name_3",
+  "desc" : "company_desc_3",
+  "avatar" : "company_avatar_3",
+  "projectIds" : [ 31, 32, 33, 34, 35, 36, 37, 38, 39, 40 ],
+  "userIds" : [ 4 ]
+}, {
+  "id" : 5,
+  "name" : "company_name_4",
+  "desc" : "company_desc_4",
+  "avatar" : "company_avatar_4",
+  "projectIds" : [ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 ],
+  "userIds" : [ 5 ]
+}, {
+  "id" : 6,
+  "name" : "company_name_5",
+  "desc" : "company_desc_5",
+  "avatar" : "company_avatar_5",
+  "projectIds" : [ 51, 52, 53, 54, 55, 56, 57, 58, 59, 60 ],
+  "userIds" : [ 6 ]
+}, {
+  "id" : 7,
+  "name" : "company_name_6",
+  "desc" : "company_desc_6",
+  "avatar" : "company_avatar_6",
+  "projectIds" : [ 61, 62, 63, 64, 65, 66, 67, 68, 69, 70 ],
+  "userIds" : [ 7 ]
+}, {
+  "id" : 8,
+  "name" : "company_name_7",
+  "desc" : "company_desc_7",
+  "avatar" : "company_avatar_7",
+  "projectIds" : [ 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 ],
+  "userIds" : [ 8 ]
+}, {
+  "id" : 9,
+  "name" : "company_name_8",
+  "desc" : "company_desc_8",
+  "avatar" : "company_avatar_8",
+  "projectIds" : [ 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 ],
+  "userIds" : [ 9 ]
+}, {
+  "id" : 10,
+  "name" : "company_name_9",
+  "desc" : "company_desc_9",
+  "avatar" : "company_avatar_9",
+  "projectIds" : [ 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 ],
+  "userIds" : [ 10 ]
+} ]
+
+
+2. Create a company
+Method: POST
+URL: /api/v1/entities/companies
+Params: none
+Roles: admin, technician, user
+Login required: true
+
+Example:
+curl -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA" -d '{"name":"company0", "desc":"desc0", "avatar":"avatar0_filepath"}' http://localhost:8080/api/v1/entities/companies
+
+Return:
+{
+  "id" : 52,
+  "name" : "company0",
+  "desc" : "desc0",
+  "avatar" : "avatar0_filepath",
+  "projectIds" : [ ],
+  "userIds" : [ ]
+}
