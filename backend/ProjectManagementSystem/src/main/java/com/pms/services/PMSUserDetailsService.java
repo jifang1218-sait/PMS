@@ -26,11 +26,11 @@ public class PMSUserDetailsService implements UserDetailsService
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
     	try {
     		log.debug("load user:{}", userName);
-    		PMSUser user = userRepo.findByUsername(userName).orElseThrow(
-        		()->new ResourceNotFoundException("No user found with userName=" + userName));
+    		PMSUser user = userRepo.findByEmail(userName).orElseThrow(
+        		()->new ResourceNotFoundException("No user found with email=" + userName));
     		return new PMSUserDetailsImpl(user);
     	} catch (ResourceNotFoundException e) {
-    		throw new UsernameNotFoundException("No user found with userName=" + userName);
+    		throw new UsernameNotFoundException("No user found with email=" + userName);
     	}
     }    
 }

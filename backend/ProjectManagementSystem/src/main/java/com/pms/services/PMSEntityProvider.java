@@ -712,9 +712,6 @@ public class PMSEntityProvider {
     		cleanupFiles(beRemovedFiles);
     		ret.setAttachments(comment.getAttachments());
     	}
-    	if (comment.getTimestamp() != null) {
-    		ret.setTimestamp(comment.getTimestamp());
-    	}
     	if (comment.getUserId() != null) {
     		ret.setUserId(comment.getUserId());
     	}
@@ -902,9 +899,6 @@ public class PMSEntityProvider {
         if (user.getFirstName() != null) {
         	ret.setFirstName(user.getFirstName());
         }
-        if (user.getMidName() != null) {
-        	ret.setMidName(user.getMidName());
-        }
         if (user.getLastName() != null) {
         	ret.setLastName(user.getLastName());
         }
@@ -917,6 +911,10 @@ public class PMSEntityProvider {
         
         if (user.getAvatar() != null) {
         	ret.setAvatar(user.getAvatar());
+        }
+        
+        if (user.getRoles() != null) {
+        	ret.setRoles(user.getRoles());
         }
 
         return userRepo.save(user);

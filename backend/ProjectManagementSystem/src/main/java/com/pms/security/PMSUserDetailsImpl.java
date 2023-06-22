@@ -21,7 +21,7 @@ public class PMSUserDetailsImpl implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return user.getRoles()
 				.stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName()))
+				.map(role -> new SimpleGrantedAuthority(role.getName().getValue()))
 				.collect(Collectors.toList());
 	}
 
@@ -32,7 +32,7 @@ public class PMSUserDetailsImpl implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return user.getEmail();
 	}
 
 	@Override

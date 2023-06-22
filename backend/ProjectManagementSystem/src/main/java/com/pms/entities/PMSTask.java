@@ -3,6 +3,7 @@
  */
 package com.pms.entities;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -19,11 +21,16 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.pms.constants.EntityConstants;
 import com.pms.constants.PMSPriority;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 
@@ -33,7 +40,7 @@ import lombok.Setter;
  */
 @Entity
 @Data
-@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class PMSTask {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
@@ -68,9 +75,11 @@ public class PMSTask {
     @CollectionTable(name="TASK_COMMENTS")
     private List<Long> commentIds;
     
-    private Long start;
-    private Long end;
-    private Long created;
+    @Column(name="START_DATE", nullable=false)
+    private Timestamp startDate;
+    
+    @Column(name="END_DATE", nullable=false)
+    private Timestamp endDate;
     
     @ElementCollection
     @CollectionTable(name="TASK_TAGS")
@@ -127,4 +136,18 @@ public class PMSTask {
         	dependentTaskIds.remove(taskId);
         }
     }
+    
+    @CreatedBy
+    @Column(updatable=false)
+    private Long createdUserId;
+    
+    @CreatedDate
+    @Column(updatable=false)
+    private Timestamp createdTime;
+    
+    @LastModifiedBy
+    private Long updatedUserId;
+    
+    @LastModifiedDate
+    private Timestamp updatedTime;
 }

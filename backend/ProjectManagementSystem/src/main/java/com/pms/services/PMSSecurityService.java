@@ -2,6 +2,7 @@ package com.pms.services;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pms.constants.EntityConstants;
+import com.pms.entities.PMSUser;
+import com.pms.repositories.PMSUserRepo;
 
 import cn.hutool.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PMSSecurityService {
 	@Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private PMSUserRepo userRepo;
 	
 	public String login(String username, String password) {
 		if (username == null || username.length() <= 0) {
@@ -50,5 +56,14 @@ public class PMSSecurityService {
 	public String logout() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		return "";
+	}
+	
+	public Optional<PMSUser> getCurrentLoginUser() {
+		String email = SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getName(); 
+		
+		return userRepo.findByEmail(email);
 	}
 }

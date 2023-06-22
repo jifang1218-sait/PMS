@@ -172,7 +172,7 @@ public class PMSActionsController {
             return new ResponseEntity<>("", HttpStatus.BAD_REQUEST);
         } 
     	
-    	return new ResponseEntity<>(securityService.login(loginInfo.getUsername(), loginInfo.getPassword()), HttpStatus.OK);
+    	return new ResponseEntity<>(securityService.login(loginInfo.getEmail(), loginInfo.getPassword()), HttpStatus.OK);
     }
     
 }

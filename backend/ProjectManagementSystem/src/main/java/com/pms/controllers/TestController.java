@@ -3,14 +3,18 @@
  */
 package com.pms.controllers;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pms.constants.PMSRoleType;
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSProject;
@@ -60,7 +64,6 @@ public class TestController {
                     attachments.add("comment_attachment_" + tmp);
                     comment.setAttachments(attachments);
                     comment.setTaskId(project.getDefaultTask().getId());
-                    comment.setTimestamp(Long.valueOf(a * kSize*kSize*kSize + b * kSize*kSize + tmp * kSize));
                     comment.setTitle("comment_title_" + tmp);
                     entityProvider.createCommentForProject(project.getId(), comment);
                 }
@@ -81,7 +84,6 @@ public class TestController {
                         attachments.add("comment_attachment_" + d);
                         comment.setAttachments(attachments);
                         comment.setTaskId(task.getId());
-                        comment.setTimestamp(Long.valueOf(a * kSize*kSize*kSize + b * kSize*kSize + c * kSize + d));
                         comment.setTitle("comment_title_" + d);
                         entityProvider.createCommentForTask(task.getId(), comment);
                     }
@@ -93,21 +95,15 @@ public class TestController {
     @GetMapping(value="/loadRolesAndUsers")
     public void loadRolesAndUsers() {
     	// add role
-    	PMSRole userRole = new PMSRole();
-    	userRole.setName("user");
-    	userRole.setDesc("user role");
-    	entityProvider.createRole(userRole);
-		
-		PMSRole adminRole = new PMSRole();
-		adminRole.setName("admin");
-		adminRole.setDesc("admin role");
-		entityProvider.createRole(adminRole);
-		
-		PMSRole techRole = new PMSRole();
-		techRole.setName("technician");
-		techRole.setDesc("technician role");
-		entityProvider.createRole(techRole);
-		
+    	List<PMSRole> roles = new ArrayList<>();
+    	for (PMSRoleType roleType : PMSRoleType.values()) {
+    		PMSRole role = new PMSRole();
+    		role.setName(roleType);
+    		role.setDesc(roleType.name() + ":" + roleType.getValue());
+    		entityProvider.createRole(role);
+    		roles.add(role);
+    	}
+    	
 		List<PMSCompany> companies = entityProvider.getCompanies();
 		int companyCount = companies.size();
 		for (int i=0; i<kSize; ++i) {
@@ -115,23 +111,27 @@ public class TestController {
         	user.setAvatar("avatar" + i);
         	user.setEmail("email" + i + "@sait.com");
         	user.setFirstName("firstname" + i);
-        	user.setMidName("midname" + i);
         	user.setLastName("lastname" + i);
-        	user.setUsername("username" + i);
         	user.setPassword("password" + i);
     		
-        	switch (i%3) {
+        	switch (i%PMSRoleType.values().length) {
         	case 0: {
-        		user.getRoles().add(userRole);
-        		user.getRoles().add(techRole);
-        		user.getRoles().add(adminRole);
+        		user.getRoles().add(roles.get(0));
+        		user.getRoles().add(roles.get(1));
+        		user.getRoles().add(roles.get(2));
+        		user.getRoles().add(roles.get(3));
         	} break;
         	case 1: {
-        		user.getRoles().add(userRole);
-        		user.getRoles().add(techRole);
+        		user.getRoles().add(roles.get(0));
+        		user.getRoles().add(roles.get(1));
+        		user.getRoles().add(roles.get(2));
         	} break;
         	case 2: {
-        		user.getRoles().add(userRole);
+        		user.getRoles().add(roles.get(0));
+        		user.getRoles().add(roles.get(1));
+        	} break;
+        	case 3: {
+        		user.getRoles().add(roles.get(0));
         	} break;
         	}
         	int companyIndex = i % companyCount;
@@ -154,5 +154,12 @@ public class TestController {
             companyIds.add(company.getId());
         }
         entityProvider.cleanupCompanies(companyIds);
+    }
+    
+    @GetMapping("/test00")
+    public void test00() throws FileNotFoundException {
+    	String str = System.getProperty("user.dir");
+    	str = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+    	str = ResourceUtils.getURL("classpath:").getPath();
     }
 }

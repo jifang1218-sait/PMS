@@ -20,6 +20,7 @@ import com.pms.security.PMSAuthenticationProvider;
 import com.pms.security.PMSAuthenticationTokenFilter;
 import com.pms.security.PMSUnauthorizedHandler;
 
+//@Profile("psdev")
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -54,6 +55,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    	httpSecurity
+    	.authorizeRequests()
+    	.antMatchers("/")
+    	.permitAll();
+    	
+    	return httpSecurity.build();
+    	/*
         // no need to use crsf protection as we use JWT. 
         httpSecurity.csrf().disable()
         		// we use token, don't need session. 
@@ -84,6 +92,6 @@ public class SecurityConfig {
         httpSecurity.logout()
         	.permitAll();
 
-        return httpSecurity.build();
+        return httpSecurity.build();*/
     }
 }

@@ -15,6 +15,5 @@ import com.pms.entities.PMSUser;
  */
 public interface PMSUserRepo extends JpaRepository<PMSUser, Long>
 {
-	Optional<PMSUser> findByUsername(String username);
 	Optional<PMSUser> findByEmail(String email);
 }
