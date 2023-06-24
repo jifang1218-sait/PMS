@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pms.constants.EntityConstants;
 import com.pms.constants.PMSRoleName;
 import com.pms.controllers.exceptions.DeletionFailureException;
-import com.pms.controllers.exceptions.DuplicatedObjectsException;
+import com.pms.controllers.exceptions.DuplicateObjectsException;
 import com.pms.controllers.exceptions.RequestValueMismatchException;
 import com.pms.controllers.exceptions.ResourceNotFoundException;
 import com.pms.entities.PMSComment;
@@ -111,7 +111,7 @@ public class PMSEntityProvider {
         
         // verify if comp doesn't exist.
         if (compRepo.findByName(comp.getName()).orElse(null) != null) {
-        	throw new DuplicatedObjectsException("company exists with name=" + comp.getName());
+        	throw new DuplicateObjectsException("company exists with name=" + comp.getName());
         }
         
         ret = compRepo.save(comp);
@@ -206,7 +206,7 @@ public class PMSEntityProvider {
     	
     	// verify if project doesn't exist.
         if (projRepo.findByNameAndCompanyId(project.getName(), companyId).orElse(null) != null) {
-        	throw new DuplicatedObjectsException("company exists with name=" 
+        	throw new DuplicateObjectsException("company exists with name=" 
         				+ project.getName() + " and company_id=" + companyId);
         }
         
@@ -443,7 +443,7 @@ public class PMSEntityProvider {
     	
     	// verify if the task doesn't exist. 
     	if (taskRepo.findByNameAndProject(task.getName(), projectId).orElse(null) != null) {
-    		throw new DuplicatedObjectsException("task exists with name=" 
+    		throw new DuplicateObjectsException("task exists with name=" 
     					+ task.getName() + " and project_id=" + projectId);
     	}
     	
@@ -774,7 +774,7 @@ public class PMSEntityProvider {
     	
     	// check if user already exists
     	if (null != userRepo.findByEmail(user.getEmail()).orElse(null)) {
-    		throw new DuplicatedObjectsException("user already exists with email=" + user.getEmail());
+    		throw new DuplicateObjectsException("user already exists with email=" + user.getEmail());
     	}
     	
     	// if companyId is -1 and role is admin, means admin role will be created.

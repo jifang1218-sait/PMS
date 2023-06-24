@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.constants.PMSFileType;
 import com.pms.constants.PMSRoleName;
-import com.pms.controllers.exceptions.DuplicatedObjectsException;
+import com.pms.controllers.exceptions.DuplicateObjectsException;
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSFile;
@@ -66,7 +66,7 @@ public class TestController {
 	    		role.setDesc(roleType.name() + ":" + roleType.getValue());
 	    		entityProvider.createRole(role);
 	    	}
-    	} catch (DuplicatedObjectsException e) {
+    	} catch (DuplicateObjectsException e) {
     		//
     	}
     }
@@ -93,7 +93,7 @@ public class TestController {
     		root.setAvatar(avatar);   
     		
     		entityProvider.createUser(root, null);
-    	} catch (DuplicatedObjectsException e) {
+    	} catch (DuplicateObjectsException e) {
     		//
     	}
     }

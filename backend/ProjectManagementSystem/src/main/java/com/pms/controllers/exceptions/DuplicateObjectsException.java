@@ -4,17 +4,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class DuplicatedObjectsException extends RuntimeException {
+public class DuplicateObjectsException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public DuplicatedObjectsException() {
+	public DuplicateObjectsException() {
         this("Duplicated Object!");
     }
-    public DuplicatedObjectsException(String message) {
+    public DuplicateObjectsException(String message) {
         this(message, null);
     }
-    public DuplicatedObjectsException(String message, Throwable cause) {
+    public DuplicateObjectsException(String message, Throwable cause) {
         super(message, cause);
     }
 }
