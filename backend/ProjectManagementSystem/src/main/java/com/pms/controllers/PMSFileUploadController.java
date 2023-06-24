@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,4 +47,19 @@ public class PMSFileUploadController {
 	    file.transferTo(new File(dir.getAbsolutePath() + File.separator + name + ".png"));
 	    return "上传完成！文件名：" + name;
 	}
+	
+	//@PreAuthorize("hasAnyAuthority('user', 'technician', 'admin')")
+	@PreAuthorize("hasAuthority('admin')")
+	@GetMapping("/admin")
+	public void kkk00() {
+		log.info("can go here.");
+	}
+	
+	@PreAuthorize("hasAuthority('viewer')")
+	@GetMapping("/viewer")
+	public void kkk01() {
+		log.info("can go here.");
+	}
+	
+	
 }

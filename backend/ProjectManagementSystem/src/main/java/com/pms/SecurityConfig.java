@@ -1,9 +1,14 @@
 package com.pms;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.pms.constants.PMSRoleName;
 import com.pms.security.PMSAccessDeniedHandler;
 import com.pms.security.PMSAuthenticationProvider;
 import com.pms.security.PMSAuthenticationTokenFilter;
@@ -51,6 +57,20 @@ public class SecurityConfig {
     @Bean
     public PMSAuthenticationProvider pmsAuthenticationProvider(){
         return new PMSAuthenticationProvider();
+    }
+    
+    @Bean
+    RoleHierarchy hierarchy() {
+      RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+      PMSRoleName[] names = PMSRoleName.values();
+      List<String> strNames = new ArrayList<>();
+      for (PMSRoleName name : names) {
+    	  strNames.add(name.name());
+      }
+      String strHierarchy = String.join(" > ", strNames);
+      hierarchy.setHierarchy(strHierarchy);
+
+      return hierarchy;
     }
 
     @Bean
