@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -18,6 +19,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -60,8 +63,8 @@ public class PMSTask {
     @Column(name = "PROJECT")
     private Long projectId;
     
-    @Column(name="AVATAR")
-    private String avatar;
+    @OneToOne(cascade=CascadeType.ALL)
+    private PMSFile avatar;
     
     @ElementCollection
     @CollectionTable(name="TASK_DEPENDENT_TASKS")
@@ -76,10 +79,10 @@ public class PMSTask {
     private List<Long> commentIds;
     
     @Column(name="START_DATE", nullable=false)
-    private Timestamp startDate;
+    private Long startDate = 0L;
     
     @Column(name="END_DATE", nullable=false)
-    private Timestamp endDate;
+    private Long endDate = 0L;
     
     @ElementCollection
     @CollectionTable(name="TASK_TAGS")
@@ -88,9 +91,8 @@ public class PMSTask {
     @Enumerated(EnumType.STRING)
     private PMSPriority priority;
     
-    @ElementCollection
-    @CollectionTable(name="TASK_ATTACHMENTS")
-    private List<String> attachments;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<PMSFile> attachments;
     
     public PMSTask() {
     	dependentTaskIds = new ArrayList<>();
@@ -143,11 +145,11 @@ public class PMSTask {
     
     @CreatedDate
     @Column(updatable=false)
-    private Timestamp createdTime;
+    private Long createdTime;
     
     @LastModifiedBy
     private Long updatedUserId;
     
     @LastModifiedDate
-    private Timestamp updatedTime;
+    private Long updatedTime;
 }

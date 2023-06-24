@@ -3,7 +3,6 @@
  */
 package com.pms.entities;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -68,10 +66,10 @@ public class PMSUser {
     @Size(min=EntityConstants.kMinUserPasswordLen)
     private String password;
     
-    @Column(name="AVATAR")
-    private String avatar;
+    @OneToOne(cascade=CascadeType.ALL)
+    private PMSFile avatar;
     
-    @ManyToMany(cascade=CascadeType.MERGE)
+    @ManyToMany
     @JoinTable(
           name="USERS_ROLES",
           joinColumns={@JoinColumn(name="USER_ID",
@@ -80,17 +78,22 @@ public class PMSUser {
         		  		referencedColumnName="ID")})
     private List<PMSRole> roles = new ArrayList<>();
     
-    @CreatedBy
-    @Column(updatable=false)
-    private Long createdUserId;
-    
     @CreatedDate
     @Column(updatable=false)
-    private Timestamp createdTime;
-    
-    @LastModifiedBy
-    private Long updatedUserId;
+    private Long createdTime;
     
     @LastModifiedDate
-    private Timestamp updatedTime;
+    private Long updatedTime;
+    
+    public void addRole(PMSRole role) {
+    	if (!roles.contains(role)) {
+    		roles.add(role);
+    	}
+    }
+    
+    public void removeRole(PMSRole role) {
+    	if (roles.contains(role)) {
+    		roles.remove(role);
+    	}
+    }
 }

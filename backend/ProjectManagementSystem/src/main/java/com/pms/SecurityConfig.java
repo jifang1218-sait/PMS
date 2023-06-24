@@ -55,13 +55,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    	/*
     	httpSecurity
     	.authorizeRequests()
     	.antMatchers("/")
     	.permitAll();
     	
     	return httpSecurity.build();
-    	/*
+    	*/
+    	
         // no need to use crsf protection as we use JWT. 
         httpSecurity.csrf().disable()
         		// we use token, don't need session. 
@@ -74,11 +76,11 @@ public class SecurityConfig {
                         "/*.html"
                 ).permitAll()
                 // public to login/register.
-                .antMatchers("/api/v1/actions/login", "/user/register").permitAll()
+                .antMatchers("/api/v1/actions/login", "/api/v1/actions/register").permitAll()
                 // cross domain request
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 // public to test
-                .antMatchers("/v1/test/**").permitAll()
+                .antMatchers("/api/v1/test/**").permitAll()
                 // requires authentication for other requests. 
                 .anyRequest()
                 .authenticated();
@@ -92,6 +94,6 @@ public class SecurityConfig {
         httpSecurity.logout()
         	.permitAll();
 
-        return httpSecurity.build();*/
+        return httpSecurity.build();
     }
 }

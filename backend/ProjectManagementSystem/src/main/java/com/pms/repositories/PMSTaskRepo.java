@@ -16,12 +16,13 @@ import com.pms.entities.PMSTask;
  *
  */
 public interface PMSTaskRepo extends JpaRepository<PMSTask, Long> {
-    @Query("SELECT t FROM PMSTask t WHERE projectId = ?1")
+    @Query("SELECT t FROM PMSTask t WHERE t.projectId = ?1")
     List<PMSTask> findAllByProjectId(long projId);
     
-    @Query("SELECT t FROM PMSTask t WHERE projectId != -1")
+    @Query("SELECT t FROM PMSTask t WHERE t.projectId != -1")
     List<PMSTask> findAllWithoutDefault();
     
-    Optional<PMSTask> findByName(String taskName);
+    @Query("SELECT t FROM PMSTask t WHERE t.name=?1 AND t.projectId=?2")
+    Optional<PMSTask> findByNameAndProject(String name, Long projectId);
     
 }

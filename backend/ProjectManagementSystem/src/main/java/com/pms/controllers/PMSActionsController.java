@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSLoginInfo;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
@@ -175,4 +176,14 @@ public class PMSActionsController {
     	return new ResponseEntity<>(securityService.login(loginInfo.getEmail(), loginInfo.getPassword()), HttpStatus.OK);
     }
     
+    @PostMapping(value="/register")
+    public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
+    		@RequestParam(name="company_id", required=true) Long companyId, 
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+        }
+        
+        return new ResponseEntity<>(entityProvider.createUser(user, companyId), HttpStatus.CREATED);
+    }
 }

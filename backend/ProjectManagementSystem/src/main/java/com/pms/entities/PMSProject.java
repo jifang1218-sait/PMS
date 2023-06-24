@@ -62,10 +62,6 @@ public class PMSProject {
     @JoinColumn(name="DEFAULT_TASK", nullable=false)
     private PMSTask defaultTask;
     
-    private Long created;
-    private Long start;
-    private Long end;
-    
     public PMSProject() {
         dependentProjectIds = new ArrayList<>();
         taskIds = new ArrayList<>();
@@ -88,12 +84,12 @@ public class PMSProject {
         defaultTask.setDesc(desc);
     }
     
-    public String getAvatar() {
+    public PMSFile getAvatar() {
         return defaultTask.getAvatar();
     }
     
-    public void setAvatar(String filePath) {
-        defaultTask.setAvatar(filePath);
+    public void setAvatar(PMSFile avatar) {
+        defaultTask.setAvatar(avatar);
     }
 
     public PMSTask getDefaultTask() {
@@ -138,12 +134,12 @@ public class PMSProject {
     
     @CreatedDate
     @Column(updatable=false)
-    private Timestamp createdTime;
+    private Long createdTime;
     
     @LastModifiedBy
     private Long updatedUserId;
     
     @LastModifiedDate
-    private Timestamp updatedTime;
+    private Long updatedTime;
     
 }

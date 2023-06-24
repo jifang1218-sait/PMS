@@ -33,4 +33,7 @@ public interface EntityConstants {
     
     // the session timeout in milliseconds, 30 minutes
     static final long kSessionTimeout = 1000 * 60 * 30;
+    
+    // default company id is used for user with admin role. 
+    static final long kDefaultCompanyId = -1L;
 }

@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -16,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -45,7 +47,7 @@ public class PMSCompany {
     @Setter(AccessLevel.NONE)
     private Long id;
     
-    @Column(name="NAME", nullable=false)
+    @Column(name="NAME", nullable=false, unique=true)
     @NotNull
     @Size(min=EntityConstants.kMinCompanyNameLen)
     private String name;
@@ -54,8 +56,8 @@ public class PMSCompany {
     @Column(name="DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
-    @Column(name="AVATAR")
-    private String avatar;
+    @OneToOne(cascade=CascadeType.ALL)
+    private PMSFile avatar;
     
     @ElementCollection
     @CollectionTable(name="COMPANY_PROJECTS")
@@ -88,11 +90,11 @@ public class PMSCompany {
     
     @CreatedDate
     @Column(updatable=false)
-    private Timestamp createdTime;
+    private Long createdTime;
     
     @LastModifiedBy
     private Long updatedUserId;
     
     @LastModifiedDate
-    private Timestamp updatedTime;
+    private Long updatedTime;
 }

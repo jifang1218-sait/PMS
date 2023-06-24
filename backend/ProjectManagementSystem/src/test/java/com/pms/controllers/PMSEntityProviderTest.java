@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.pms.JavaConfig;
 import com.pms.entities.PMSCompany;
+import com.pms.entities.PMSFile;
 import com.pms.services.PMSEntityProvider;
 
 
@@ -76,7 +77,9 @@ class PMSEntityProviderTest {
     void testGetCompanies() {
     	// create 1 company then check it then delete it. 
         PMSCompany company = new PMSCompany();
-        company.setAvatar("company0avatar");
+        PMSFile avatar = new PMSFile();
+		avatar.setRealFilename("company0avatar");
+        company.setAvatar(avatar);
         company.setDesc("company0desc");
         company.setName("company0name");
         company = testEntityManager.persistAndFlush(company);

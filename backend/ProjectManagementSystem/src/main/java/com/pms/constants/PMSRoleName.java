@@ -1,14 +1,14 @@
 package com.pms.constants;
 
-public enum PMSRoleType {
-	Admin("admin"), 
-	Manager("manager"), 
-	Technician("technician"), 
-	Viewer("viewer");
+public enum PMSRoleName {
+	admin("admin"), 
+	manager("manager"), 
+	technician("technician"), 
+	viewer("viewer");
 	
 	private String value;
 	 
-	PMSRoleType(String value) {
+	PMSRoleName(String value) {
         this.value = value;
     }
  

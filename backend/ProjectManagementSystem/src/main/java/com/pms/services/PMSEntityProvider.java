@@ -16,18 +16,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSRoleName;
 import com.pms.controllers.exceptions.DeletionFailureException;
+import com.pms.controllers.exceptions.DuplicatedObjectsException;
 import com.pms.controllers.exceptions.RequestValueMismatchException;
 import com.pms.controllers.exceptions.ResourceNotFoundException;
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSCompany;
+import com.pms.entities.PMSFile;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSRole;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
-import com.pms.repositories.IPMSFileManager;
 import com.pms.repositories.PMSCommentRepo;
 import com.pms.repositories.PMSCompanyRepo;
+import com.pms.repositories.PMSFileRepo;
 import com.pms.repositories.PMSProjectRepo;
 import com.pms.repositories.PMSRoleRepo;
 import com.pms.repositories.PMSTaskRepo;
@@ -64,11 +67,11 @@ public class PMSEntityProvider {
     private PMSCommentRepo commentRepo;
     
     @Autowired
-    private IPMSFileManager fileMgr;
-    
+    private PMSFileRepo fileRepo;
+        
     @Autowired
     private PasswordEncoder passwdEncoder;
-    
+
     private List<Long> updateIdSets(List<Long> oldIds, List<Long> newIds) {
         List<Long> beRemovedIdSet = new ArrayList<>();
         
@@ -105,6 +108,11 @@ public class PMSEntityProvider {
     // company operations
     public PMSCompany createCompany(PMSCompany comp) {
         PMSCompany ret = null;
+        
+        // verify if comp doesn't exist.
+        if (compRepo.findByName(comp.getName()).orElse(null) != null) {
+        	throw new DuplicatedObjectsException("company exists with name=" + comp.getName());
+        }
         
         ret = compRepo.save(comp);
         
@@ -189,11 +197,19 @@ public class PMSEntityProvider {
     }
     
     public PMSProject createProject(Long companyId, PMSProject project) {
+    	// check if the company exists
     	PMSCompany company = compRepo.findById(companyId)
     			.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + companyId));
     	PMSProject ret = project;
         
     	project.setCompanyId(companyId);
+    	
+    	// verify if project doesn't exist.
+        if (projRepo.findByNameAndCompanyId(project.getName(), companyId).orElse(null) != null) {
+        	throw new DuplicatedObjectsException("company exists with name=" 
+        				+ project.getName() + " and company_id=" + companyId);
+        }
+        
         ret = projRepo.save(ret);
         
         // update company. 
@@ -421,8 +437,15 @@ public class PMSEntityProvider {
     }
 
     public PMSTask createTask(Long projectId, PMSTask task) {
+    	// check if the project exists. 
     	PMSProject project = projRepo.findById(projectId)
     			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + task.getId()));
+    	
+    	// verify if the task doesn't exist. 
+    	if (taskRepo.findByNameAndProject(task.getName(), projectId).orElse(null) != null) {
+    		throw new DuplicatedObjectsException("task exists with name=" 
+    					+ task.getName() + " and project_id=" + projectId);
+    	}
     	
         PMSTask ret = null;
         
@@ -704,17 +727,15 @@ public class PMSEntityProvider {
     	if (comment.getDesc() != null) {
     		ret.setDesc(comment.getDesc());
     	}
+    	/*
     	if (comment.getAttachments() != null) {
     		// remove old files. 
-    		List<String> oldFiles = ret.getAttachments();
-    		List<String> newFiles = comment.getAttachments();
+    		List<PMSFile> oldFiles = ret.getAttachments();
+    		List<PMSFile> newFiles = comment.getAttachments();
     		List<String> beRemovedFiles = updateStringSets(oldFiles, newFiles);
     		cleanupFiles(beRemovedFiles);
     		ret.setAttachments(comment.getAttachments());
-    	}
-    	if (comment.getUserId() != null) {
-    		ret.setUserId(comment.getUserId());
-    	}
+    	}*/
     	if (comment.getTaskId() != null) {
     		ret.setTaskId(comment.getTaskId());
     	}
@@ -728,16 +749,56 @@ public class PMSEntityProvider {
     }
     
     // users operation
-    public PMSUser createUser(PMSUser user, Long companyId) {
+    private PMSUser createAdminUser(PMSUser user) {
     	user.setPassword(passwdEncoder.encode(user.getPassword()));
         PMSUser ret = userRepo.save(user);
         
-        PMSCompany comp = compRepo.findById(companyId).orElseThrow(
+        return ret;
+    }
+    
+    private PMSUser createNormalUser(PMSUser user, Long companyId) {
+    	PMSCompany comp = compRepo.findById(companyId).orElseThrow(
         		()->new ResourceNotFoundException("No company found with id=" + companyId));
+    	
+    	user.setPassword(passwdEncoder.encode(user.getPassword()));
+        PMSUser ret = userRepo.save(user);
+        
         comp.getUserIds().add(ret.getId());
         compRepo.save(comp);
         
         return ret;
+    }
+    
+    public PMSUser createUser(PMSUser user, Long companyId) {
+    	PMSUser ret = null;
+    	
+    	// check if user already exists
+    	if (null != userRepo.findByEmail(user.getEmail()).orElse(null)) {
+    		throw new DuplicatedObjectsException("user already exists with email=" + user.getEmail());
+    	}
+    	
+    	// if companyId is -1 and role is admin, means admin role will be created.
+    	// construct admin role. 
+    	PMSRole admin = new PMSRole();
+    	admin.setName(PMSRoleName.admin);
+    	if (companyId == null || companyId.longValue() == -1 ) {
+    		if (user.getRoles().contains(admin)) {
+    			// create admin user
+    			ret = createAdminUser(user);
+    		} else {
+    			throw new RequestValueMismatchException();
+    		}
+    	} else {
+    		if (user.getRoles().contains(admin)) {
+    			// create admin user
+    			ret = createAdminUser(user);
+    		} else {
+    			// create normal user
+    			ret = createNormalUser(user, companyId);
+    		}
+    	}
+    	
+    	return ret;
     }
     
     public List<PMSUser> getUsersByProject(Long projectId) {
@@ -770,6 +831,10 @@ public class PMSEntityProvider {
     
     public List<PMSUser> getUsers() {
         return userRepo.findAll();
+    }
+    
+    public List<PMSUser> getCompanyUsers() {
+    	return userRepo.findCompanyUsers();
     }
     
     public List<PMSUser> getUsersByIds(List<Long> ids) {
@@ -933,7 +998,7 @@ public class PMSEntityProvider {
     	}
     	
     	// delete users.
-    	List<String> avatars = new ArrayList<>();
+    	List<PMSFile> avatars = new ArrayList<>();
     	for (Long userId : userIds) {
     		// delete user's avatar.
     		avatars.clear();    		
@@ -943,7 +1008,7 @@ public class PMSEntityProvider {
     		}
     		// remove avatar. 
     		if (avatars.size() > 0) {
-    			fileMgr.removeFiles(avatars);
+    			fileRepo.deleteAll(avatars);
     		}
             userRepo.deleteById(userId);
     	}
@@ -999,9 +1064,53 @@ public class PMSEntityProvider {
     }
     
     public PMSRole createRole(PMSRole role) {
+    	PMSRole ret = null;
     	
-    	roleRepo.save(role);
+    	ret = roleRepo.findByName(role.getName()).orElse(ret);
+    	if (ret == null) {
+    		roleRepo.save(role);
+    	}
     	
-    	return role;
+    	return ret;
     }
+    
+    public List<PMSRole> getRoles() {
+    	List<PMSRole> ret = roleRepo.findAll();
+    	
+    	return ret;
+    }
+    
+    public PMSRole getRole(Long roleId) {
+    	PMSRole ret = null;
+    	
+    	ret = roleRepo.findById(roleId).orElse(ret);
+    	
+    	return ret;
+    }
+
+	public PMSRole updateRole(PMSRole role) {
+		PMSRole ret = getRole(role.getId());
+		
+		if (role.getName() != null) {
+			ret.setName(role.getName());
+		}
+		
+		if (role.getDesc() != null) {
+			ret.setDesc(role.getDesc());
+		}
+		
+		return ret;
+	}
+
+	public void deleteRole(Long roleId) {
+		// TODO
+	}
+
+	public PMSRole getRoleByName(PMSRoleName name) {
+		PMSRole ret = null;
+		
+		ret = roleRepo.findByName(name).orElse(ret);
+		
+		return ret;
+	}
 }

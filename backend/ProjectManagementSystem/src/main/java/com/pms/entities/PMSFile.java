@@ -1,22 +1,13 @@
-/**
- * 
- */
 package com.pms.entities;
 
-import java.sql.Timestamp;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,43 +15,36 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSFileType;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
-/**
- * @author jifang
- *
- */
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public class PMSComment {
-    @Id
+public class PMSFile {
+	@Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
-    
-    @Column(name="TITLE")
-    @NotNull
-    @Size(min=EntityConstants.kMinCommentTitleLen)
-    private String title;
-    
-    @Lob
-    @Column(name = "DESCRIPTION", columnDefinition="TEXT")
-    private String desc;
-    
-    @OneToMany(cascade=CascadeType.ALL)
-    private List<PMSFile> attachments;
-    
-    @Column(name = "TASK")
-    @NotNull
-    private Long taskId;
-    
-    @CreatedBy
+	
+	@Column(name="REAL_FILENAME", nullable=false, unique=true)
+	private String realFilename = "";
+	
+	@Column(name="DISPLAY_NAME")
+	private String displayFilename = "";
+	
+	@Column(name="FILE_TYPE")
+	@Enumerated(EnumType.STRING)
+	private PMSFileType fileType = PMSFileType.File;
+	
+	@Column(name="FILE_SIZE")
+	private Long size;
+	
+	@CreatedBy
     @Column(updatable=false)
     private Long createdUserId;
     
