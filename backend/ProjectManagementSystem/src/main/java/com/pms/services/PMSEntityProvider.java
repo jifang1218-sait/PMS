@@ -1206,4 +1206,20 @@ public class PMSEntityProvider {
 		return ret;
 	}
 	
+	public PMSProject startProject(Long projectId) {
+		return null;
+	}
+	
+	public PMSProject stopProject(Long projectId) {
+		return null;
+	}
+	
+	public PMSTask startTask(Long taskId) {
+		return null;
+	}
+	
+	public PMSTask stopTask(Long taskId) {
+		return null;
+	}
+	
 }
