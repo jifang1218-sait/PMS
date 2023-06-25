@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-//import javax.persistence.EntityManagerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ import com.pms.entities.PMSCompany;
 import com.pms.entities.PMSFile;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSRole;
+import com.pms.entities.PMSTag;
 import com.pms.entities.PMSTask;
 import com.pms.entities.PMSUser;
 import com.pms.repositories.PMSCommentRepo;
@@ -33,6 +32,7 @@ import com.pms.repositories.PMSCompanyRepo;
 import com.pms.repositories.PMSFileRepo;
 import com.pms.repositories.PMSProjectRepo;
 import com.pms.repositories.PMSRoleRepo;
+import com.pms.repositories.PMSTagRepo;
 import com.pms.repositories.PMSTaskRepo;
 import com.pms.repositories.PMSUserRepo;
 
@@ -71,6 +71,9 @@ public class PMSEntityProvider {
         
     @Autowired
     private PasswordEncoder passwdEncoder;
+    
+    @Autowired
+    private PMSTagRepo tagRepo;
 
     private List<Long> updateIdSets(List<Long> oldIds, List<Long> newIds) {
         List<Long> beRemovedIdSet = new ArrayList<>();
@@ -1087,17 +1090,51 @@ public class PMSEntityProvider {
     	
     	return ret;
     }
-
-	public PMSRole updateRole(PMSRole role) {
-		PMSRole ret = getRole(role.getId());
+    
+    public PMSRole getRole(PMSRoleName name) {
+		PMSRole ret = null;
 		
-		if (role.getName() != null) {
+		ret = roleRepo.findByName(name).orElse(ret);
+		
+		return ret;
+	}
+
+	public PMSRole updateRole(Long roleId, PMSRole role) {
+		if (roleId.longValue() != role.getId().longValue()) {
+			throw new RequestValueMismatchException();
+		}
+		
+		PMSRole ret = getRole(roleId);
+		if (ret == null) {
+			throw new ResourceNotFoundException("No role found with id=" + roleId);
+		}
+		
+		/*if (role.getName() != null) {
 			ret.setName(role.getName());
+		}*/
+		
+		if (role.getDesc() != null) {
+			ret.setDesc(role.getDesc());
+		}
+		
+		roleRepo.save(ret);
+		
+		return ret;
+	}
+	
+	public PMSRole updateRole(PMSRoleName roleName, PMSRole role) {
+		PMSRole ret = null;
+		
+		ret = getRole(roleName);
+		if (ret == null) {
+			throw new ResourceNotFoundException("No role found with name=" + roleName);
 		}
 		
 		if (role.getDesc() != null) {
 			ret.setDesc(role.getDesc());
 		}
+		
+		roleRepo.save(ret);
 		
 		return ret;
 	}
@@ -1105,12 +1142,68 @@ public class PMSEntityProvider {
 	public void deleteRole(Long roleId) {
 		// TODO
 	}
+	
+	public void deleteRole(PMSRoleName name) {
+		// TODO
+	}
 
-	public PMSRole getRoleByName(PMSRoleName name) {
-		PMSRole ret = null;
+	public List<PMSUser> getUsersByRoleId(Long roleId) {
+		List<PMSUser> ret = new ArrayList<>();
 		
-		ret = roleRepo.findByName(name).orElse(ret);
+		List<PMSUser> users = userRepo.findAll();
+		for (PMSUser user : users) {
+			boolean found = false;
+			List<PMSRole> roles = user.getRoles();
+			for (PMSRole role : roles) {
+				if (role.getId().longValue() == roleId.longValue()) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				ret.add(user);
+			}
+		}
 		
 		return ret;
 	}
+
+	public List<PMSUser> getUsersByRoleName(PMSRoleName roleName) {
+		List<PMSUser> ret = new ArrayList<>();
+		
+		List<PMSUser> users = userRepo.findAll();
+		for (PMSUser user : users) {
+			boolean found = false;
+			List<PMSRole> roles = user.getRoles();
+			for (PMSRole role : roles) {
+				if (role.getName() == roleName) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				ret.add(user);
+			}
+		}
+		
+		return ret;
+	}
+	
+	public List<PMSTag> updateTags(List<PMSTag> tags) {
+		List<PMSTag> ret = null;
+		
+		List<PMSTag> allTags = tagRepo.findAll();
+
+		for (PMSTag tag : tags) {
+			if (!allTags.contains(tag)) {
+				allTags.add(tag);
+			}
+		}
+		
+		tagRepo.saveAll(tags);
+		ret = tags;
+		
+		return ret;
+	}
+	
 }

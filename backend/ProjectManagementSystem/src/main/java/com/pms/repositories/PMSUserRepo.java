@@ -19,6 +19,12 @@ public interface PMSUserRepo extends JpaRepository<PMSUser, Long>
 {
 	Optional<PMSUser> findByEmail(String email);
 	
+//	@Query("SELECT u FROM PMSUser u WHERE u.roles.name = ?1")
+//	List<PMSUser> findByRole(PMSRoleName roleName);
+//	
+//	@Query("SELECT u FROM PMSUser u WHERE u.role.name = ?1")
+//	List<PMSUser> findByRole(Long roleId);
+	
 	@Query("SELECT u FROM PMSUser u WHERE u.email != 'root@sait.com'")
 	List<PMSUser> findCompanyUsers();
 }

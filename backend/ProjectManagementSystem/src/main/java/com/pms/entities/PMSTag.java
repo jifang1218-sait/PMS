@@ -1,20 +1,15 @@
 package com.pms.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,42 +22,24 @@ import lombok.Setter;
 @Entity
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public class PMSRole
-{
-    @Id 
+public class PMSTag {
+	@Id 
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ID_Gen")
     @Column(name="ID")
     @Setter(AccessLevel.NONE)
     private Long id;
-    
-    @Column(nullable=false, unique=true)
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private PMSRoleName name;
-    
-    @Column(name="DESCRIPTION", nullable=true)
-    private String desc;
-    
-    @Setter(AccessLevel.NONE)
-    @ManyToMany(mappedBy="roles")
-    private List<PMSUser> users = new ArrayList<>();
-    
-    @CreatedDate
-    @Column(updatable=false)
-    private Long createdTime;
-
-    @LastModifiedDate
-    private Long updatedTime;
-    
-    @Override
+	
+	@Column(unique = true)
+	private String value;
+	
+	@Override
     public boolean equals(Object o) {
     	boolean ret = false;
     	if (this == o) {
     		ret = true;
     	} else {
-    		PMSRole right = (PMSRole)o;
-    		PMSRoleName type = right.getName();
-    		if (type.name().equalsIgnoreCase(this.name.name())) {
+    		PMSTag tag = (PMSTag)o;
+    		if (value.equalsIgnoreCase(tag.getValue())) {
     			ret = true;
     		}
     	}
@@ -72,6 +49,20 @@ public class PMSRole
     
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return value.hashCode();
     }
+	
+	@CreatedBy
+    @Column(updatable=false)
+    private Long createdUserId;
+    
+    @CreatedDate
+    @Column(updatable=false)
+    private Long createdTime;
+    
+    @LastModifiedBy
+    private Long updatedUserId;
+    
+    @LastModifiedDate
+    private Long updatedTime;
 }

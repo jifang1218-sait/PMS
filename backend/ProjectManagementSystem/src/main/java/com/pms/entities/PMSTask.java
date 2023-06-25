@@ -84,9 +84,8 @@ public class PMSTask {
     @Column(name="END_DATE", nullable=false)
     private Long endDate = 0L;
     
-    @ElementCollection
-    @CollectionTable(name="TASK_TAGS")
-    private List<String> tags;
+    @OneToMany
+    private List<PMSTag> tags;
     
     @Enumerated(EnumType.STRING)
     private PMSPriority priority;
@@ -98,6 +97,9 @@ public class PMSTask {
     	dependentTaskIds = new ArrayList<>();
     	userIds = new ArrayList<>();
         commentIds = new ArrayList<>();
+        attachments = new ArrayList<>();
+        tags = new ArrayList<>();
+        
         // set project id of the default task to -1, 
         // as the relationship is managed in column pmsproject_default_task in table pmsproject
         projectId = -1L; 

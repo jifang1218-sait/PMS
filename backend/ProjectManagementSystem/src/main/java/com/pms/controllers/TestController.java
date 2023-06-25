@@ -81,7 +81,7 @@ public class TestController {
     		
     		// role
     		List<PMSRole> roles = new ArrayList<>();
-    		PMSRole admin = entityProvider.getRoleByName(PMSRoleName.admin);
+    		PMSRole admin = entityProvider.getRole(PMSRoleName.admin);
     		roles.add(admin);
     		root.setRoles(roles);
     		

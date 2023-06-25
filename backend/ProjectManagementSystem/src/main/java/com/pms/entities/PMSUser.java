@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -76,7 +77,10 @@ public class PMSUser {
                         referencedColumnName="ID")},
           inverseJoinColumns={@JoinColumn(name="ROLE_ID", 
         		  		referencedColumnName="ID")})
-    private List<PMSRole> roles = new ArrayList<>();
+    private List<PMSRole> roles;
+    
+    @OneToMany
+    private List<PMSTag> tags;
     
     @CreatedDate
     @Column(updatable=false)
@@ -84,6 +88,11 @@ public class PMSUser {
     
     @LastModifiedDate
     private Long updatedTime;
+    
+    public PMSUser() {
+    	roles = new ArrayList<>();
+    	tags = new ArrayList<>();
+    }
     
     public void addRole(PMSRole role) {
     	if (!roles.contains(role)) {
