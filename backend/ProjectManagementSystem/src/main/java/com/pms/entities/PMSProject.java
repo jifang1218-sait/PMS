@@ -3,7 +3,6 @@
  */
 package com.pms.entities;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,14 +129,14 @@ public class PMSProject {
     
     @CreatedBy
     @Column(updatable=false)
-    private Long createdUserId;
+    private String createdUser;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private Long updatedUserId;
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;

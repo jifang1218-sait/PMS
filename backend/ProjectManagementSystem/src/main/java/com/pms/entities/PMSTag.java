@@ -13,8 +13,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.pms.constants.PMSRoleName;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -52,16 +50,16 @@ public class PMSTag {
         return value.hashCode();
     }
 	
-	@CreatedBy
+    @CreatedBy
     @Column(updatable=false)
-    private Long createdUserId;
+    private String createdUser;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private Long updatedUserId;
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;

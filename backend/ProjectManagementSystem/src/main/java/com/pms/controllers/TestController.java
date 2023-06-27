@@ -118,7 +118,7 @@ public class TestController {
             
             PMSFile avatar = new PMSFile();
             avatar.setDisplayFilename("company_avatar_" + a);
-            avatar.setRealFilename(company.getName() + System.currentTimeMillis());
+            avatar.setRealFilename(company.getName() + "_" + System.currentTimeMillis());
             avatar.setFileType(PMSFileType.Image);
             company.setAvatar(avatar);
             

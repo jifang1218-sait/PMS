@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 import com.pms.constants.PMSRoleName;
 import com.pms.entities.PMSComment;
 import com.pms.entities.PMSCompany;
@@ -57,20 +58,9 @@ public class PMSEntitiesController {
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PostMapping(value="/companies")
-    public ResponseEntity<PMSCompany> createCompany(@RequestBody @Valid PMSCompany comp, BindingResult result) {
-        if(result.hasErrors()) {
-            return new ResponseEntity<>(comp, HttpStatus.BAD_REQUEST);
-        }
-        
+    public ResponseEntity<PMSCompany> createCompany(@RequestBody @Validated PMSCompany comp) {
         return new ResponseEntity<>(entityProvider.createCompany(comp), HttpStatus.CREATED);
     } 
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies")
-    public ResponseEntity<Void> deleteCompanies(@RequestBody List<Long> companyIds) {
-        entityProvider.cleanupCompanies(companyIds);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @GetMapping(value="/companies/{id}")
@@ -84,11 +74,7 @@ public class PMSEntitiesController {
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PutMapping(value="/companies/{id}")
     public ResponseEntity<PMSCompany> updateCompany(@PathVariable("id") Long id, 
-            @RequestBody @Valid PMSCompany comp, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(comp, HttpStatus.BAD_REQUEST);
-        } 
-        
+            @RequestBody @Validated PMSCompany comp) {
         return new ResponseEntity<>(entityProvider.updateCompany(id, comp), HttpStatus.OK);
     }
     
@@ -99,7 +85,7 @@ public class PMSEntitiesController {
         ids.add(id);
         entityProvider.cleanupCompanies(ids);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -111,7 +97,7 @@ public class PMSEntitiesController {
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PostMapping(value="/companies/{company_id}/projects")
     public ResponseEntity<PMSProject> createProject(@PathVariable("company_id") Long companyId, 
-            @RequestBody @Valid PMSProject project, 
+            @RequestBody @Validated PMSProject project, 
             BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
@@ -402,7 +388,7 @@ public class PMSEntitiesController {
         
         Long compId = null;
         if (companyId == null) {
-        	compId = Long.valueOf(EntityConstants.kDefaultCompanyId);
+        	compId = Long.valueOf(PMSEntityConstants.kDefaultCompanyId);
         }
         return new ResponseEntity<>(entityProvider.createUser(user, compId), HttpStatus.CREATED);
     }

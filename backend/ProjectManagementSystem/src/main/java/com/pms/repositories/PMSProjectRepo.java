@@ -19,6 +19,8 @@ public interface PMSProjectRepo extends JpaRepository<PMSProject, Long> {
     
     List<PMSProject> findAllByCompanyId(Long companyId);
     
+    boolean existsByNameAndCompanyId(String name, Long compId);
+    
     @Query("SELECT p FROM PMSProject p WHERE p.defaultTask.name = ?1 AND p.companyId = ?2")
     Optional<PMSProject> findByNameAndCompanyId(String name, Long companyId);
 }

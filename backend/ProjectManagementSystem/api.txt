@@ -1,103 +1,197 @@
+http headers examples:
+{Accept}: "Accept: application/json"
+{Content-Type}: "Content-Type: application/json"
+{token}: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA"
+{Authorization} : "Authorization: Bearer {token}"
+
+token is retrieved by login.  
+
 1. Get all companies
 Method: GET
 URL: /api/v1/entities/companies
 Params: none
-Roles: admin, technician, user
+Roles: admin, manager, technician, viewer
 Login required: true
 
 Example:
-curl -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA" http://localhost:8080/api/v1/entities/companies
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies
 
-Return:
+Return: 200
 [ {
   "id" : 1,
-  "name" : "company_name_0",
-  "desc" : "company_desc_0",
-  "avatar" : "company_avatar_0",
-  "projectIds" : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-  "userIds" : [ 1 ]
+  "name" : "aaa",
+  "desc" : "aaaa",
+  "avatar" : null,
+  "projectIds" : [ ],
+  "userIds" : [ ],
+  "createdUser" : null,
+  "createdTime" : 1687811955154,
+  "updatedUser" : null,
+  "updatedTime" : 1687811955154
 }, {
   "id" : 2,
-  "name" : "company_name_1",
-  "desc" : "company_desc_1",
-  "avatar" : "company_avatar_1",
-  "projectIds" : [ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ],
-  "userIds" : [ 2 ]
-}, {
-  "id" : 3,
-  "name" : "company_name_2",
-  "desc" : "company_desc_2",
-  "avatar" : "company_avatar_2",
-  "projectIds" : [ 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 ],
-  "userIds" : [ 3 ]
-}, {
-  "id" : 4,
-  "name" : "company_name_3",
-  "desc" : "company_desc_3",
-  "avatar" : "company_avatar_3",
-  "projectIds" : [ 31, 32, 33, 34, 35, 36, 37, 38, 39, 40 ],
-  "userIds" : [ 4 ]
-}, {
-  "id" : 5,
-  "name" : "company_name_4",
-  "desc" : "company_desc_4",
-  "avatar" : "company_avatar_4",
-  "projectIds" : [ 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 ],
-  "userIds" : [ 5 ]
-}, {
-  "id" : 6,
-  "name" : "company_name_5",
-  "desc" : "company_desc_5",
-  "avatar" : "company_avatar_5",
-  "projectIds" : [ 51, 52, 53, 54, 55, 56, 57, 58, 59, 60 ],
-  "userIds" : [ 6 ]
-}, {
-  "id" : 7,
-  "name" : "company_name_6",
-  "desc" : "company_desc_6",
-  "avatar" : "company_avatar_6",
-  "projectIds" : [ 61, 62, 63, 64, 65, 66, 67, 68, 69, 70 ],
-  "userIds" : [ 7 ]
-}, {
-  "id" : 8,
-  "name" : "company_name_7",
-  "desc" : "company_desc_7",
-  "avatar" : "company_avatar_7",
-  "projectIds" : [ 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 ],
-  "userIds" : [ 8 ]
-}, {
-  "id" : 9,
-  "name" : "company_name_8",
-  "desc" : "company_desc_8",
-  "avatar" : "company_avatar_8",
-  "projectIds" : [ 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 ],
-  "userIds" : [ 9 ]
-}, {
-  "id" : 10,
-  "name" : "company_name_9",
-  "desc" : "company_desc_9",
-  "avatar" : "company_avatar_9",
-  "projectIds" : [ 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 ],
-  "userIds" : [ 10 ]
-} ]
+  "name" : "dddd",
+  "desc" : "kkkk",
+  "avatar" : {
+    "id" : 2,
+    "realFilename" : "/upload/avatar/default_company_avatar.png",
+    "displayFilename" : "/upload/avatar/default_company_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdUser" : null,
+    "createdTime" : 1687812178883,
+    "updatedUser" : null,
+    "updatedTime" : 1687812178883
+  },
+  "projectIds" : [ ],
+  "userIds" : [ ],
+  "createdUser" : null,
+  "createdTime" : 1687812178965,
+  "updatedUser" : null,
+  "updatedTime" : 1687812178965
+}, 
+......
+{
+  "id" : 52,
+  "name" : "ddd",
+  "desc" : "kkkk",
+  "avatar" : {
+    "id" : 2,
+    "realFilename" : "/upload/avatar/default_company_avatar.png",
+    "displayFilename" : "/upload/avatar/default_company_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdUser" : null,
+    "createdTime" : 1687812178883,
+    "updatedUser" : null,
+    "updatedTime" : 1687812178883
+  },
+  "projectIds" : [ ],
+  "userIds" : [ ],
+  "createdUser" : null,
+  "createdTime" : 1687817058020,
+  "updatedUser" : null,
+  "updatedTime" : 1687817058020
+}
 
 
 2. Create a company
 Method: POST
 URL: /api/v1/entities/companies
+Params: PMSCompany in request body. 
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+1. this function doesn't read projectIds and userIds fields. 
+2. If no avatar specified, it will use the default company avatar. 
+3. company name is globally unique. 
+
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} -d '{"name":"dddd0", "desc":"abc company description"}' http://localhost:8080/api/v1/entities/companies
+
+Return: 201
+{
+    "id": 103,
+    "name": "dddd0",
+    "desc": "abc company description",
+    "avatar": {
+        "id": 2,
+        "realFilename": "/upload/avatar/default_company_avatar.png",
+        "displayFilename": "/upload/avatar/default_company_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": null,
+        "createdTime": 1687812178883,
+        "updatedUser": null,
+        "updatedTime": 1687812178883
+    },
+    "projectIds": [],
+    "userIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687819564570,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687819564570
+}
+
+3. Get a company
+Method: GET
+URL: /api/v1/entities/companies/{company_id}
 Params: none
-Roles: admin, technician, user
+Roles: admin, manager, technician, viewer
 Login required: true
 
 Example:
-curl -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA" -d '{"name":"company0", "desc":"desc0", "avatar":"avatar0_filepath"}' http://localhost:8080/api/v1/entities/companies
+curl -X GET -H {Content-Type} -H {Accept} -H {Authorization} -d '{[3,4,5]}' http://localhost:8080/api/v1/entities/companies/102
 
-Return:
+Return: 200
 {
-  "id" : 52,
-  "name" : "company0",
-  "desc" : "desc0",
-  "avatar" : "avatar0_filepath",
-  "projectIds" : [ ],
-  "userIds" : [ ]
+    "id": 102,
+    "name": "ddda",
+    "desc": "kkkk",
+    "avatar": {
+        "id": 2,
+        "realFilename": "/upload/avatar/default_company_avatar.png",
+        "displayFilename": "/upload/avatar/default_company_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": null,
+        "createdTime": 1687812178883,
+        "updatedUser": null,
+        "updatedTime": 1687812178883
+    },
+    "projectIds": [],
+    "userIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687817308836,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687817308836
 }
+
+4. Update a company
+Method: PUT
+URL: /api/v1/entities/companies/{company_id}
+Params: PMSCompany in request body
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+this function won't update id, name, projectIds and userIds. 
+
+Example:
+curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} -d '{"name":"dddd", "desc":"updated company description"}' http://localhost:8080/api/v1/entities/companies/102
+(we can see name field still exists in the request body but the value is meaningless. it is a placeholder.)
+
+Return: 200
+{
+    "id": 102,
+    "name": "ddda",
+    "desc": "updated company description",
+    "avatar": {
+        "id": 2,
+        "realFilename": "/upload/avatar/default_company_avatar.png",
+        "displayFilename": "/upload/avatar/default_company_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": null,
+        "createdTime": 1687812178883,
+        "updatedUser": null,
+        "updatedTime": 1687812178883
+    },
+    "projectIds": [],
+    "userIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687817308836,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687832234292
+}
+
+5. Delete a company
+Method: DELETE
+URL: /api/v1/entities/companies/{company_id}
+Params: company_id in request parameter. 
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/102
+
+Return: 204 (NO_CONTENT)

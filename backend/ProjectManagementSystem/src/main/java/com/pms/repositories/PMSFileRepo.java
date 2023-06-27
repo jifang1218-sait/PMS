@@ -8,4 +8,5 @@ import com.pms.entities.PMSFile;
 
 public interface PMSFileRepo extends JpaRepository<PMSFile, Long> {
 	Optional<PMSFile> findByRealFilename(String filename);
+	boolean existsByRealFilename(String filename);
 }

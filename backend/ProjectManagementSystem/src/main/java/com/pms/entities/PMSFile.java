@@ -19,10 +19,12 @@ import com.pms.constants.PMSFileType;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Data
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class PMSFile {
 	@Id
@@ -46,15 +48,21 @@ public class PMSFile {
 	
 	@CreatedBy
     @Column(updatable=false)
-    private Long createdUserId;
+    private String createdUser;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private Long updatedUserId;
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;
+    
+    public PMSFile(String fileName, PMSFileType fileType) {
+    	this.displayFilename = fileName;
+    	this.realFilename = fileName;
+    	this.fileType = fileType;
+    }
 }

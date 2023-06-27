@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 import com.pms.entities.PMSUser;
 import com.pms.repositories.PMSUserRepo;
 
@@ -42,8 +42,8 @@ public class PMSSecurityService {
                 new UsernamePasswordAuthenticationToken(username, password);
         authenticationManager.authenticate(authenticationToken);
 
-        Date expireTime = new Date(System.currentTimeMillis() + EntityConstants.kDefaultTaskProjectId);
-        byte[] signKey = EntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8);
+        Date expireTime = new Date(System.currentTimeMillis() + PMSEntityConstants.kDefaultTaskProjectId);
+        byte[] signKey = PMSEntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8);
         String token = JWT.create()
                 .setExpiresAt(expireTime)
                 .setPayload("username", username)

@@ -16,4 +16,5 @@ import com.pms.entities.PMSCompany;
  */
 public interface PMSCompanyRepo extends JpaRepository<PMSCompany, Long>{
 	Optional<PMSCompany> findByName(String name);
+	boolean existsByName(String name);
 }

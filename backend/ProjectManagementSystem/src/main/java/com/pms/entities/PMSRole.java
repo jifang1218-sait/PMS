@@ -14,10 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pms.constants.PMSRoleName;
 
 import lombok.AccessLevel;
@@ -43,14 +46,22 @@ public class PMSRole
     @Column(name="DESCRIPTION", nullable=true)
     private String desc;
     
+    @JsonIgnore
     @Setter(AccessLevel.NONE)
     @ManyToMany(mappedBy="roles")
     private List<PMSUser> users = new ArrayList<>();
     
+    @CreatedBy
+    @Column(updatable=false)
+    private String createdUser;
+    
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
-
+    
+    @LastModifiedBy
+    private String updatedUser;
+    
     @LastModifiedDate
     private Long updatedTime;
     

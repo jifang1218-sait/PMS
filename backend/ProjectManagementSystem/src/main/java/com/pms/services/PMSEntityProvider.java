@@ -13,7 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
+import com.pms.constants.PMSFileType;
 import com.pms.constants.PMSRoleName;
 import com.pms.controllers.exceptions.DeletionFailureException;
 import com.pms.controllers.exceptions.DuplicateObjectsException;
@@ -43,6 +44,9 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 
+/**
+ * Entity Management class. 
+ */
 @Service
 @Transactional
 @Slf4j
@@ -75,6 +79,12 @@ public class PMSEntityProvider {
     @Autowired
     private PMSTagRepo tagRepo;
 
+    /**
+     * helper function to find the removed ID set by comparing the old&new sets. 
+     * @param oldIds old ID collection. 
+     * @param newIds new ID collection. 
+     * @return the collection to be removed (from old collection). 
+     */
     private List<Long> updateIdSets(List<Long> oldIds, List<Long> newIds) {
         List<Long> beRemovedIdSet = new ArrayList<>();
         
@@ -87,7 +97,15 @@ public class PMSEntityProvider {
         return beRemovedIdSet;
     }
     
-    private List<String> updateStringSets(List<String> oldStrings, List<String> newStrings) {
+    /**
+     * helper function to find the removed string set by comparing the old&new sets.
+     * @param oldStrings old string collection. 
+     * @param newStrings new string collection. 
+     * @return the collection to be removed (from old collection). 
+     * @apiNote case-sensitive. 
+     */
+    @SuppressWarnings("unused")
+	private List<String> updateStringSets(List<String> oldStrings, List<String> newStrings) {
         List<String> beRemovedStringSet = new ArrayList<>();
         
         for (String oldString : oldStrings) {
@@ -99,7 +117,74 @@ public class PMSEntityProvider {
         return beRemovedStringSet;
     }
     
+    /**
+     * helper function, add a file to db. 
+     * will ignore the duplicated file. 
+     * @param file file object to be inserted. 
+     * @return the saved file object. 
+     */
+    private PMSFile addFile(PMSFile file) {
+    	PMSFile ret = null;
+    	
+    	if (file == null) {
+    		log.debug("file is null, return.");
+    		return ret;
+    	}
+    	
+    	log.debug("displayname:{}\nrealpath:{}\ntype:{}", 
+    			file.getDisplayFilename(), file.getRealFilename(), file.getFileType());
+    	
+    	if (!fileRepo.existsByRealFilename(file.getRealFilename())) {
+    		log.debug("file doesn't exist, save it.");
+    		ret = fileRepo.save(file);
+    	} else {
+    		log.debug("file exists, don't save it.");
+    	}
+    	
+    	return ret;
+    }
+    
+    /**
+     * helper function, get the company default avatar.  
+     * otherwise create and save the company default avatar. 
+     * @return the company default avatar object. 
+     */
+    private PMSFile getDefaultCompanyAvatar() {
+    	PMSFile ret = null;
+    	
+    	if (fileRepo.existsByRealFilename(PMSEntityConstants.kCompanyDefaultAvatarPath)) {
+    		ret = fileRepo.findByRealFilename(PMSEntityConstants.kCompanyDefaultAvatarPath).orElse(ret);
+    	} else {
+    		ret = new PMSFile(PMSEntityConstants.kCompanyDefaultAvatarPath, PMSFileType.Image);
+    		ret = fileRepo.save(ret);
+    	}
+    	
+    	return ret;
+    }
+    
+    /**
+     * helper function, get the project default avatar.  
+     * otherwise create and save the project default avatar. 
+     * @return the project default avatar object. 
+     */
+    private PMSFile getDefaultProjectAvatar() {
+    	PMSFile ret = null;
+    	
+    	if (fileRepo.existsByRealFilename(PMSEntityConstants.kProjectDefaultAvatarPath)) {
+    		ret = fileRepo.findByRealFilename(PMSEntityConstants.kProjectDefaultAvatarPath).orElse(ret);
+    	} else {
+    		ret = new PMSFile(PMSEntityConstants.kProjectDefaultAvatarPath, PMSFileType.Image);
+    		ret = fileRepo.save(ret);
+    	}
+    	
+    	return ret;
+    }
+    
     // company
+    /**
+     * get all companies as a list. 
+     * @return the company list. 
+     */
     public List<PMSCompany> getCompanies() {
         List<PMSCompany> ret = null;
         
@@ -109,12 +194,24 @@ public class PMSEntityProvider {
     }
     
     // company operations
-    public PMSCompany createCompany(PMSCompany comp) {
+    /**
+     * create a company
+     * @param comp company object
+     * @return the newly created company object. 
+     * @throws DuplicateObjectsException
+     * @apiNote this function doesn't process projectIds and userIds fields. 
+     */
+    public PMSCompany createCompany(PMSCompany comp) throws DuplicateObjectsException {
         PMSCompany ret = null;
-        
-        // verify if comp doesn't exist.
-        if (compRepo.findByName(comp.getName()).orElse(null) != null) {
+
+        if (compRepo.existsByName(comp.getName())) {
         	throw new DuplicateObjectsException("company exists with name=" + comp.getName());
+        }
+        
+        if (comp.getAvatar() != null) {
+        	addFile(comp.getAvatar());
+        } else {
+        	comp.setAvatar(getDefaultCompanyAvatar());
         }
         
         ret = compRepo.save(comp);
@@ -135,11 +232,7 @@ public class PMSEntityProvider {
     }
  
     public PMSCompany updateCompany(Long id, PMSCompany comp) {
-    	if (id != comp.getId()) {
-    		throw new RequestValueMismatchException();
-    	}
-        
-        PMSCompany ret = compRepo.findById(id).orElseThrow(
+    	PMSCompany ret = compRepo.findById(id).orElseThrow(
                 ()->new ResourceNotFoundException("No company found with id=" + id));
         
         if (comp.getAvatar() != null) {
@@ -147,12 +240,6 @@ public class PMSEntityProvider {
         }
         if (comp.getDesc() != null) {
             ret.setDesc(comp.getDesc());
-        }
-        if (comp.getName() != null) {
-            ret.setName(comp.getName());
-        }
-        if (comp.getProjectIds() != null) {
-            ret.setProjectIds(comp.getProjectIds());
         }
         compRepo.save(ret);
         
@@ -213,6 +300,11 @@ public class PMSEntityProvider {
         				+ project.getName() + " and company_id=" + companyId);
         }
         
+        if (project.getAvatar() != null) {
+        	addFile(project.getAvatar());
+        } else {
+        	project.setAvatar(getDefaultProjectAvatar());
+        }
         ret = projRepo.save(ret);
         
         // update company. 
@@ -527,7 +619,7 @@ public class PMSEntityProvider {
     		// delete its comments
         	cleanupComments(task.getCommentIds());
         	// we won't delete the project default task as it is managed by the project.
-        	if (task.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+        	if (task.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
         	    beDeletedTaskIds.add(task.getId());
         	}
             
@@ -867,7 +959,7 @@ public class PMSEntityProvider {
                 ret.addUserId(userId);
                 // as we have assigned the user to a certain task, 
                 // we need to remove the user from the project default task. 
-                if (ret.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+                if (ret.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
                     beRemovedUserIds.add(userId);
                 }
             }
@@ -903,7 +995,7 @@ public class PMSEntityProvider {
                 ret.addUserId(userId);
                 // as we have assigned the user to a certain task, 
                 // we need to remove the user from the project default task. 
-                if (ret.getProjectId() != EntityConstants.kDefaultTaskProjectId) {
+                if (ret.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
                     beRemovedUserIds.add(userId);
                 }
             } 

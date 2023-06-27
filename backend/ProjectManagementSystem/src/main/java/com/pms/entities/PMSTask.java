@@ -3,7 +3,6 @@
  */
 package com.pms.entities;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 import com.pms.constants.PMSPriority;
 
 import lombok.AccessLevel;
@@ -53,7 +52,9 @@ public class PMSTask {
     
     @Column(name="NAME", nullable=false)
     @NotNull
-    @Size(min=EntityConstants.kMinTaskNameLen)
+    @Size(min=PMSEntityConstants.kMinTaskNameLen, 
+    	max=PMSEntityConstants.kMaxTaskNameLen, 
+    	message="name should between [{min}, {max}]")
     private String name;
 
     @Lob
@@ -63,7 +64,7 @@ public class PMSTask {
     @Column(name = "PROJECT")
     private Long projectId;
     
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne
     private PMSFile avatar;
     
     @ElementCollection
@@ -102,7 +103,7 @@ public class PMSTask {
         
         // set project id of the default task to -1, 
         // as the relationship is managed in column pmsproject_default_task in table pmsproject
-        projectId = -1L; 
+        projectId = PMSEntityConstants.kDefaultTaskProjectId; 
     }
     
     public void addCommentId(Long commentId) {
@@ -143,14 +144,14 @@ public class PMSTask {
     
     @CreatedBy
     @Column(updatable=false)
-    private Long createdUserId;
+    private String createdUser;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private Long updatedUserId;
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;

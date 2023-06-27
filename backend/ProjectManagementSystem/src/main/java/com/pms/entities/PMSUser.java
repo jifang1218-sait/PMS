@@ -22,11 +22,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -49,12 +51,12 @@ public class PMSUser {
     
     @Column(name="FNAME", nullable=false)
     @NotNull
-    @Size(min=EntityConstants.kMinUserNameLen)
+    @Size(min=PMSEntityConstants.kMinUserNameLen)
     private String firstName;
     
     @Column(name="LNAME", nullable=false)
     @NotNull
-    @Size(min=EntityConstants.kMinUserNameLen)
+    @Size(min=PMSEntityConstants.kMinUserNameLen)
     private String lastName;
     
     @Column(name="EMAIL", nullable=false, unique=true)
@@ -64,7 +66,7 @@ public class PMSUser {
     
     @Column(name="PASSWORD", nullable=false)
     @NotNull
-    @Size(min=EntityConstants.kMinUserPasswordLen)
+    @Size(min=PMSEntityConstants.kMinUserPasswordLen)
     private String password;
     
     @OneToOne(cascade=CascadeType.ALL)
@@ -82,9 +84,16 @@ public class PMSUser {
     @OneToMany
     private List<PMSTag> tags;
     
+    @CreatedBy
+    @Column(updatable=false)
+    private String createdUser;
+    
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
+    
+    @LastModifiedBy
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;

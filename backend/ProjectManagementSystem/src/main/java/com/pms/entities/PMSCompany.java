@@ -3,11 +3,9 @@
  */
 package com.pms.entities;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -27,7 +25,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -48,15 +46,15 @@ public class PMSCompany {
     private Long id;
     
     @Column(name="NAME", nullable=false, unique=true)
-    @NotNull
-    @Size(min=EntityConstants.kMinCompanyNameLen)
+    @NotNull(message="name should be unique and not null. ")
+    @Size(min=PMSEntityConstants.kMinCompanyNameLen, max=PMSEntityConstants.kMaxCompanyNameLen, message="Length of name should be between [{min}, {max}]. ")
     private String name;
 
     @Lob 
     @Column(name="DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne
     private PMSFile avatar;
     
     @ElementCollection
@@ -86,14 +84,14 @@ public class PMSCompany {
     
     @CreatedBy
     @Column(updatable=false)
-    private Long createdUserId;
+    private String createdUser;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private Long updatedUserId;
+    private String updatedUser;
     
     @LastModifiedDate
     private Long updatedTime;

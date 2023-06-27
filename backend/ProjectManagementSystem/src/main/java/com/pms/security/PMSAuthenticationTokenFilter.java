@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.pms.constants.EntityConstants;
+import com.pms.constants.PMSEntityConstants;
 
 import cn.hutool.jwt.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class PMSAuthenticationTokenFilter extends OncePerRequestFilter {
         String authToken = authHeader.split("\\s+")[1];
         log.info("authToken:{}" , authToken);
         //verify token
-        if (!JWTUtil.verify(authToken, EntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8))) {
+        if (!JWTUtil.verify(authToken, PMSEntityConstants.kPMSSecuritySignKey.getBytes(StandardCharsets.UTF_8))) {
             log.info("invalid token");
             filterChain.doFilter(request,response);
             return;
