@@ -80,10 +80,10 @@ public class PMSTask {
     private List<Long> commentIds;
     
     @Column(name="START_DATE", nullable=false)
-    private Long startDate = 0L;
+    private Long startDate;
     
     @Column(name="END_DATE", nullable=false)
-    private Long endDate = 0L;
+    private Long endDate;
     
     @OneToMany
     private List<PMSTag> tags;
@@ -104,6 +104,9 @@ public class PMSTask {
         // set project id of the default task to -1, 
         // as the relationship is managed in column pmsproject_default_task in table pmsproject
         projectId = PMSEntityConstants.kDefaultTaskProjectId; 
+        
+        startDate = System.currentTimeMillis();
+        endDate = System.currentTimeMillis();
     }
     
     public void addCommentId(Long commentId) {

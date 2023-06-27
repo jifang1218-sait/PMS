@@ -4,6 +4,9 @@ http headers examples:
 {token}: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODcyOTA5MjAsInVzZXJuYW1lIjoidXNlcm5hbWUwIn0.sWUbuJC-3HFC4BOGtp-ywLvlaBJybxUBl-PWacd3TdA"
 {Authorization} : "Authorization: Bearer {token}"
 
+Date & Time:
+Date and time are using UTC format, the current the milliseconds since 1970, of type long integer.  
+
 token is retrieved by login.  
 
 1. Get all companies
@@ -74,6 +77,7 @@ Return: 200
   "updatedTime" : 1687817058020
 }
 
+=============================================================
 
 2. Create a company
 Method: POST
@@ -113,6 +117,8 @@ Return: 201
     "updatedTime": 1687819564570
 }
 
+=============================================================
+
 3. Get a company
 Method: GET
 URL: /api/v1/entities/companies/{company_id}
@@ -147,6 +153,8 @@ Return: 200
     "updatedTime": 1687817308836
 }
 
+=============================================================
+
 4. Update a company
 Method: PUT
 URL: /api/v1/entities/companies/{company_id}
@@ -154,7 +162,7 @@ Params: PMSCompany in request body
 Roles: admin, manager, technician, viewer
 Login required: true
 Note:
-this function won't update id, name, projectIds and userIds. 
+this function won't update id, projectIds and userIds. 
 
 Example:
 curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} -d '{"name":"dddd", "desc":"updated company description"}' http://localhost:8080/api/v1/entities/companies/102
@@ -184,14 +192,251 @@ Return: 200
     "updatedTime": 1687832234292
 }
 
+=============================================================
+
 5. Delete a company
 Method: DELETE
 URL: /api/v1/entities/companies/{company_id}
 Params: company_id in request parameter. 
 Roles: admin, manager, technician, viewer
 Login required: true
+Note:
+delete a company will delete all its children, projects, tasks, comments etc.
+delete a company will unlink all the users. 
 
 Example:
 curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/102
 
 Return: 204 (NO_CONTENT)
+
+=============================================================
+
+6. Create a project
+Method: POST
+URL: /api/v1/entities/companies/{company_id}/projects
+Params: company_id in path, PMSProject in request body. 
+Roles: admin, manager, technician, viewer
+Login required: true
+Notes:
+1. this function doesn't read companyId, taskIds, and dependentProjectIds fields in PMSProject object in the request body.
+2. companyId of project object will be set to {company_id} which comes from the url.  
+3. If no avatar specified, it will use the default project avatar. 
+4. project name is company wide unique.
+5. if startDate or endDate are not given in the request body, they are set to the current datetime.  
+
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects -d '{"company_id":1, "name":"project_1", "desc":"project_1_description", "priority":"Lower", "startDate":1687817058020, "endDate":1687817958031}'
+
+Return: 201
+
+{
+    "id": 52,
+    "companyId": 1,
+    "dependentProjectIds": [],
+    "taskIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687881007976,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687881007976,
+    "name": "project_2",
+    "priority": "Lower",
+    "desc": "project_2_description",
+    "avatar": {
+        "id": 52,
+        "realFilename": "/upload/avatar/project_default_avatar.png",
+        "displayFilename": "/upload/avatar/project_default_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": "root@sait.com",
+        "createdTime": 1687880110807,
+        "updatedUser": "root@sait.com",
+        "updatedTime": 1687880110807
+    },
+    "startDate": 1687817058020,
+    "endDate": 1687817958031
+}
+
+=============================================================
+
+7. Get project list
+Method: GET
+URL: /api/v1/entities/companies/{company_id}/projects
+Params: {company_id} in url.  
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects
+
+Return: 200
+
+[
+    {
+        "id": 1,
+        "companyId": 1,
+        "dependentProjectIds": [],
+        "taskIds": [],
+        "createdUser": "root@sait.com",
+        "createdTime": 1687880110858,
+        "updatedUser": "root@sait.com",
+        "updatedTime": 1687880110858,
+        "name": "project_1",
+        "priority": "Lower",
+        "desc": "project_1_description",
+        "avatar": {
+            "id": 52,
+            "realFilename": "/upload/avatar/project_default_avatar.png",
+            "displayFilename": "/upload/avatar/project_default_avatar.png",
+            "fileType": "Image",
+            "size": null,
+            "createdUser": "root@sait.com",
+            "createdTime": 1687880110807,
+            "updatedUser": "root@sait.com",
+            "updatedTime": 1687880110807
+        },
+        "startDate": 0,
+        "endDate": 0
+    },
+    {
+        "id": 52,
+        "companyId": 1,
+        "dependentProjectIds": [],
+        "taskIds": [],
+        "createdUser": "root@sait.com",
+        "createdTime": 1687881007976,
+        "updatedUser": "root@sait.com",
+        "updatedTime": 1687881007976,
+        "name": "project_2",
+        "priority": "Lower",
+        "desc": "project_2_description",
+        "avatar": {
+            "id": 52,
+            "realFilename": "/upload/avatar/project_default_avatar.png",
+            "displayFilename": "/upload/avatar/project_default_avatar.png",
+            "fileType": "Image",
+            "size": null,
+            "createdUser": "root@sait.com",
+            "createdTime": 1687880110807,
+            "updatedUser": "root@sait.com",
+            "updatedTime": 1687880110807
+        },
+        "startDate": 1687817058020,
+        "endDate": 1687817958031
+    }
+]
+
+=============================================================
+
+8. Get a project
+Method: GET
+URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
+Params: {company_id} in url, {project_id} in url. 
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1
+
+Return: 200
+
+{
+    "id": 1,
+    "companyId": 1,
+    "dependentProjectIds": [],
+    "taskIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687880110858,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687880110858,
+    "name": "project_1",
+    "priority": "Lower",
+    "desc": "project_1_description",
+    "avatar": {
+        "id": 52,
+        "realFilename": "/upload/avatar/project_default_avatar.png",
+        "displayFilename": "/upload/avatar/project_default_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": "root@sait.com",
+        "createdTime": 1687880110807,
+        "updatedUser": "root@sait.com",
+        "updatedTime": 1687880110807
+    },
+    "startDate": 1687880110807,
+    "endDate": 1687880110807
+}
+
+=============================================================
+
+9. Update a project
+Method: UPDATE
+URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
+Params: {company_id} in url, {project_id} in url, 
+		project object in request body.  
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+1. this function doesn't update id, companyId, taskIds, and dependentProjectIds fields in PMSProject object in the request body.   
+
+Example:
+curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1 -d '{"name":"new_name", "desc":"new_desc", "priority":"Higher"}'
+
+Return: 200
+
+{
+    "id": 1,
+    "companyId": 1,
+    "dependentProjectIds": [],
+    "taskIds": [],
+    "createdUser": "root@sait.com",
+    "createdTime": 1687880110858,
+    "updatedUser": "root@sait.com",
+    "updatedTime": 1687880110858,
+    "name": "new_name",
+    "priority": "Higher",
+    "desc": "new_desc",
+    "avatar": {
+        "id": 52,
+        "realFilename": "/upload/avatar/project_default_avatar.png",
+        "displayFilename": "/upload/avatar/project_default_avatar.png",
+        "fileType": "Image",
+        "size": null,
+        "createdUser": "root@sait.com",
+        "createdTime": 1687880110807,
+        "updatedUser": "root@sait.com",
+        "updatedTime": 1687880110807
+    },
+    "startDate": 1687880110807,
+    "endDate": 1687880110807
+}
+
+=============================================================
+
+10. Delete a project
+Method: DELETE
+URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
+Params: {company_id} in url, {project_id} in url.   
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+delete a project will delete all its children, tasks, comments etc.
+delete a project will unlink all the users.   
+
+Example:
+curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1
+
+Return: 204 (NO_CONTENT)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

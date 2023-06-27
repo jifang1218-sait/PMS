@@ -235,6 +235,17 @@ public class PMSEntityProvider {
     	PMSCompany ret = compRepo.findById(id).orElseThrow(
                 ()->new ResourceNotFoundException("No company found with id=" + id));
         
+    	// change name
+    	if (comp.getName() != null) {
+    		if (!ret.getName().equals(comp.getName())) { // need to change name
+    			if (compRepo.existsByName(comp.getName())) {
+    				throw new DuplicateObjectsException("company name="+ comp.getName() + " exists.");
+    			} else {
+    				ret.setName(comp.getName());
+    			}
+    		}
+    	}
+    	
         if (comp.getAvatar() != null) {
             ret.setAvatar(comp.getAvatar());
         }
@@ -286,6 +297,12 @@ public class PMSEntityProvider {
         return ret;
     }
     
+    /**
+     * create a project within the company. 
+     * @param companyId the project will be created in. 
+     * @param project the project object
+     * @return the newly create project. 
+     */
     public PMSProject createProject(Long companyId, PMSProject project) {
     	// check if the company exists
     	PMSCompany company = compRepo.findById(companyId)
@@ -314,42 +331,32 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSProject updateProject(Long projectId, PMSProject project) {
-    	if (projectId != project.getId()) {
-    		throw new RequestValueMismatchException();
+    public PMSProject updateProject(Long companyId, Long projectId, PMSProject project) {
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
-        PMSProject ret = projRepo.findById(projectId).orElseThrow(
+    	PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
-        
+    	// change project name. 
+        if (project.getName() != null) {
+        	if (ret.getName().compareTo(project.getName()) != 0) { // need to change project name. 
+	        	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
+	        		throw new DuplicateObjectsException("project " + ret.getName() + " exists in the company with id=" + companyId);
+	        	} else {
+	        		ret.setName(project.getName());
+	        	}
+        	}
+        }
+        if (project.getPriority() != null) {
+        	ret.setPriority(project.getPriority());
+        }
         if (project.getAvatar() != null) {
             ret.setAvatar(project.getAvatar());
-        }
-        if (project.getCompanyId() != null) {
-            ret.setCompanyId(project.getCompanyId());
         }
         if (project.getDesc() != null) {
             ret.setDesc(project.getDesc());
         }
-        if (project.getName() != null) {
-            ret.setName(project.getName());
-        }
-        
-        if (project.getDependentProjectIds() != null) {
-            List<Long> dependentIds = project.getDependentProjectIds();
-            for (Long dependentId : dependentIds) {
-                if (projRepo.existsById(dependentId)) {
-                    ret.addDependentProjectId(dependentId);
-                }
-            }
-        }
-        
-        if (project.getTaskIds() != null) {
-            List<Long> beRemovedTaskIds = updateIdSets(ret.getTaskIds(), project.getTaskIds());
-	        cleanupTasks(beRemovedTaskIds);
-	        ret.setTaskIds(project.getTaskIds());
-        }
-        
         return projRepo.save(ret);
     }
 

@@ -25,6 +25,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pms.constants.PMSPriority;
 
 import lombok.AccessLevel;
@@ -46,7 +47,6 @@ public class PMSProject {
     private Long id;
        
     @Column(name = "COMPANY_ID")
-    @NotNull
     private Long companyId;
     
     @ElementCollection
@@ -59,6 +59,7 @@ public class PMSProject {
     
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="DEFAULT_TASK", nullable=false)
+    @JsonIgnore
     private PMSTask defaultTask;
     
     public PMSProject() {
@@ -125,6 +126,22 @@ public class PMSProject {
         if (taskIds.contains(taskId)) {
             taskIds.remove(taskId);
         }
+    }
+    
+    public Long getStartDate() {
+    	return defaultTask.getStartDate();
+    }
+    
+    public void setStartDate(Long startDate) {
+    	defaultTask.setStartDate(startDate);
+    }
+    
+    public Long getEndDate() {
+    	return defaultTask.getEndDate();
+    }
+    
+    public void setEndDate(Long endDate) {
+    	defaultTask.setEndDate(endDate);
     }
     
     @CreatedBy

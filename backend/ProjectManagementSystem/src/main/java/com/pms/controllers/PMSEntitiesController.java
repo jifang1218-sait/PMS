@@ -97,43 +97,25 @@ public class PMSEntitiesController {
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PostMapping(value="/companies/{company_id}/projects")
     public ResponseEntity<PMSProject> createProject(@PathVariable("company_id") Long companyId, 
-            @RequestBody @Validated PMSProject project, 
-            BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
-        }
-        
+            @RequestBody @Validated PMSProject project) {
         return new ResponseEntity<>(entityProvider.createProject(companyId, project), HttpStatus.CREATED);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @PutMapping(value="/companies/{company_id}/projects/{projectId}")
+    @PutMapping(value="/companies/{company_id}/projects/{project_id}")
     public ResponseEntity<PMSProject> updateProject(@PathVariable("company_id") Long companyId, 
-            @PathVariable("projectId") Long projectId, 
-            @RequestBody @Valid PMSProject project, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(project, HttpStatus.BAD_REQUEST);
-        }
-        
-        return new ResponseEntity<>(entityProvider.updateProject(projectId, project), HttpStatus.OK);
+            @PathVariable("project_id") Long projectId, 
+            @RequestBody @Validated PMSProject project) {
+        return new ResponseEntity<>(entityProvider.updateProject(companyId, projectId, project), HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects/{projectId}")
+    @DeleteMapping(value="/companies/{company_id}/projects/{project_id}")
     public ResponseEntity<Void> deleteProject(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId) {
         List<Long> ids = new ArrayList<>();
         ids.add(projectId);
         entityProvider.cleanupProjects(ids);
-        
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects")
-    public ResponseEntity<Void> deleteProjects(@PathVariable("company_id") Long companyId, 
-            @RequestBody List<Long> projectIds) {
-        entityProvider.cleanupProjects(projectIds);
         
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -145,7 +127,7 @@ public class PMSEntitiesController {
         List<Long> ids = new ArrayList<>();
         ids.add(projectId);
         
-        return new ResponseEntity<>(entityProvider.getProjectsByIds(ids).get(0), HttpStatus.OK);        
+        return new ResponseEntity<>(entityProvider.getProjectsByIds(ids).get(0), HttpStatus.NO_CONTENT);        
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
