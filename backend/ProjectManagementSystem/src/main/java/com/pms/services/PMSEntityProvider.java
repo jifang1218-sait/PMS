@@ -180,6 +180,24 @@ public class PMSEntityProvider {
     	return ret;
     }
     
+    /**
+     * helper function, get the task default avatar.  
+     * otherwise create and save the task default avatar. 
+     * @return the task default avatar object. 
+     */
+    private PMSFile getDefaultTaskAvatar() {
+    	PMSFile ret = null;
+    	
+    	if (fileRepo.existsByRealFilename(PMSEntityConstants.kTaskDefaultAvatarPath)) {
+    		ret = fileRepo.findByRealFilename(PMSEntityConstants.kTaskDefaultAvatarPath).orElse(ret);
+    	} else {
+    		ret = new PMSFile(PMSEntityConstants.kTaskDefaultAvatarPath, PMSFileType.Image);
+    		ret = fileRepo.save(ret);
+    	}
+    	
+    	return ret;
+    }
+    
     // company
     /**
      * get all companies as a list. 
@@ -550,6 +568,13 @@ public class PMSEntityProvider {
     	}
     	
         PMSTask ret = null;
+        
+        // save avatar
+        if (task.getAvatar() != null) {
+        	addFile(task.getAvatar());
+        } else {
+        	task.setAvatar(getDefaultTaskAvatar());
+        }
         
         // save task
         task.setProjectId(projectId);
@@ -1303,6 +1328,16 @@ public class PMSEntityProvider {
 		ret = tags;
 		
 		return ret;
+	}
+	
+	public void deleteFile(Long fileId) {
+		if (fileRepo.existsById(fileId)) {
+			fileRepo.deleteById(fileId);
+			// TODO
+			// remove file from system. 
+		} else {
+			throw new ResourceNotFoundException("File cannot be found with id=" + fileId);
+		}
 	}
 	
 	public PMSProject startProject(Long projectId) {

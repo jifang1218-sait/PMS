@@ -112,78 +112,74 @@ public class TestController {
     private void loadEntities() {
     	// add company, project, task, comment etc.
         for (int a=0; a<kSize; ++a) {
+        	// create company
             PMSCompany company = new PMSCompany();
-            company.setName("company_name_" + a);
-            company.setDesc("company_desc_" + a);
+            company.setName("company_" + a + "_name");
+            company.setDesc(company.getName() + "_desc");
             
-            PMSFile avatar = new PMSFile();
-            avatar.setDisplayFilename("company_avatar_" + a);
-            avatar.setRealFilename(company.getName() + "_" + System.currentTimeMillis());
-            avatar.setFileType(PMSFileType.Image);
-            company.setAvatar(avatar);
+            PMSFile avatar = null;
+            if (a % 2 == 0) {
+            	avatar = new PMSFile();
+	            avatar.setDisplayFilename(company.getName() + "_avatar");
+	            avatar.setRealFilename(avatar.getDisplayFilename() + "_" + System.currentTimeMillis());
+	            avatar.setFileType(PMSFileType.Image);
+	            company.setAvatar(avatar);
+            }
             
             entityProvider.createCompany(company);
+            
             for (int b=0; b<kSize; ++b) {
+            	// create project
                 PMSProject project = new PMSProject();
                 project.setCompanyId(company.getId());
-                project.setDesc("project_desc_" + b);
-                project.setName("project_name_" + b);
+                project.setName(company.getName() + "_project_" + b);
+                project.setDesc(project.getName() + "_desc");
                 
-                avatar = new PMSFile();
-                avatar.setDisplayFilename("project_avatar_" + b);
-                avatar.setRealFilename(project.getName() + System.currentTimeMillis());
-                avatar.setFileType(PMSFileType.Image);
-                project.setAvatar(avatar);
+                if (b % 2 == 0) {
+	                avatar = new PMSFile();
+	                avatar.setDisplayFilename(project.getName() + "_avatar");
+	                avatar.setRealFilename(avatar.getDisplayFilename() + "_" + System.currentTimeMillis());
+	                avatar.setFileType(PMSFileType.Image);
+	                project.setAvatar(avatar);
+                }
                 
                 entityProvider.createProject(company.getId(), project);
-                
-                // add 10 comments to the project
-                List<PMSComment> comments = new ArrayList<>();
-                for (int tmp=0; tmp<kSize; ++tmp) {
+
+                for (int projectComment=0; projectComment<kSize; ++projectComment) {
+                	// create comment for the project. 
                     PMSComment comment = new PMSComment();
-                    comment.setTitle("comment_title_" + tmp);
-                    comment.setDesc("comment_desc_" + tmp);
+                    comment.setTitle(project.getName() + "_comment_title");
+                    comment.setDesc(comment.getTitle() + "_desc");
                     comment.setTaskId(project.getDefaultTask().getId());
-                    
-                    List<PMSFile> attachments = new ArrayList<>();
-                    PMSFile file = new PMSFile();
-                    file.setDisplayFilename("comment_attachment_" + tmp);
-                    file.setRealFilename(comment.getTitle() + System.currentTimeMillis());
-                    file.setFileType(PMSFileType.File);
-                    attachments.add(file);
-                    comment.setAttachments(attachments);
-                    
+                                        
                     entityProvider.createCommentForProject(project.getId(), comment);
                 }
                 
-                // add 10 comments to the tasks of the project.
+                // create tasks for the project
                 for (int c=0; c<kSize; ++c) {
+                	// create task
                 	PMSTask task = new PMSTask();
-                	task.setDesc("avatar_desc_" + c);
-                    task.setName("task_name_" + c);
+                	task.setName(project.getName() + "_task_" + c);
+                	task.setDesc(task.getName() + "_desc");
                     task.setProjectId(project.getId());
                     
-                    avatar = new PMSFile();
-                    avatar.setDisplayFilename("task_avatar_" + c);
-                    avatar.setRealFilename(task.getName() + System.currentTimeMillis());
-                    avatar.setFileType(PMSFileType.Image);
-                    task.setAvatar(avatar);
+                    if (c % 2 == 0) {
+	                    avatar = new PMSFile();
+	                    avatar.setDisplayFilename(task.getName() + "_avatar");
+	                    avatar.setRealFilename(avatar.getDisplayFilename() + "_" + System.currentTimeMillis());
+	                    avatar.setFileType(PMSFileType.Image);
+	                    task.setAvatar(avatar);
+                    }
                     
                     entityProvider.createTask(project.getId(), task);
-                    comments.clear();
+
                     for (int d=0; d<kSize; ++d) {
+                    	// create comment for the task
                         PMSComment comment = new PMSComment();
-                        comment.setDesc("comment_desc_" + d);
-                        comment.setTitle("comment_title_" + d);
-                        comment.setTaskId(task.getId());
                         
-                        List<PMSFile> attachments = new ArrayList<>();
-                        PMSFile file = new PMSFile();
-                        file.setDisplayFilename("comment_attachment_" + d);
-                        file.setRealFilename(comment.getTitle() + System.currentTimeMillis());
-                        file.setFileType(PMSFileType.Image);
-                        attachments.add(file);
-                        comment.setAttachments(attachments);
+                        comment.setTitle(task.getName() + "_comment_title");
+                        comment.setDesc(comment.getTitle() + "_desc");
+                        comment.setTaskId(task.getId());
                         
                         entityProvider.createCommentForTask(task.getId(), comment);
                     }
@@ -197,42 +193,24 @@ public class TestController {
 		int companyCount = companies.size();
 		for (int i=0; i<kSize; ++i) {
         	PMSUser user = new PMSUser();
-        	user.setEmail("email" + i + "@sait.com");
-        	user.setFirstName("firstname" + i);
-        	user.setLastName("lastname" + i);
-        	user.setPassword("password" + i);
+        	user.setEmail("email_" + i + "@sait.com");
+        	user.setFirstName("firstname_" + i);
+        	user.setLastName("lastname_" + i);
+        	user.setPassword("password");
         	
+        	if (i % 2 == 0) {
         	PMSFile avatar = new PMSFile();
-        	avatar.setDisplayFilename("avatar" + i);
-        	avatar.setRealFilename(user.getEmail() + System.currentTimeMillis());
-        	avatar.setFileType(PMSFileType.Image);
-        	user.setAvatar(avatar);
-        	
-    		List<PMSRole> roles = entityProvider.getRoles();
-        	switch (i%PMSRoleName.values().length) {
-        	case 0: {
-        		user.getRoles().add(roles.get(0));
-        		user.getRoles().add(roles.get(1));
-        		user.getRoles().add(roles.get(2));
-        		user.getRoles().add(roles.get(3));
-        	} break;
-        	case 1: {
-        		user.getRoles().add(roles.get(0));
-        		user.getRoles().add(roles.get(1));
-        		user.getRoles().add(roles.get(2));
-        	} break;
-        	case 2: {
-        		user.getRoles().add(roles.get(0));
-        		user.getRoles().add(roles.get(1));
-        	} break;
-        	case 3: {
-        		user.getRoles().add(roles.get(0));
-        	} break;
+	        	avatar.setDisplayFilename(user.getEmail() + "_avatar");
+	        	avatar.setRealFilename(avatar.getRealFilename() + "_" + System.currentTimeMillis());
+	        	avatar.setFileType(PMSFileType.Image);
+	        	user.setAvatar(avatar);
         	}
         	
-			int companyIndex = i % companyCount;
+    		List<PMSRole> roles = entityProvider.getRoles();
+    		user.addRole(roles.get(i % roles.size()));
+    		
+        	int companyIndex = i % companyCount;
 			entityProvider.createUser(user, companies.get(companyIndex).getId());
-        	
         }
     }
     

@@ -38,4 +38,5 @@ public interface PMSEntityConstants {
     static final long kDefaultCompanyId = -1L;
     static final String kCompanyDefaultAvatarPath = "/upload/avatar/company_default_avatar.png";
     static final String kProjectDefaultAvatarPath = "/upload/avatar/project_default_avatar.png";
+    static final String kTaskDefaultAvatarPath = "/upload/avatar/task_default_avatar.png";
 }
