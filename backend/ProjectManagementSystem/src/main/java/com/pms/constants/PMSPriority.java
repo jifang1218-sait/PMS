@@ -4,7 +4,7 @@ public enum PMSPriority {
 	Loweast, 
 	Lower, 
 	Low, 
-	Medium,
+	Normal,
 	High,
 	Higher, 
 	Highest

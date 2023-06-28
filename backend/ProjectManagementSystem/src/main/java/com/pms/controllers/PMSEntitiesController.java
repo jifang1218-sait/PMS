@@ -117,7 +117,7 @@ public class PMSEntitiesController {
         ids.add(projectId);
         entityProvider.cleanupProjects(ids);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -131,21 +131,17 @@ public class PMSEntitiesController {
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @GetMapping(value="/companies/{company_id}/projects/{projectId}/tasks")
+    @GetMapping(value="/companies/{company_id}/projects/{project_id}/tasks")
     public ResponseEntity<List<PMSTask>> getTasks(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId) {
     	List<PMSTask> ret = null;
-        if (projectId == null) {
-        	ret = entityProvider.getTasks();
-        } else {
-            ret = entityProvider.getTasksByProjectId(projectId);
-        }
+        ret = entityProvider.getTasksByProjectIdAndCompanyId(projectId, companyId);
         
         return new ResponseEntity<>(ret, HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @PostMapping(value="/companies/{company_id}/projects/{projectId}/tasks")
+    @PostMapping(value="/companies/{company_id}/projects/{project_id}/tasks")
     public ResponseEntity<PMSTask> createTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @RequestBody @Valid PMSTask task, 
@@ -154,20 +150,11 @@ public class PMSEntitiesController {
             return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
         } 
         
-        return new ResponseEntity<>(entityProvider.createTask(projectId, task), HttpStatus.CREATED);
+        return new ResponseEntity<>(entityProvider.createTask(companyId, projectId, task), HttpStatus.CREATED);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/tasks")
-    public ResponseEntity<Void> deleteTasks(@PathVariable("company_id") Long companyId, 
-            @PathVariable("project_id") Long projectId, @RequestBody List<Long> taskIds) {
-        entityProvider.cleanupTasks(taskIds);
-        
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @GetMapping(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}")
+    @GetMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}")
     public ResponseEntity<PMSTask> getTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId) {
@@ -178,20 +165,16 @@ public class PMSEntitiesController {
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @PutMapping(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}")
+    @PutMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}")
     public ResponseEntity<PMSTask> updateTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId,  
-            @RequestBody @Valid PMSTask task, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
-        }
-        
-        return new ResponseEntity<>(entityProvider.updateTask(taskId, task), HttpStatus.OK);
+            @RequestBody @Validated PMSTask task) {
+        return new ResponseEntity<>(entityProvider.updateTask(companyId, projectId, taskId, task), HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects/{projectId}/tasks/{task_id}")
+    @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}")
     public ResponseEntity<Void> deleteTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId) {
@@ -199,7 +182,7 @@ public class PMSEntitiesController {
         ids.add(taskId);
         entityProvider.cleanupTasks(ids);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -231,16 +214,6 @@ public class PMSEntitiesController {
         }
         
         return new ResponseEntity<PMSComment>(entityProvider.createCommentForProject(projectId, comment), HttpStatus.CREATED);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/comments")
-    public ResponseEntity<Void> deleteComments(@PathVariable("company_id") Long companyId, 
-            @PathVariable("project_id") Long projectId, 
-            @RequestBody List<Long> commentIds) {
-        entityProvider.cleanupComments(commentIds);
-        
-        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -276,7 +249,7 @@ public class PMSEntitiesController {
         commentIds.add(commentId);
         entityProvider.cleanupComments(commentIds);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -300,17 +273,6 @@ public class PMSEntitiesController {
         }
         
         return new ResponseEntity<PMSComment>(entityProvider.createCommentForTask(taskId, comment), HttpStatus.CREATED);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments")
-    public ResponseEntity<Void> deleteComments(@PathVariable("company_id") Long companyId, 
-            @PathVariable("project_id") Long projectId, 
-            @PathVariable("task_id") Long taskId, 
-            @RequestBody List<Long> commentIds) {
-        entityProvider.cleanupComments(commentIds);
-        
-        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -349,7 +311,7 @@ public class PMSEntitiesController {
         commentIds.add(commentId);
         entityProvider.cleanupComments(commentIds);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     // users
@@ -373,14 +335,6 @@ public class PMSEntitiesController {
         	compId = Long.valueOf(PMSEntityConstants.kDefaultCompanyId);
         }
         return new ResponseEntity<>(entityProvider.createUser(user, compId), HttpStatus.CREATED);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/users")
-    public ResponseEntity<Void> deleteUsers(@RequestBody List<Long> userIds) {
-        entityProvider.deleteUsers(userIds);
-        
-        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -410,7 +364,7 @@ public class PMSEntitiesController {
         userIds.add(userId);
         entityProvider.deleteUsers(userIds);
         
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -479,13 +433,6 @@ public class PMSEntitiesController {
     @DeleteMapping(value="/roles/{role_id}")
     public ResponseEntity<Void> deleteRole(@PathVariable("role_id") Long roleId) {
     	//entityProvider.deleteRole(roleId);
-    	return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-    
-    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
-    @DeleteMapping(value="/roles/{role_name}")
-    public ResponseEntity<Void> deleteRole(@PathVariable("role_name") PMSRoleName roleName) {
-    	//entityProvider.deleteRole(roleName);
     	return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
     

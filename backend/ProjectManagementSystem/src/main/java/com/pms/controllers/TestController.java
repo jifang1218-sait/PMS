@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pms.constants.PMSFileType;
+import com.pms.constants.PMSPriority;
 import com.pms.constants.PMSRoleName;
 import com.pms.controllers.exceptions.DuplicateObjectsException;
 import com.pms.entities.PMSComment;
@@ -163,6 +164,16 @@ public class TestController {
                 	task.setDesc(task.getName() + "_desc");
                     task.setProjectId(project.getId());
                     
+                    switch (c % 3) {
+                    case 0: {
+                    	task.setPriority(PMSPriority.Higher);
+                    } break;
+                    case 1: {
+                    	task.setPriority(PMSPriority.Lower);
+                    } break;
+                    	// default, don't set priority, use default value. 
+                    }
+                    
                     if (c % 2 == 0) {
 	                    avatar = new PMSFile();
 	                    avatar.setDisplayFilename(task.getName() + "_avatar");
@@ -171,7 +182,7 @@ public class TestController {
 	                    task.setAvatar(avatar);
                     }
                     
-                    entityProvider.createTask(project.getId(), task);
+                    entityProvider.createTask(company.getId(), project.getId(), task);
 
                     for (int d=0; d<kSize; ++d) {
                     	// create comment for the task

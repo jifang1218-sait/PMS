@@ -20,7 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -51,7 +50,6 @@ public class PMSTask {
     private Long id;
     
     @Column(name="NAME", nullable=false)
-    @NotNull
     @Size(min=PMSEntityConstants.kMinTaskNameLen, 
     	max=PMSEntityConstants.kMaxTaskNameLen, 
     	message="name should between [{min}, {max}]")
@@ -100,6 +98,7 @@ public class PMSTask {
         commentIds = new ArrayList<>();
         attachments = new ArrayList<>();
         tags = new ArrayList<>();
+        priority = PMSPriority.Normal;
         
         // set project id of the default task to -1, 
         // as the relationship is managed in column pmsproject_default_task in table pmsproject
@@ -147,15 +146,15 @@ public class PMSTask {
     
     @CreatedBy
     @Column(updatable=false)
-    private String createdUser;
+    private String createdBy;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private String updatedUser;
+    private String modifiedBy;
     
     @LastModifiedDate
-    private Long updatedTime;
+    private Long modifiedTime;
 }

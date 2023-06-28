@@ -20,6 +20,10 @@ public interface PMSProjectRepo extends JpaRepository<PMSProject, Long> {
     
     List<PMSProject> findAllByCompanyId(Long companyId);
     
+    Optional<PMSProject> findByIdAndCompanyId(Long projectId, Long companyId);
+    
+    boolean existsByIdAndCompanyId(Long projectId, Long companyId);
+    
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM PMSProject p WHERE p.defaultTask.name = :name AND p.companyId = :companyId")
     boolean existsByNameAndCompanyId(@Param("name") String name, @Param("companyId") Long companyId);
     

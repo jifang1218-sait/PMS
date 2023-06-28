@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -146,16 +145,16 @@ public class PMSProject {
     
     @CreatedBy
     @Column(updatable=false)
-    private String createdUser;
+    private String createdBy;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private String updatedUser;
+    private String modifiedBy;
     
     @LastModifiedDate
-    private Long updatedTime;
+    private Long modifiedTime;
     
 }

@@ -27,10 +27,10 @@ Return: 200
   "avatar" : null,
   "projectIds" : [ ],
   "userIds" : [ ],
-  "createdUser" : null,
+  "createdBy" : null,
   "createdTime" : 1687811955154,
-  "updatedUser" : null,
-  "updatedTime" : 1687811955154
+  "modifiedBy" : null,
+  "modifiedTime" : 1687811955154
 }, {
   "id" : 2,
   "name" : "dddd",
@@ -41,17 +41,17 @@ Return: 200
     "displayFilename" : "/upload/avatar/default_company_avatar.png",
     "fileType" : "Image",
     "size" : null,
-    "createdUser" : null,
+    "createdBy" : null,
     "createdTime" : 1687812178883,
-    "updatedUser" : null,
-    "updatedTime" : 1687812178883
+    "modifiedBy" : null,
+    "modifiedTime" : 1687812178883
   },
   "projectIds" : [ ],
   "userIds" : [ ],
-  "createdUser" : null,
+  "createdBy" : null,
   "createdTime" : 1687812178965,
-  "updatedUser" : null,
-  "updatedTime" : 1687812178965
+  "modifiedBy" : null,
+  "modifiedTime" : 1687812178965
 }, 
 ......
 {
@@ -64,17 +64,17 @@ Return: 200
     "displayFilename" : "/upload/avatar/default_company_avatar.png",
     "fileType" : "Image",
     "size" : null,
-    "createdUser" : null,
+    "createdBy" : null,
     "createdTime" : 1687812178883,
-    "updatedUser" : null,
-    "updatedTime" : 1687812178883
+    "modifiedBy" : null,
+    "modifiedTime" : 1687812178883
   },
   "projectIds" : [ ],
   "userIds" : [ ],
-  "createdUser" : null,
+  "createdBy" : null,
   "createdTime" : 1687817058020,
-  "updatedUser" : null,
-  "updatedTime" : 1687817058020
+  "modifiedBy" : null,
+  "modifiedTime" : 1687817058020
 }
 
 =============================================================
@@ -104,17 +104,17 @@ Return: 201
         "displayFilename": "/upload/avatar/default_company_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": null,
+        "createdBy": null,
         "createdTime": 1687812178883,
-        "updatedUser": null,
-        "updatedTime": 1687812178883
+        "modifiedBy": null,
+        "modifiedTime": 1687812178883
     },
     "projectIds": [],
     "userIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687819564570,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687819564570
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687819564570
 }
 
 =============================================================
@@ -140,17 +140,17 @@ Return: 200
         "displayFilename": "/upload/avatar/default_company_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": null,
+        "createdBy": null,
         "createdTime": 1687812178883,
-        "updatedUser": null,
-        "updatedTime": 1687812178883
+        "modifiedBy": null,
+        "modifiedTime": 1687812178883
     },
     "projectIds": [],
     "userIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687817308836,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687817308836
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687817308836
 }
 
 =============================================================
@@ -179,17 +179,17 @@ Return: 200
         "displayFilename": "/upload/avatar/default_company_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": null,
+        "createdBy": null,
         "createdTime": 1687812178883,
-        "updatedUser": null,
-        "updatedTime": 1687812178883
+        "modifiedBy": null,
+        "modifiedTime": 1687812178883
     },
     "projectIds": [],
     "userIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687817308836,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687832234292
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687832234292
 }
 
 =============================================================
@@ -234,10 +234,10 @@ Return: 201
     "companyId": 1,
     "dependentProjectIds": [],
     "taskIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687881007976,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687881007976,
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687881007976,
     "name": "project_2",
     "priority": "Lower",
     "desc": "project_2_description",
@@ -247,10 +247,10 @@ Return: 201
         "displayFilename": "/upload/avatar/project_default_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": "root@sait.com",
+        "createdBy": "root@sait.com",
         "createdTime": 1687880110807,
-        "updatedUser": "root@sait.com",
-        "updatedTime": 1687880110807
+        "modifiedBy": "root@sait.com",
+        "modifiedTime": 1687880110807
     },
     "startDate": 1687817058020,
     "endDate": 1687817958031
@@ -276,10 +276,10 @@ Return: 200
         "companyId": 1,
         "dependentProjectIds": [],
         "taskIds": [],
-        "createdUser": "root@sait.com",
+        "createdBy": "root@sait.com",
         "createdTime": 1687880110858,
-        "updatedUser": "root@sait.com",
-        "updatedTime": 1687880110858,
+        "modifiedBy": "root@sait.com",
+        "modifiedTime": 1687880110858,
         "name": "project_1",
         "priority": "Lower",
         "desc": "project_1_description",
@@ -289,10 +289,10 @@ Return: 200
             "displayFilename": "/upload/avatar/project_default_avatar.png",
             "fileType": "Image",
             "size": null,
-            "createdUser": "root@sait.com",
+            "createdBy": "root@sait.com",
             "createdTime": 1687880110807,
-            "updatedUser": "root@sait.com",
-            "updatedTime": 1687880110807
+            "modifiedBy": "root@sait.com",
+            "modifiedTime": 1687880110807
         },
         "startDate": 0,
         "endDate": 0
@@ -302,10 +302,10 @@ Return: 200
         "companyId": 1,
         "dependentProjectIds": [],
         "taskIds": [],
-        "createdUser": "root@sait.com",
+        "createdBy": "root@sait.com",
         "createdTime": 1687881007976,
-        "updatedUser": "root@sait.com",
-        "updatedTime": 1687881007976,
+        "modifiedBy": "root@sait.com",
+        "modifiedTime": 1687881007976,
         "name": "project_2",
         "priority": "Lower",
         "desc": "project_2_description",
@@ -315,10 +315,10 @@ Return: 200
             "displayFilename": "/upload/avatar/project_default_avatar.png",
             "fileType": "Image",
             "size": null,
-            "createdUser": "root@sait.com",
+            "createdBy": "root@sait.com",
             "createdTime": 1687880110807,
-            "updatedUser": "root@sait.com",
-            "updatedTime": 1687880110807
+            "modifiedBy": "root@sait.com",
+            "modifiedTime": 1687880110807
         },
         "startDate": 1687817058020,
         "endDate": 1687817958031
@@ -344,10 +344,10 @@ Return: 200
     "companyId": 1,
     "dependentProjectIds": [],
     "taskIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687880110858,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687880110858,
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687880110858,
     "name": "project_1",
     "priority": "Lower",
     "desc": "project_1_description",
@@ -357,10 +357,10 @@ Return: 200
         "displayFilename": "/upload/avatar/project_default_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": "root@sait.com",
+        "createdBy": "root@sait.com",
         "createdTime": 1687880110807,
-        "updatedUser": "root@sait.com",
-        "updatedTime": 1687880110807
+        "modifiedBy": "root@sait.com",
+        "modifiedTime": 1687880110807
     },
     "startDate": 1687880110807,
     "endDate": 1687880110807
@@ -388,10 +388,10 @@ Return: 200
     "companyId": 1,
     "dependentProjectIds": [],
     "taskIds": [],
-    "createdUser": "root@sait.com",
+    "createdBy": "root@sait.com",
     "createdTime": 1687880110858,
-    "updatedUser": "root@sait.com",
-    "updatedTime": 1687880110858,
+    "modifiedBy": "root@sait.com",
+    "modifiedTime": 1687880110858,
     "name": "new_name",
     "priority": "Higher",
     "desc": "new_desc",
@@ -401,10 +401,10 @@ Return: 200
         "displayFilename": "/upload/avatar/project_default_avatar.png",
         "fileType": "Image",
         "size": null,
-        "createdUser": "root@sait.com",
+        "createdBy": "root@sait.com",
         "createdTime": 1687880110807,
-        "updatedUser": "root@sait.com",
-        "updatedTime": 1687880110807
+        "modifiedBy": "root@sait.com",
+        "modifiedTime": 1687880110807
     },
     "startDate": 1687880110807,
     "endDate": 1687880110807
@@ -427,16 +427,241 @@ curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost
 
 Return: 204 (NO_CONTENT)
 
+=============================================================
 
+11. Create a task
+Method: POST
+URL: /companies/{company_id}/projects/{project_id}/tasks
+Params: {company_id}, {project_id} in url, PMSTask object in request body. 
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+1. this function doesn't read projectId, dependentTaskIds, userIds, and commentIds fields.  
+2. If no avatar specified, it will use the default task avatar. 
+3. task name is unique in the project wide.  
+4. If startDate or endDate are not given in the request body, they are set to the current datetime.
 
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} -d '{"name":"test task", "desc":"test task description", "priority":"Low", "startDate":1687880110807, "endDate":1687880110807}' http://localhost:8080/api/v1/entities/companies
 
+Return: 201
+{
+  "id" : 1102,
+  "name" : "test task",
+  "desc" : "test task description",
+  "projectId" : 1,
+  "avatar" : {
+    "id" : 5,
+    "realFilename" : "/upload/avatar/task_default_avatar.png",
+    "displayFilename" : "/upload/avatar/task_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687897044184,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687897044184
+  },
+  "dependentTaskIds" : [ ],
+  "userIds" : [ ],
+  "commentIds" : [ ],
+  "startDate" : 1687880110807,
+  "endDate" : 1687880110807,
+  "tags" : [ ],
+  "priority" : "Low",
+  "attachments" : [ ],
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687901291595,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687901291595
+}
 
+=============================================================
 
+12. Get task list
+Method: GET
+URL: /companies/{company_id}/projects/{project_id}/tasks
+Params: {company_id}, and {project_id} in url.  
+Roles: admin, manager, technician, viewer
+Login required: true
 
+Example:
+curl -X GET -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks
 
+Return: 200
 
+[ {
+  "id" : 2,
+  "name" : "company_0_name_project_0_task_0",
+  "desc" : "company_0_name_project_0_task_0_desc",
+  "projectId" : 1,
+  "avatar" : {
+    "id" : 4,
+    "realFilename" : "company_0_name_project_0_task_0_avatar_1687941779115",
+    "displayFilename" : "company_0_name_project_0_task_0_avatar",
+    "fileType" : "Image",
+    "size" : null,
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687941779165,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687941779165
+  },
+  "dependentTaskIds" : [ ],
+  "userIds" : [ ],
+  "commentIds" : [ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ],
+  "startDate" : 1687941779115,
+  "endDate" : 1687941779115,
+  "tags" : [ ],
+  "priority" : "Higher",
+  "attachments" : [ ],
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687941779167,
+  "modifiedBy" : "anonymousUser",
+  "modifiedTime" : 1687941779167
+},
+......
+{
+  "id" : 11,
+  "name" : "company_0_name_project_0_task_9",
+  "desc" : "company_0_name_project_0_task_9_desc",
+  "projectId" : 1,
+  "avatar" : {
+    "id" : 5,
+    "realFilename" : "/upload/avatar/task_default_avatar.png",
+    "displayFilename" : "/upload/avatar/task_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687941779627,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687941779627
+  },
+  "dependentTaskIds" : [ ],
+  "userIds" : [ ],
+  "commentIds" : [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ],
+  "startDate" : 1687941782814,
+  "endDate" : 1687941782814,
+  "tags" : [ ],
+  "priority" : "Higher",
+  "attachments" : [ ],
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687941782832,
+  "modifiedBy" : "anonymousUser",
+  "modifiedTime" : 1687941782832
+} ]
+=============================================================
 
+13. Get a task
+Method: GET
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
+Params: {company_id}, {project_id}, and {task_id} in url.  
+Roles: admin, manager, technician, viewer
+Login required: true
 
+Example:
+curl -X GET -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/1102
+
+Return: 200
+{
+  "id" : 1102,
+  "name" : "test task",
+  "desc" : "test task description",
+  "projectId" : 1,
+  "avatar" : {
+    "id" : 5,
+    "realFilename" : "/upload/avatar/task_default_avatar.png",
+    "displayFilename" : "/upload/avatar/task_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687897044184,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687897044184
+  },
+  "dependentTaskIds" : [ ],
+  "userIds" : [ ],
+  "commentIds" : [ ],
+  "startDate" : 1687880110807,
+  "endDate" : 1687880110807,
+  "tags" : [ ],
+  "priority" : "Low",
+  "attachments" : [ ],
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687901291595,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687901291595
+}
+
+=============================================================
+
+14. Update a task
+Method: PUT
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
+Params: {company_id}, {project_id}, and {task_id} in url, PMSTask object in request body.   
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+1. this function doesn't read projectId, dependentTaskIds, userIds, and commentIds fields.   
+2. task name is unique in the project wide.  
+
+Example:
+curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/1102 -d '{"name" : "new_task_name", "desc" : "new_task_description", "avatar" : {"displayFilename" : "/upload/avatar/new_task_avatar.png", "realFilename" : "/upload/avatar/new_task_avatar.png", "fileType" : "Image"}, "startDate" : 1687880110807, "endDate" : 1687880110807, "priority" : "Low" }'
+
+Return: 200
+{
+  "id" : 11,
+  "name" : "new_task_name",
+  "desc" : "new_task_description",
+  "projectId" : 1,
+  "avatar" : {
+    "id" : 5,
+    "realFilename" : "/upload/avatar/task_default_avatar.png",
+    "displayFilename" : "/upload/avatar/task_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687941779627,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687941779627
+  },
+  "dependentTaskIds" : [ ],
+  "userIds" : [ ],
+  "commentIds" : [ 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 ],
+  "startDate" : 1687880110807,
+  "endDate" : 1687880110807,
+  "tags" : [ ],
+  "priority" : "Low",
+  "attachments" : [ ],
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687941782832,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687949738867
+}
+
+=============================================================
+
+14. Delete a task
+Method: DELETE
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
+Params: {company_id}, {project_id}, and {task_id} in url.    
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/11
+
+Return: 204 (NO_CONTENT)
+
+=============================================================
+
+15. Delete a task
+Method: DELETE
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
+Params: {company_id}, {project_id}, and {task_id} in url.    
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -X DELETE -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODc5NDk2MDgsInVzZXJuYW1lIjoicm9vdEBzYWl0LmNvbSJ9.DRJOOj96N4nN6h90JWd6xoF9PYWUIHogaTG77Zp9CoQ" http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/11
 
 
 

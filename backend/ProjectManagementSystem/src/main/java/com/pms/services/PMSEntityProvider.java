@@ -323,15 +323,15 @@ public class PMSEntityProvider {
      */
     public PMSProject createProject(Long companyId, PMSProject project) {
     	// check if the company exists
-    	PMSCompany company = compRepo.findById(companyId)
-    			.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + companyId));
-    	PMSProject ret = project;
-        
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
     	project.setCompanyId(companyId);
     	
-    	// verify if project doesn't exist.
-        if (projRepo.findByNameAndCompanyId(project.getName(), companyId).orElse(null) != null) {
-        	throw new DuplicateObjectsException("company exists with name=" 
+    	// check if the project exists. 
+    	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
+           	throw new DuplicateObjectsException("project exists with name=" 
         				+ project.getName() + " and company_id=" + companyId);
         }
         
@@ -340,13 +340,15 @@ public class PMSEntityProvider {
         } else {
         	project.setAvatar(getDefaultProjectAvatar());
         }
-        ret = projRepo.save(ret);
+        project = projRepo.save(project);
         
-        // update company. 
-        company.addProjectId(ret.getId());
+        // update company.
+        PMSCompany company = compRepo.findById(companyId)
+    			.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + companyId));
+        company.addProjectId(project.getId());
         compRepo.save(company);
         
-        return ret;
+        return project;
     }
 
     public PMSProject updateProject(Long companyId, Long projectId, PMSProject project) {
@@ -357,14 +359,13 @@ public class PMSEntityProvider {
     	PMSProject ret = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
     	// change project name. 
-        if (project.getName() != null) {
-        	if (ret.getName().compareTo(project.getName()) != 0) { // need to change project name. 
-	        	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
-	        		throw new DuplicateObjectsException("project " + ret.getName() + " exists in the company with id=" + companyId);
-	        	} else {
-	        		ret.setName(project.getName());
-	        	}
-        	}
+        if ((project.getName() != null) && (ret.getName().compareTo(project.getName()) != 0)) {
+        	// need to change project name. 
+        	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
+        		throw new DuplicateObjectsException("project " + ret.getName() + " exists in the company with id=" + companyId);
+        	} else {
+        		ret.setName(project.getName());
+        	}   	
         }
         if (project.getPriority() != null) {
         	ret.setPriority(project.getPriority());
@@ -531,13 +532,10 @@ public class PMSEntityProvider {
     }
     
     // task operations
-    public List<PMSTask> getTasks() {
-        return taskRepo.findAllWithoutDefault();
-    }
-    
-    public List<PMSTask> getTasksByProjectId(Long projId) {
-        if (!projRepo.existsById(projId)) {
-            throw new ResourceNotFoundException("No project found with id=" + projId);
+    public List<PMSTask> getTasksByProjectIdAndCompanyId(Long projId, Long companyId) {
+        if (!projRepo.existsByIdAndCompanyId(projId, companyId)) {
+            throw new ResourceNotFoundException("No project found with id=" + projId + 
+            		", and company_id=" + companyId);
         }
         
         return taskRepo.findAllByProjectId(projId);
@@ -556,18 +554,23 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSTask createTask(Long projectId, PMSTask task) {
-    	// check if the project exists. 
-    	PMSProject project = projRepo.findById(projectId)
-    			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + task.getId()));
-    	
-    	// verify if the task doesn't exist. 
-    	if (taskRepo.findByNameAndProject(task.getName(), projectId).orElse(null) != null) {
-    		throw new DuplicateObjectsException("task exists with name=" 
-    					+ task.getName() + " and project_id=" + projectId);
+    public PMSTask createTask(Long companyId, Long projectId, PMSTask task) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
-        PMSTask ret = null;
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
+    	// verify if the task doesn't exist. 
+    	if (taskRepo.existsByNameAndProjectId(task.getName(), projectId)) {
+    		throw new DuplicateObjectsException("task exists with name=" 
+    					+ task.getName() + " project_id=" + projectId + " , and company_id=" + companyId);
+    	}
         
         // save avatar
         if (task.getAvatar() != null) {
@@ -578,51 +581,73 @@ public class PMSEntityProvider {
         
         // save task
         task.setProjectId(projectId);
-        ret = taskRepo.save(task);
+        task = taskRepo.save(task);
         
         // update project
+        PMSProject project = projRepo.findById(projectId).orElseThrow(
+        		()-> new ResourceNotFoundException("No project found with id=" + projectId));
         project.addTaskId(task.getId());
         projRepo.save(project);
         
-        return ret;
+        return task;
     }
     
-    public PMSTask updateTask(Long taskId, PMSTask task) {
-    	if (taskId != task.getId()) {
-    		throw new RequestValueMismatchException();
+    public PMSTask updateTask(Long companyId, Long projectId, Long taskId, PMSTask task) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
-        PMSTask ret = taskRepo.findById(taskId).orElseThrow(
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
+    	// verify if the task exists. 
+    	if (!taskRepo.existsByIdAndProjectId(taskId, projectId)) {
+    		throw new ResourceNotFoundException("No task found with id=" + taskId 
+    					+ " in project_id=" + projectId + " , and company_id=" + companyId);
+    	}
+    	
+    	PMSTask oldTask = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
+    	// update name
+    	if (task.getName() != null 
+    			&& !task.getName().equals(oldTask.getName())) { // need to update name. 
+    		if (taskRepo.existsByNameAndProjectId(task.getName(), projectId)) { // new name exists. won't update. 
+    			throw new DuplicateObjectsException("new name " + task.getName() + " exists.");
+    		}
+    		oldTask.setName(task.getName());
+    	}
+    	
+    	// desc
+    	if (task.getDesc() != null) {
+    		oldTask.setDesc(task.getDesc());
+    	}
         
-        if (task.getAvatar() != null) {
-            ret.setAvatar(task.getAvatar());
-        }
-        if (task.getName() != null) {
-            ret.setName(task.getName());
-        }
-        if (task.getDesc() != null) {
-            ret.setDesc(task.getDesc());
-        }
-        if (task.getProjectId() != null) {
-            ret.setProjectId(task.getProjectId());
-        }
-        if (task.getDependentTaskIds() != null) {
-            ret.setDependentTaskIds(task.getDependentTaskIds());
-        }
-        if (task.getUserIds() != null) {
-        	ret.setUserIds(task.getUserIds());
-        }
+    	// avatar
+        //private PMSFile avatar;
         
-        // update commentIds
-        if (task.getCommentIds() != null) {
-            List<Long> beRemovedCommentIds = updateIdSets(ret.getCommentIds(), task.getCommentIds());
-            
-            // delete old comments
-            cleanupComments(beRemovedCommentIds);
-        }
-
-        return taskRepo.save(ret);
+    	// start date
+    	if (task.getStartDate() != null
+    			&& task.getStartDate().longValue() != oldTask.getStartDate().longValue()) {
+    		oldTask.setStartDate(task.getStartDate());
+    	}
+        
+        // end date
+    	if (task.getEndDate() != null
+    			&& task.getEndDate().longValue() != oldTask.getEndDate().longValue()) {
+    		oldTask.setEndDate(task.getEndDate());
+    	}
+    	
+    	// priority
+    	if (task.getPriority() != null 
+    			&& !task.getPriority().equals(oldTask.getPriority())) {
+    		oldTask.setPriority(task.getPriority());
+    	}
+        
+        return taskRepo.save(oldTask);
     }
     
     public void cleanupTasks(List<Long> taskIds) {
@@ -1172,13 +1197,17 @@ public class PMSEntityProvider {
     public List<PMSTask> getTasksByUserId(Long userId, Long projectId) {
         PMSProject project = projRepo.findById(projectId).orElseThrow(
                 ()->new ResourceNotFoundException("No project found with id=" + projectId));
-        userRepo.findById(userId).orElseThrow(
-                ()->new ResourceNotFoundException("No user found with id=" + userId));
+        if (!compRepo.existsById(project.getCompanyId())) {
+        	throw new ResourceNotFoundException("No company found with id=" + project.getCompanyId());
+        }
+        if (!userRepo.existsById(userId)) {
+        	throw new ResourceNotFoundException("No user found with id=" + userId);
+        }
         
         List<PMSTask> ret = new ArrayList<>();
         List<PMSTask> allTasks = new ArrayList<>();
         allTasks.add(project.getDefaultTask());
-        List<PMSTask> tasks = getTasksByProjectId(project.getId());
+        List<PMSTask> tasks = getTasksByProjectIdAndCompanyId(project.getId(), project.getCompanyId());
         allTasks.addAll(tasks);
         
         for (PMSTask allTask : allTasks) {

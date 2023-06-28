@@ -48,17 +48,17 @@ public class PMSFile {
 	
 	@CreatedBy
     @Column(updatable=false)
-    private String createdUser;
+    private String createdBy;
     
     @CreatedDate
     @Column(updatable=false)
     private Long createdTime;
     
     @LastModifiedBy
-    private String updatedUser;
+    private String modifiedBy;
     
     @LastModifiedDate
-    private Long updatedTime;
+    private Long modifiedTime;
     
     public PMSFile(String fileName, PMSFileType fileType) {
     	this.displayFilename = fileName;
