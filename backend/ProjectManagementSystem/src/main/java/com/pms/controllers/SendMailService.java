@@ -16,28 +16,12 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
-@RequestMapping(value="/api/v1/actions/sendmail", 
-            produces="application/json", 
-            consumes="application/json")
 @Slf4j
-public class SendMailController {
-	@GetMapping(value="/send")
-	public ResponseEntity<Void> send() throws AddressException, MessagingException, IOException {
-		sendmail();
-		
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+public class SendMailService {
 	
-	private void sendmail() throws AddressException, MessagingException, IOException {
+	public void sendmail(String title, String body, String to) throws AddressException, MessagingException, IOException {
 		   Properties props = new Properties();
 		   props.put("mail.smtp.auth", "true");
 		   props.put("mail.smtp.starttls.enable", "true");
@@ -54,7 +38,7 @@ public class SendMailController {
 		   Message msg = new MimeMessage(session);
 		   msg.setFrom(new InternetAddress("jifang1218@gmail.com", false));
 
-		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("jifang1218@hotmail.com"));
+		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
 		   msg.setSubject("mail from spring title.");
 		   msg.setContent("mail from spring body.", "text/html");
 		   msg.setSentDate(new Date());
@@ -64,10 +48,10 @@ public class SendMailController {
 
 		   Multipart multipart = new MimeMultipart();
 		   multipart.addBodyPart(messageBodyPart);
-		   MimeBodyPart attachPart = new MimeBodyPart();
+		   //MimeBodyPart attachPart = new MimeBodyPart();
 
-		   attachPart.attachFile("/home/jifang/Desktop/api.txt");
-		   multipart.addBodyPart(attachPart);
+//		   attachPart.attachFile("/home/jifang/Desktop/api.txt");
+//		   multipart.addBodyPart(attachPart);
 		   msg.setContent(multipart);
 		   Transport.send(msg);   
 		}

@@ -3,6 +3,7 @@
  */
 package com.pms.controllers;
 
+import java.io.File;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.pms.constants.PMSFileType;
 import com.pms.entities.PMSCompany;
+import com.pms.entities.PMSFile;
 import com.pms.entities.PMSLoginInfo;
 import com.pms.entities.PMSProject;
 import com.pms.entities.PMSTask;
@@ -210,4 +215,12 @@ public class PMSActionsController {
         
         return new ResponseEntity<>(entityProvider.createUser(user, companyId), HttpStatus.CREATED);
     }
+    
+    @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
+    @PostMapping("/upload")
+	public PMSFile upload(@RequestParam("file") MultipartFile file, 
+			@RequestParam(value="display_name", required=false) String displayName, 
+			@RequestParam(value="file_type", defaultValue="File") PMSFileType fileType) {
+    	return entityProvider.upload(file, displayName, fileType);
+	}
 }
