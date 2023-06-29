@@ -286,7 +286,7 @@ public class PMSEntityProvider {
             	continue;
             }
             List<Long> projectIds = comp.getProjectIds();
-            cleanupProjects(projectIds);
+            cleanupProjects(companyId, projectIds);
             compRepo.deleteById(companyId);
         }
     }
@@ -383,7 +383,7 @@ public class PMSEntityProvider {
         return projRepo.save(ret);
     }
 
-    public void cleanupProjects(List<Long> projectIds) {
+    public void cleanupProjects(Long companyId, List<Long> projectIds) {
     	if (projectIds.size() == 0) {
     		return;
     	}
@@ -402,10 +402,9 @@ public class PMSEntityProvider {
 
     		// delete its tasks
         	List<Long> taskIds = project.getTaskIds();
-            cleanupTasks(taskIds);
+        	Long projectId = project.getId();
+            cleanupTasks(companyId, projectId, taskIds);
             cleanupDefaultTask(project);
-            
-            Long projectId = project.getId();
             
             // update company, remove project from the company
             company.removeProjectId(projectId);
@@ -423,7 +422,7 @@ public class PMSEntityProvider {
         PMSTask defaultTask = project.getDefaultTask();
         if (defaultTask != null) {
             List<Long> commentIds = defaultTask.getCommentIds();
-            cleanupComments(commentIds);
+            cleanupComments(project.getCompanyId(), project.getId(), commentIds);
         }
         
         // default task will be deleted when the project is deleted.
@@ -629,7 +628,7 @@ public class PMSEntityProvider {
     	if (task.getDesc() != null) {
     		oldTask.setDesc(task.getDesc());
     	}
-        
+    	
     	// avatar
         //private PMSFile avatar;
         
@@ -650,11 +649,17 @@ public class PMSEntityProvider {
     			&& !task.getPriority().equals(oldTask.getPriority())) {
     		oldTask.setPriority(task.getPriority());
     	}
+    	
+    	// status
+    	if (task.getStatus() != null
+    			&& !task.getStatus().equals(oldTask.getStatus())) {
+    		oldTask.setStatus(task.getStatus());
+    	}
         
         return taskRepo.save(oldTask);
     }
     
-    public void cleanupTasks(List<Long> taskIds) {
+    public void cleanupTasks(Long companyId, Long projectId, List<Long> taskIds) {
         if (taskIds.size() == 0) {
             return;
         }
@@ -678,7 +683,7 @@ public class PMSEntityProvider {
         	}
     		
     		// delete its comments
-        	cleanupComments(task.getCommentIds());
+        	cleanupComments(companyId, projectId, task.getCommentIds());
         	// we won't delete the project default task as it is managed by the project.
         	if (task.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
         	    beDeletedTaskIds.add(task.getId());
@@ -761,17 +766,57 @@ public class PMSEntityProvider {
     }
 
     // comments operation
-    public PMSComment createCommentForProject(Long projectId, PMSComment comment) {
+    public PMSComment createCommentForProject(Long companyId, Long projectId, PMSComment comment) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
     	PMSProject project = projRepo.findById(projectId)
     			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
-    	return createCommentForTask(project.getDefaultTask().getId(), comment); 
+    	// get default task, will create comment to default task. 
+    	PMSTask task = project.getDefaultTask();
+    	comment.setTaskId(task.getId());
+    	commentRepo.save(comment);
+    	
+    	// update task.
+    	task.addCommentId(comment.getId());
+    	taskRepo.save(task);
+    	
+    	return comment;
     }
     
-    public PMSComment createCommentForTask(Long taskId, PMSComment comment) {
-    	PMSTask task = taskRepo.findById(taskId)
-    			.orElseThrow(()->new ResourceNotFoundException("No task found with id=" + taskId));
+    public PMSComment createCommentForTask(Long companyId, Long projectId, Long taskId, PMSComment comment) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
     	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
+    	// check if the task exists. 
+    	if (!taskRepo.existsByIdAndProjectId(taskId, projectId)) {
+    		throw new ResourceNotFoundException("No task found with id=" + taskId 
+    				+ " with project_id=" + projectId 
+    				+ " with company_id=" + companyId);
+    	}
+    	
+    	// create comment to taskId. 
+    	PMSTask task = taskRepo.findById(taskId)
+    			.orElseThrow(()->new ResourceNotFoundException("No task found with id=" + taskId 
+    					+ " with project_id=" + projectId 
+    					+ " with company_id=" + companyId));
     	comment.setTaskId(taskId);
     	commentRepo.save(comment);
     	
@@ -780,10 +825,20 @@ public class PMSEntityProvider {
     	taskRepo.save(task);
     	
     	return comment;
-    	
     }
 
-    public void cleanupComments(List<Long> commentIds) {
+    public void cleanupComments(Long companyId, Long projectId, List<Long> commentIds) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
         List<PMSComment> comments = commentRepo.findAllById(commentIds);
         List<Long> beRemovedCommentIds = new ArrayList<>();
         for (PMSComment comment : comments) {
@@ -821,7 +876,18 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public List<PMSComment> getComments(List<Long> commentIds) {
+    public List<PMSComment> getComments(Long companyId, Long projectId, List<Long> commentIds) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
         List<PMSComment> ret = null;
         
         if (commentIds == null) {
@@ -839,7 +905,18 @@ public class PMSEntityProvider {
     } 
     
     // return: [comment0, comment1, ...]
-    public List<PMSComment> getCommentsForProjectOnly(Long projectId) {
+    public List<PMSComment> getCommentsForProjectOnly(Long companyId, Long projectId) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
         PMSProject project = projRepo.findById(projectId).orElseThrow(()
                 ->new ResourceNotFoundException("No project found with id=" + projectId));
         
@@ -849,18 +926,29 @@ public class PMSEntityProvider {
     }
 
     // return: [project, task0, task1, task2...]
-    public List<List<PMSComment>> getCommentsByProject(Long projectId) {
+    public List<List<PMSComment>> getCommentsByProject(Long companyId, Long projectId) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
     	PMSProject project = projRepo.findById(projectId)
     			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
     	
     	List<List<PMSComment>> ret = new ArrayList<>();
 
     	// add comments of tasks.
-    	// add project comments
-    	List<PMSComment> projectComments = getCommentsForProjectOnly(projectId);
+    	// 1. add project comments
+    	List<PMSComment> projectComments = getCommentsForProjectOnly(companyId, projectId);
     	ret.add(projectComments);
     	
-    	// add tasks comments
+    	// 2. add tasks comments
     	List<Long> taskIds = project.getTaskIds();
     	for (Long taskId : taskIds) {
     		List<PMSComment> comments = getCommentsByTask(taskId);
@@ -870,9 +958,16 @@ public class PMSEntityProvider {
     	return ret;
     }
 
-    public PMSComment updateComment(Long commentId, PMSComment comment) {
-    	if (commentId != comment.getId()) {
-    		throw new RequestValueMismatchException();
+    public PMSComment updateComment(Long companyId, Long projectId, Long commentId, PMSComment comment) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     	}
     	
     	PMSComment ret = commentRepo.findById(comment.getId())
@@ -883,15 +978,7 @@ public class PMSEntityProvider {
     	if (comment.getDesc() != null) {
     		ret.setDesc(comment.getDesc());
     	}
-    	/*
-    	if (comment.getAttachments() != null) {
-    		// remove old files. 
-    		List<PMSFile> oldFiles = ret.getAttachments();
-    		List<PMSFile> newFiles = comment.getAttachments();
-    		List<String> beRemovedFiles = updateStringSets(oldFiles, newFiles);
-    		cleanupFiles(beRemovedFiles);
-    		ret.setAttachments(comment.getAttachments());
-    	}*/
+    	
     	if (comment.getTaskId() != null) {
     		ret.setTaskId(comment.getTaskId());
     	}

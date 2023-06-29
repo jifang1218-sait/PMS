@@ -30,6 +30,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.pms.constants.PMSEntityConstants;
 import com.pms.constants.PMSPriority;
+import com.pms.constants.PMSTaskStatus;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -89,6 +90,9 @@ public class PMSTask {
     @Enumerated(EnumType.STRING)
     private PMSPriority priority;
     
+    @Enumerated(EnumType.STRING)
+    private PMSTaskStatus status;
+    
     @OneToMany(cascade=CascadeType.ALL)
     private List<PMSFile> attachments;
     
@@ -99,6 +103,7 @@ public class PMSTask {
         attachments = new ArrayList<>();
         tags = new ArrayList<>();
         priority = PMSPriority.Normal;
+        status = PMSTaskStatus.NotStarted;
         
         // set project id of the default task to -1, 
         // as the relationship is managed in column pmsproject_default_task in table pmsproject

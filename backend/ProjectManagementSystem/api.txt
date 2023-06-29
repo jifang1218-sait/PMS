@@ -5,11 +5,11 @@ http headers examples:
 {Authorization} : "Authorization: Bearer {token}"
 
 Date & Time:
-Date and time are using UTC format, the current the milliseconds since 1970, of type long integer.  
+Date and time are using UTC format, the elapsed milliseconds since 1970, of type long.   
 
 token is retrieved by login.  
 
-1. Get all companies
+Get all companies
 Method: GET
 URL: /api/v1/entities/companies
 Params: none
@@ -79,7 +79,7 @@ Return: 200
 
 =============================================================
 
-2. Create a company
+Create a company
 Method: POST
 URL: /api/v1/entities/companies
 Params: PMSCompany in request body. 
@@ -119,7 +119,7 @@ Return: 201
 
 =============================================================
 
-3. Get a company
+Get a company
 Method: GET
 URL: /api/v1/entities/companies/{company_id}
 Params: none
@@ -155,7 +155,7 @@ Return: 200
 
 =============================================================
 
-4. Update a company
+Update a company
 Method: PUT
 URL: /api/v1/entities/companies/{company_id}
 Params: PMSCompany in request body
@@ -194,7 +194,7 @@ Return: 200
 
 =============================================================
 
-5. Delete a company
+Delete a company
 Method: DELETE
 URL: /api/v1/entities/companies/{company_id}
 Params: company_id in request parameter. 
@@ -211,7 +211,7 @@ Return: 204 (NO_CONTENT)
 
 =============================================================
 
-6. Create a project
+Create a project
 Method: POST
 URL: /api/v1/entities/companies/{company_id}/projects
 Params: company_id in path, PMSProject in request body. 
@@ -258,7 +258,7 @@ Return: 201
 
 =============================================================
 
-7. Get project list
+Get project list
 Method: GET
 URL: /api/v1/entities/companies/{company_id}/projects
 Params: {company_id} in url.  
@@ -327,7 +327,7 @@ Return: 200
 
 =============================================================
 
-8. Get a project
+Get a project
 Method: GET
 URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
 Params: {company_id} in url, {project_id} in url. 
@@ -368,7 +368,7 @@ Return: 200
 
 =============================================================
 
-9. Update a project
+Update a project
 Method: UPDATE
 URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
 Params: {company_id} in url, {project_id} in url, 
@@ -412,7 +412,7 @@ Return: 200
 
 =============================================================
 
-10. Delete a project
+Delete a project
 Method: DELETE
 URL: /api/v1/entities/companies/{company_id}/projects/{project_id}
 Params: {company_id} in url, {project_id} in url.   
@@ -429,7 +429,7 @@ Return: 204 (NO_CONTENT)
 
 =============================================================
 
-11. Create a task
+Create a task
 Method: POST
 URL: /companies/{company_id}/projects/{project_id}/tasks
 Params: {company_id}, {project_id} in url, PMSTask object in request body. 
@@ -477,7 +477,7 @@ Return: 201
 
 =============================================================
 
-12. Get task list
+Get task list
 Method: GET
 URL: /companies/{company_id}/projects/{project_id}/tasks
 Params: {company_id}, and {project_id} in url.  
@@ -550,7 +550,7 @@ Return: 200
 } ]
 =============================================================
 
-13. Get a task
+Get a task
 Method: GET
 URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
 Params: {company_id}, {project_id}, and {task_id} in url.  
@@ -593,7 +593,7 @@ Return: 200
 
 =============================================================
 
-14. Update a task
+Update a task
 Method: PUT
 URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
 Params: {company_id}, {project_id}, and {task_id} in url, PMSTask object in request body.   
@@ -639,7 +639,7 @@ Return: 200
 
 =============================================================
 
-14. Delete a task
+Delete a task
 Method: DELETE
 URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
 Params: {company_id}, {project_id}, and {task_id} in url.    
@@ -653,15 +653,248 @@ Return: 204 (NO_CONTENT)
 
 =============================================================
 
-15. Delete a task
-Method: DELETE
-URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}
-Params: {company_id}, {project_id}, and {task_id} in url.    
+Get comments. 
+Method: GET
+/companies/{company_id}/projects/{project_id}/comments")
+URL: /companies/{company_id}/projects/{project_id}/comments
+Params: {company_id}, and {project_id} in url, {project_only} in request params.    
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+return value is a two-dimensional array. 
+1. when project_only is true, it only returns the project comments (without comments from tasks). the first and the only element is the project only comments list. 
+2. when project_only is false or without project only request parameter, it returns the project comments and the comments from tasks. the first element is the project comment list, the second onward are the lists of each task comments.  
+
+Example:
+1) only fetch project-only comments
+curl -X GET -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/comments?project_only=true
+
+Return: 200
+
+[ [ {
+  "id" : 1,
+  "title" : "company_0_name_project_0_comment_title",
+  "desc" : "company_0_name_project_0_comment_title_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835016,
+  "modifiedBy" : "anonymousUser",
+  "modifiedTime" : 1687967835016
+}, 
+......
+{
+  "id" : 10,
+  "title" : "company_0_name_project_0_comment_title",
+  "desc" : "company_0_name_project_0_comment_title_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835577,
+  "modifiedBy" : "anonymousUser",
+  "modifiedTime" : 1687967835577
+} ] ]
+
+2) fetch project and its tasks' comments. (project_only=false, or without project_only request param). 
+curl -X GET -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODc5ODk2MDgsInVzZXJuYW1lIjoicm9vdEBzYWl0LmNvbSJ9.ap0097-_RJpRmfyaoOW1XWymJFVFHgSVErlRJnDxPmc" http://localhost:8080/api/v1/entities/companies/1/projects/1/comments?project_only=false
+or
+curl -X GET -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODc5ODk2MDgsInVzZXJuYW1lIjoicm9vdEBzYWl0LmNvbSJ9.ap0097-_RJpRmfyaoOW1XWymJFVFHgSVErlRJnDxPmc" http://localhost:8080/api/v1/entities/companies/1/projects/1/comments
+
+Return: 200
+[
+    [
+        {
+            "id": 1,
+            "title": "company_0_name_project_0_comment_title",
+            "desc": "company_0_name_project_0_comment_title_desc",
+            "attachments": [],
+            "taskId": 1,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967835016,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967835016
+        },
+        ......
+        {
+            "id": 10,
+            "title": "company_0_name_project_0_comment_title",
+            "desc": "company_0_name_project_0_comment_title_desc",
+            "attachments": [],
+            "taskId": 1,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967835577,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967835577
+        }
+    ],
+    [
+        {
+            "id": 11,
+            "title": "company_0_name_project_0_task_0_comment_title",
+            "desc": "company_0_name_project_0_task_0_comment_title_desc",
+            "attachments": [],
+            "taskId": 2,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967835704,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967835704
+        },
+        ......
+        {
+            "id": 20,
+            "title": "company_0_name_project_0_task_0_comment_title",
+            "desc": "company_0_name_project_0_task_0_comment_title_desc",
+            "attachments": [],
+            "taskId": 2,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967836037,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967836037
+        }
+    ],
+    ......
+    [
+        {
+            "id": 101,
+            "title": "company_0_name_project_0_task_9_comment_title",
+            "desc": "company_0_name_project_0_task_9_comment_title_desc",
+            "attachments": [],
+            "taskId": 11,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967839254,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967839254
+        },
+        ......
+        {
+            "id": 110,
+            "title": "company_0_name_project_0_task_9_comment_title",
+            "desc": "company_0_name_project_0_task_9_comment_title_desc",
+            "attachments": [],
+            "taskId": 11,
+            "createdBy": "anonymousUser",
+            "createdTime": 1687967839560,
+            "modifiedBy": "anonymousUser",
+            "modifiedTime": 1687967839560
+        }
+    ]
+]
+
+=============================================================
+
+Create a comment for a project.
+Method: POST
+URL: /companies/{company_id}/projects/{project_id}/comments
+Params: {company_id}, and {project_id} in url, PMSComment object in request body.     
+Roles: admin, manager, technician, viewer
+Login required: true
+Note: 
+1. this function doesn't read id, attachments and taskId fields.    
+
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/comments -d '{"title":"comment_title", "desc":"comment_desc"}'
+
+Return: 201
+
+{
+  "id" : 11052,
+  "title" : "comment_title",
+  "desc" : "comment_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687993431904,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687993431904
+}
+
+=============================================================
+
+Create a comment for a task.
+Method: POST
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments
+Params: {company_id}, {project_id}, and {task_id} in url, PMSComment object in request body.     
+Roles: admin, manager, technician, viewer
+Login required: true
+Note: 
+1. this function doesn't read id, attachments and taskId fields.    
+
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/2/comments -d '{"title":"comment_title", "desc":"comment_desc"}'
+
+Return: 201
+
+{
+  "id" : 11102,
+  "title" : "comment_title",
+  "desc" : "comment_desc",
+  "attachments" : [ ],
+  "taskId" : 2,
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687993921302,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687993921302
+}
+
+=============================================================
+
+Get a comment
+Method: GET
+URL: /companies/{company_id}/projects/{project_id}/comments/{comment_id}
+Params: {company_id}, {project_id}, and {comment_id} in url. 
 Roles: admin, manager, technician, viewer
 Login required: true
 
 Example:
-curl -X DELETE -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODc5NDk2MDgsInVzZXJuYW1lIjoicm9vdEBzYWl0LmNvbSJ9.DRJOOj96N4nN6h90JWd6xoF9PYWUIHogaTG77Zp9CoQ" http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/11
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/comments/1
+
+Return: 200
+
+{
+  "id" : 1,
+  "title" : "company_0_name_project_0_comment_title",
+  "desc" : "company_0_name_project_0_comment_title_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835016,
+  "modifiedBy" : "anonymousUser",
+  "modifiedTime" : 1687967835016
+}
+
+=============================================================
+
+Update a comment
+Method: PUT
+URL: /companies/{company_id}/projects/{project_id}/comments/{comment_id}
+Params: {company_id}, {project_id}, and {comment_id} in url， PMSComment object in request body. 
+Roles: admin, manager, technician, viewer
+Login required: true
+1. this function doesn't read id, attachments and taskId fields.   
+
+Example:
+curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/comments/1 -d '{"id":1, "title":"new_title", "desc":"new_desc"}'
+
+Return: 200
+
+{
+  "id" : 1,
+  "title" : "new_title",
+  "desc" : "new_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835016,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688050305911
+}
+
+
+
+
+
+
+
 
 
 

@@ -43,10 +43,7 @@ consumes="application/json")
 public class TestController {
     
     private static final int kSize = 10;
-    
-    @Value("${file.upload.path}")
-    private String path;
-    
+        
     @Autowired
     private PMSEntityProvider entityProvider;
     
@@ -153,7 +150,7 @@ public class TestController {
                     comment.setDesc(comment.getTitle() + "_desc");
                     comment.setTaskId(project.getDefaultTask().getId());
                                         
-                    entityProvider.createCommentForProject(project.getId(), comment);
+                    entityProvider.createCommentForProject(company.getId(), project.getId(), comment);
                 }
                 
                 // create tasks for the project
@@ -192,7 +189,7 @@ public class TestController {
                         comment.setDesc(comment.getTitle() + "_desc");
                         comment.setTaskId(task.getId());
                         
-                        entityProvider.createCommentForTask(task.getId(), comment);
+                        entityProvider.createCommentForTask(company.getId(), project.getId(), task.getId(), comment);
                     }
                 }
             }
@@ -254,13 +251,6 @@ public class TestController {
     
     @GetMapping("/test00")
     public void test00() throws FileNotFoundException {
-    	String str = System.getProperty("user.dir");
-    	log.info(str);
-    	str = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-    	log.info(str);
-    	str = ResourceUtils.getURL("classpath:").getPath();
-    	log.info(str);
-    	log.info(path);
     	
     }
 }

@@ -3,9 +3,9 @@
  */
 package com.pms.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -44,19 +45,20 @@ public class PMSComment {
     private Long id;
     
     @Column(name="TITLE")
-    @NotNull
-    @Size(min=PMSEntityConstants.kMinCommentTitleLen)
+    @NotNull(message="title cannot be null.")
+    @NotEmpty(message="title cannot be empty.")
+    @Size(min=PMSEntityConstants.kMinCommentTitleLen, 
+    	message="The minimium title length is {min}.")
     private String title;
     
     @Lob
     @Column(name = "DESCRIPTION", columnDefinition="TEXT")
     private String desc;
     
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany
     private List<PMSFile> attachments;
     
     @Column(name = "TASK")
-    @NotNull
     private Long taskId;
     
     @CreatedBy
@@ -72,4 +74,8 @@ public class PMSComment {
     
     @LastModifiedDate
     private Long modifiedTime;
+    
+    public PMSComment() {
+    	attachments = new ArrayList<>();
+    }
 }
