@@ -144,12 +144,7 @@ public class PMSEntitiesController {
     @PostMapping(value="/companies/{company_id}/projects/{project_id}/tasks")
     public ResponseEntity<PMSTask> createTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
-            @RequestBody @Valid PMSTask task, 
-            BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(task, HttpStatus.BAD_REQUEST);
-        } 
-        
+            @RequestBody @Validated PMSTask task) {
         return new ResponseEntity<>(entityProvider.createTask(companyId, projectId, task), HttpStatus.CREATED);
     }
     
@@ -245,11 +240,11 @@ public class PMSEntitiesController {
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @GetMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments")
-    public ResponseEntity<List<PMSComment>> getCommentsForTask(@PathVariable("company_id") Long companyId, 
+    public ResponseEntity<List<PMSComment>> getCommentsByTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId) {
     	
-        return new ResponseEntity<>(entityProvider.getCommentsByTask(taskId), HttpStatus.OK);
+        return new ResponseEntity<>(entityProvider.getCommentsByTask(companyId, projectId, taskId), HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
@@ -257,12 +252,7 @@ public class PMSEntitiesController {
     public ResponseEntity<PMSComment> createCommentForTask(@PathVariable("company_id") Long companyId, 
             @PathVariable("project_id") Long projectId, 
             @PathVariable("task_id") Long taskId, 
-            @RequestBody @Valid PMSComment comment, 
-            BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<PMSComment>(comment, HttpStatus.BAD_REQUEST);
-        }
-        
+            @RequestBody @Validated PMSComment comment) {
         return new ResponseEntity<PMSComment>(entityProvider.createCommentForTask(companyId, projectId, taskId, comment), HttpStatus.CREATED);
     }
     /*
@@ -291,7 +281,7 @@ public class PMSEntitiesController {
         
         return new ResponseEntity<PMSComment>(entityProvider.updateComment(commentId, comment), HttpStatus.OK);
     }*/
-    
+    /*
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @DeleteMapping(value="/companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments/{comment_id}")
     public ResponseEntity<Void> deleteComment(@PathVariable("comment_id") Long commentId, 
@@ -303,7 +293,7 @@ public class PMSEntitiesController {
         entityProvider.cleanupComments(companyId, projectId, commentIds);
         
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    }*/
     
     // users
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")

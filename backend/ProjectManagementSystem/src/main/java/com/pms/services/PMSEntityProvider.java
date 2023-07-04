@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.pms.constants.PMSEntityConstants;
@@ -135,12 +134,10 @@ public class PMSEntityProvider {
     		return ret;
     	}
     	
-    	log.debug("displayname:{}\nrealpath:{}\ntype:{}", 
-    			file.getDisplayFilename(), file.getRealFilename(), file.getFileType());
-    	
     	if (!fileRepo.existsByRealFilename(file.getRealFilename())) {
-    		log.debug("file doesn't exist, save it.");
     		ret = fileRepo.save(file);
+    		log.debug("file saved. displayname:{}\nrealpath:{}\ntype:{}", 
+        			file.getDisplayFilename(), file.getRealFilename(), file.getFileType());
     	} else {
     		log.debug("file exists, don't save it.");
     	}
@@ -161,6 +158,7 @@ public class PMSEntityProvider {
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kCompanyDefaultAvatarPath, PMSFileType.Image);
     		ret = fileRepo.save(ret);
+    		log.debug("no default company avatar, create it.");
     	}
     	
     	return ret;
@@ -179,6 +177,7 @@ public class PMSEntityProvider {
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kProjectDefaultAvatarPath, PMSFileType.Image);
     		ret = fileRepo.save(ret);
+    		log.debug("no default project avatar, create it.");
     	}
     	
     	return ret;
@@ -197,6 +196,7 @@ public class PMSEntityProvider {
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kTaskDefaultAvatarPath, PMSFileType.Image);
     		ret = fileRepo.save(ret);
+    		log.debug("no default task avatar, create it.");
     	}
     	
     	return ret;
@@ -227,6 +227,7 @@ public class PMSEntityProvider {
         PMSCompany ret = null;
 
         if (compRepo.existsByName(comp.getName())) {
+        	log.debug("name " + comp.getName() + " exists, can't create company with this name.");
         	throw new DuplicateObjectsException("company exists with name=" + comp.getName());
         }
         
@@ -246,7 +247,10 @@ public class PMSEntityProvider {
 
         for (Long companyId : companyIds) {
             PMSCompany company = compRepo.findById(companyId).orElseThrow(
-                   ()-> new ResourceNotFoundException("No company found with id=" + companyId));
+                   ()-> {
+                	   log.debug("no company with id={}.", companyId);
+                	   return new ResourceNotFoundException("No company found with id=" + companyId);
+                	   });
             ret.add(company);
         }
 
@@ -255,12 +259,18 @@ public class PMSEntityProvider {
  
     public PMSCompany updateCompany(Long id, PMSCompany comp) {
     	PMSCompany ret = compRepo.findById(id).orElseThrow(
-                ()->new ResourceNotFoundException("No company found with id=" + id));
+                ()->{
+                	log.debug("no company with id= {}.", id);
+                	return new ResourceNotFoundException("No company found with id=" + id);
+                	});
         
     	// change name
     	if (comp.getName() != null) {
+    		log.debug("new name != null.");
     		if (!ret.getName().equals(comp.getName())) { // need to change name
+    			log.debug("new name != old name");
     			if (compRepo.existsByName(comp.getName())) {
+    				log.debug("name " + comp.getName() + " exists, can't update company with this name.");
     				throw new DuplicateObjectsException("company name="+ comp.getName() + " exists.");
     			} else {
     				ret.setName(comp.getName());
@@ -311,8 +321,11 @@ public class PMSEntityProvider {
         List<PMSProject> ret = new ArrayList<>();
         
         for (Long projectId : projectIds) {
-            PMSProject project = projRepo.findById(projectId).orElseThrow(()->
-                        new ResourceNotFoundException("No project found with id=" + projectId));
+        	log.error("No project with id=" + projectId);
+            PMSProject project = projRepo.findById(projectId).orElseThrow(()-> {
+            	log.debug("no project with id={}.", projectId);
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
             ret.add(project);
         }
             
@@ -328,6 +341,7 @@ public class PMSEntityProvider {
     public PMSProject createProject(Long companyId, PMSProject project) {
     	// check if the company exists
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
@@ -335,20 +349,26 @@ public class PMSEntityProvider {
     	
     	// check if the project exists. 
     	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
+    		log.debug("project with name=" + project.getName() + " exists, can't create project with this name.");
            	throw new DuplicateObjectsException("project exists with name=" 
         				+ project.getName() + " and company_id=" + companyId);
         }
         
         if (project.getAvatar() != null) {
+        	log.debug("project's avatar != null, will use the customized avatar.");
         	addFile(project.getAvatar());
         } else {
+        	log.debug("project's avatar == null, use project default avatar.");
         	project.setAvatar(getDefaultProjectAvatar());
         }
         project = projRepo.save(project);
         
         // update company.
         PMSCompany company = compRepo.findById(companyId)
-    			.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + companyId));
+    			.orElseThrow(()->{
+    			log.debug("no company with id={}.", companyId);	
+    			return new ResourceNotFoundException("No company found with id=" + companyId);
+    			});
         company.addProjectId(project.getId());
         compRepo.save(company);
         
@@ -357,15 +377,21 @@ public class PMSEntityProvider {
 
     public PMSProject updateProject(Long companyId, Long projectId, PMSProject project) {
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	PMSProject ret = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                log.debug("no project with id={}.", projectId);	
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
     	// change project name. 
         if ((project.getName() != null) && (ret.getName().compareTo(project.getName()) != 0)) {
+        	log.debug("new name != null, new name != old name, need to change project name.");
         	// need to change project name. 
         	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
+        		log.debug("new name:{}, duplicate to the existing name.", project.getName());
         		throw new DuplicateObjectsException("project " + ret.getName() + " exists in the company with id=" + companyId);
         	} else {
         		ret.setName(project.getName());
@@ -384,19 +410,24 @@ public class PMSEntityProvider {
     }
 
     public void cleanupProjects(Long companyId, List<Long> projectIds) {
+    	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company with id=" + companyId);
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
     	if (projectIds.size() == 0) {
     		return;
     	}
 
+    	PMSCompany company = compRepo.findById(companyId).orElseGet(null);
     	List<PMSProject> projects = projRepo.findAllById(projectIds);
     	for (PMSProject project : projects) {
-    		PMSCompany company = compRepo.findById(project.getCompanyId())
-    				.orElseThrow(()->new ResourceNotFoundException("No company found with id=" + project.getCompanyId()));
     		// check if other projects depend on it.
-    		List<PMSProject> allCompanyProjects = this.getProjectsByCompanyId(company.getId());
+    		List<PMSProject> allCompanyProjects = this.getProjectsByCompanyId(companyId);
     		for (PMSProject allCompanyProject : allCompanyProjects) {
         		if (allCompanyProject.getDependentProjectIds().contains(project.getId())) {
-        			throw new DeletionFailureException("Cannot delete the project (" + project.getId() + ") as other projects depend on it.");
+        			log.debug("project {} depends on {}, cannot delete it.", allCompanyProject.getId(), project.getId());
+        			throw new DeletionFailureException("Cannot delete the project (" + project.getId() + ") as project " + allCompanyProject.getId() + " depends on it.");
         		}
         	}
 
@@ -430,14 +461,17 @@ public class PMSEntityProvider {
         // taskRepo.deleteById(defaultTask.getId());
     }
 
-    public PMSProject addDependentProjects(Long projectId, List<Long> dependentProjectIds) {
+    public PMSProject addDependentProjectIds(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                log.debug("no project with id={}.", projectId);	
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
 
         for (Long dependentProjectId : dependentProjectIds) {
             // a project cannot dependent on itself.
-            if (!ret.getId().equals(dependentProjectId) 
-                    && projRepo.existsById(dependentProjectId)) {
+            if (projRepo.existsById(dependentProjectId) &&
+            		!ret.getId().equals(dependentProjectId)) {
                 ret.addDependentProjectId(dependentProjectId);
             }
         }
@@ -446,26 +480,25 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSProject setDependentProjects(Long projectId, List<Long> dependentProjectIds) {
+    public PMSProject setDependentProjectIds(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                log.debug("no project with id={}.", projectId);	
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
         
         ret.getDependentProjectIds().clear();
-        for (Long dependentProjectId : dependentProjectIds) {
-            // a project cannot dependent on itself.
-            if (!ret.getId().equals(dependentProjectId) 
-                    && projRepo.existsById(dependentProjectId)) {
-                ret.addDependentProjectId(dependentProjectId);
-            }
-        }
-        projRepo.save(ret);
+        ret = addDependentProjectIds(projectId, dependentProjectIds);
         
         return ret;
     }
 
-    public PMSProject removeDependentProjects(Long projectId, List<Long> dependentProjectIds) {
+    public PMSProject removeDependentProjectIds(Long projectId, List<Long> dependentProjectIds) {
         PMSProject ret = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                log.debug("no project with id={}.", projectId);
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
         
         List<Long> currentDependentIds = ret.getDependentProjectIds();
         for (Long dependentProjectId : dependentProjectIds) {
@@ -481,7 +514,10 @@ public class PMSEntityProvider {
     public List<PMSProject> getDependentProjectsById(Long projectId) {
         List<PMSProject> projects = new ArrayList<PMSProject>();
         PMSProject proj = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                	log.debug("no project with id={}.", projectId);
+                	return new ResourceNotFoundException("No project found with id=" + projectId);
+                	});
         
         List<Long> projIds = proj.getDependentProjectIds();
         for (Long projId : projIds) {
@@ -498,13 +534,18 @@ public class PMSEntityProvider {
         boolean ret = false;
         
         PMSProject project = projRepo.findById(projectId).orElseThrow(
-                ()->new ResourceNotFoundException("No project found with id=" + projectId));
+                ()->{
+                log.debug("no project with id={}.", projectId);
+                return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
         
         do {
+        	// check if the user is assigned to project
             if (isUserExistsInTask(userId, project.getDefaultTask().getId())) {
                 ret = true;
                 break;
             }
+            // check if the user is assigned to the project's tasks. 
             List<Long> taskIds = project.getTaskIds();
             for (Long taskId : taskIds) {
                 if (isUserExistsInTask(userId, taskId)) {
@@ -519,11 +560,15 @@ public class PMSEntityProvider {
     
     public boolean isUserExistsInTask(Long userId, Long taskId) {
     	if (!userRepo.existsById(userId)) {
+    		log.debug("no user with id={}", userId);
     		throw new ResourceNotFoundException("No user found with id=" + userId);
     	}
     	
     	PMSTask task = taskRepo.findById(taskId).orElseThrow(
-    			()->new ResourceNotFoundException("No task found with id=" + taskId));
+    			()->{
+    				log.debug("no task with id={}.", taskId);
+    				return new ResourceNotFoundException("No task found with id=" + taskId);
+    			});
     	
     	boolean ret = false;
     	List<Long> userIds = task.getUserIds();
@@ -535,8 +580,10 @@ public class PMSEntityProvider {
     }
     
     // task operations
+    // default task isn't included in the return list. 
     public List<PMSTask> getTasksByProjectIdAndCompanyId(Long projId, Long companyId) {
         if (!projRepo.existsByIdAndCompanyId(projId, companyId)) {
+        	log.debug("no project found with id={}, compan_id={}", projId, companyId);
             throw new ResourceNotFoundException("No project found with id=" + projId + 
             		", and company_id=" + companyId);
         }
@@ -551,6 +598,8 @@ public class PMSEntityProvider {
             PMSTask task = taskRepo.findById(taskId).orElse(null);
             if (task != null) {
                 ret.add(task);
+            } else {
+            	log.debug("task id={} doesn't exist.", taskId);
             }
         }
         
@@ -560,17 +609,20 @@ public class PMSEntityProvider {
     public PMSTask createTask(Long companyId, Long projectId, PMSTask task) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("no company with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("no project with id=" + projectId + " in company with id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
     	// verify if the task doesn't exist. 
     	if (taskRepo.existsByNameAndProjectId(task.getName(), projectId)) {
+    		log.debug("task name={} already exists, cannot create task with this name in project={}", task.getName(), projectId);
     		throw new DuplicateObjectsException("task exists with name=" 
     					+ task.getName() + " project_id=" + projectId + " , and company_id=" + companyId);
     	}
@@ -588,7 +640,10 @@ public class PMSEntityProvider {
         
         // update project
         PMSProject project = projRepo.findById(projectId).orElseThrow(
-        		()-> new ResourceNotFoundException("No project found with id=" + projectId));
+        		()-> {
+        			log.debug("no project with id={}.", projectId);
+        			return new ResourceNotFoundException("No project found with id=" + projectId);
+        		});
         project.addTaskId(task.getId());
         projRepo.save(project);
         
@@ -598,27 +653,34 @@ public class PMSEntityProvider {
     public PMSTask updateTask(Long companyId, Long projectId, Long taskId, PMSTask task) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("no company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("no project with id={} found in company={}", projectId, companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
     	// verify if the task exists. 
     	if (!taskRepo.existsByIdAndProjectId(taskId, projectId)) {
+    		log.debug("no task with id={} exists in project={}", taskId, projectId);
     		throw new ResourceNotFoundException("No task found with id=" + taskId 
     					+ " in project_id=" + projectId + " , and company_id=" + companyId);
     	}
     	
     	PMSTask oldTask = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()->{
+                	log.debug("no task with id={}.", taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
     	// update name
     	if (task.getName() != null 
     			&& !task.getName().equals(oldTask.getName())) { // need to update name. 
     		if (taskRepo.existsByNameAndProjectId(task.getName(), projectId)) { // new name exists. won't update. 
+    			log.debug("task with new name={} exists.", task.getName());
     			throw new DuplicateObjectsException("new name " + task.getName() + " exists.");
     		}
     		oldTask.setName(task.getName());
@@ -629,8 +691,9 @@ public class PMSEntityProvider {
     		oldTask.setDesc(task.getDesc());
     	}
     	
-    	// avatar
-        //private PMSFile avatar;
+    	if (task.getAvatar() != null) {
+    		oldTask.setAvatar(task.getAvatar());
+        }
         
     	// start date
     	if (task.getStartDate() != null
@@ -660,17 +723,35 @@ public class PMSEntityProvider {
     }
     
     public void cleanupTasks(Long companyId, Long projectId, List<Long> taskIds) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		log.debug("no company found with id=" + companyId);
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	PMSProject project = projRepo.findByIdAndCompanyId(projectId, companyId)
+    			.orElseThrow(()->{
+    				log.debug("no project with id={} in company={}.", projectId, companyId);
+    				return new ResourceNotFoundException("no project with id=" + projectId 
+    						+ " ,in company=" + companyId);
+    			});
+    	
         if (taskIds.size() == 0) {
             return;
         }
         
         List<PMSTask> tasks = this.getTasksByIds(taskIds);
-        List<Long> beDeletedTaskIds = new ArrayList<>();
         for (PMSTask task : tasks) {
-            // find its project to ensure no dependency issue.
-        	PMSProject project = projRepo.findById(task.getProjectId())
-        			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + task.getId()));
-        	
+        	// verify project_id
+        	if (task.getProjectId().longValue() != projectId.longValue()) {
+        		log.debug("task with id={}, its project_id={}, mismatch with the projectId={}.", 
+        				task.getId(), task.getProjectId(), projectId);
+        		throw new RequestValueMismatchException("task with id=" + task.getId() 
+        				+ " ,its project_id=" + task.getProjectId() 
+        				+ " ,mismatch with the projectId=" + projectId);
+        	}
+        		
         	// check if there is dependency issue.
         	List<Long> allTaskIds = project.getTaskIds();
         	List<PMSTask> allTasks = this.getTasksByIds(allTaskIds);
@@ -678,54 +759,56 @@ public class PMSEntityProvider {
         	    // if one of the dependent sets of other tasks contain the task, it can't be removed.
         		if (!allTask.getId().equals(task.getId()) 
         		        && allTask.getDependentTaskIds().contains(task.getId())) {
+        			log.debug("Cannot delete the task={} as other tasks(id={}} depend on it.", task.getId(), allTask.getId());
         			throw new DeletionFailureException("Cannot delete the task (" + task.getId() + ") as other tasks depend on it.");
         		}
         	}
     		
     		// delete its comments
         	cleanupComments(companyId, projectId, task.getCommentIds());
+        	
         	// we won't delete the project default task as it is managed by the project.
         	if (task.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
-        	    beDeletedTaskIds.add(task.getId());
+        	    taskRepo.deleteById(task.getId());
         	}
             
             // update project, remove task from the project
             project.removeTaskId(task.getId());
             projRepo.save(project);
         }
-        
-        // finally delete tasks. 
-        for (Long beDeletedTaskId : beDeletedTaskIds) {
-            taskRepo.deleteById(beDeletedTaskId);
-        }            
     }
     
-    public PMSTask addDependentTasks(Long taskId, List<Long> dependentIds) {
+    public PMSTask addDependentTasks(Long taskId, List<Long> dependentTaskIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()->{
+                	log.debug("no task found with id={}.", taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
 
-        for (Long dependentId : dependentIds) {
+        for (Long dependentTaskId : dependentTaskIds) {
             // a task cannot dependent on itself.
-            if (!ret.getId().equals(dependentId) 
-                    && taskRepo.existsById(dependentId)) {
-                ret.addDependentTaskId(dependentId);
+            if (taskRepo.existsById(dependentTaskId) 
+                    && !ret.getId().equals(dependentTaskId)) {
+                ret.addDependentTaskId(dependentTaskId);
             }
         }
-        taskRepo.save(ret);
         
-        return ret;
+        return taskRepo.save(ret);
     }
     
-    public PMSTask setDependentTasks(Long taskId, List<Long> dependentIds) {
+    public PMSTask setDependentTasks(Long taskId, List<Long> dependentTaskIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()->{
+                	log.debug("no task found with id={}.", taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
         
         ret.getDependentTaskIds().clear();
-        for (Long dependentId : dependentIds) {
+        for (Long dependentTaskId : dependentTaskIds) {
             // a task cannot dependent on itself.
-            if (!ret.getId().equals(dependentId) 
-                    && taskRepo.existsById(dependentId)) {
-                ret.addDependentTaskId(dependentId);
+            if (taskRepo.existsById(dependentTaskId) 
+                    && !ret.getId().equals(dependentTaskId)) {
+                ret.addDependentTaskId(dependentTaskId);
             }
         }
         taskRepo.save(ret);
@@ -733,32 +816,33 @@ public class PMSEntityProvider {
         return ret;
     }
 
-    public PMSTask removeDependentTasks(Long taskId, List<Long> dependentIds) {
+    public PMSTask removeDependentTasks(Long taskId, List<Long> dependentTaskIds) {
         PMSTask ret = taskRepo.findById(taskId).orElseThrow(
                 ()->new ResourceNotFoundException("No task found with id=" + taskId));
         
         List<Long> currentDependentIds = ret.getDependentTaskIds();
-        for (Long dependentId : dependentIds) {
-            if (currentDependentIds.contains(dependentId)) {
-                ret.removeDependentTaskId(dependentId);
+        for (Long dependentTaskId : dependentTaskIds) {
+            if (currentDependentIds.contains(dependentTaskId)) {
+                ret.removeDependentTaskId(dependentTaskId);
             }
         }
-        taskRepo.save(ret);
-        
-        return ret;
+        return taskRepo.save(ret);
     }
     
     public List<PMSTask> getDependentTasks(Long taskId) {
         List<PMSTask> tasks = new ArrayList<>();
         
         PMSTask task = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()->{
+                	log.debug("no task found with id={}.", taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
         
-        List<Long> taskIds = task.getDependentTaskIds();
-        for (Long depId : taskIds) {
-            PMSTask dep = taskRepo.findById(depId).orElseGet(null);
-            if (dep != null) {
-                tasks.add(dep);
+        List<Long> dependentTaskIds = task.getDependentTaskIds();
+        for (Long dependentTaskId : dependentTaskIds) {
+            PMSTask dependentTask = taskRepo.findById(dependentTaskId).orElseGet(null);
+            if (dependentTask != null) {
+                tasks.add(dependentTask);
             }
         }
         
@@ -769,17 +853,23 @@ public class PMSEntityProvider {
     public PMSComment createCommentForProject(Long companyId, Long projectId, PMSComment comment) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
     	PMSProject project = projRepo.findById(projectId)
-    			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
+    			.orElseThrow(()->{
+    				log.debug("No project found with id=" + projectId);
+    				return new ResourceNotFoundException("No project found with id=" + projectId);
+    			});
     	
     	// get default task, will create comment to default task. 
     	PMSTask task = project.getDefaultTask();
@@ -796,17 +886,23 @@ public class PMSEntityProvider {
     public PMSComment createCommentForTask(Long companyId, Long projectId, Long taskId, PMSComment comment) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+    				+ " ,in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
+					+ " ,in company_id=" + companyId);
     	}
     	
     	// check if the task exists. 
     	if (!taskRepo.existsByIdAndProjectId(taskId, projectId)) {
+    		log.debug("No task found with id=" + taskId 
+    				+ " with project_id=" + projectId 
+    				+ " with company_id=" + companyId);
     		throw new ResourceNotFoundException("No task found with id=" + taskId 
     				+ " with project_id=" + projectId 
     				+ " with company_id=" + companyId);
@@ -814,9 +910,14 @@ public class PMSEntityProvider {
     	
     	// create comment to taskId. 
     	PMSTask task = taskRepo.findById(taskId)
-    			.orElseThrow(()->new ResourceNotFoundException("No task found with id=" + taskId 
+    			.orElseThrow(()->{
+    				log.debug("No task found with id=" + taskId 
+        					+ " with project_id=" + projectId 
+        					+ " with company_id=" + companyId);
+    				return new ResourceNotFoundException("No task found with id=" + taskId 
     					+ " with project_id=" + projectId 
-    					+ " with company_id=" + companyId));
+    					+ " with company_id=" + companyId);
+    			});
     	comment.setTaskId(taskId);
     	commentRepo.save(comment);
     	
@@ -830,39 +931,63 @@ public class PMSEntityProvider {
     public void cleanupComments(Long companyId, Long projectId, List<Long> commentIds) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
         List<PMSComment> comments = commentRepo.findAllById(commentIds);
-        List<Long> beRemovedCommentIds = new ArrayList<>();
         for (PMSComment comment : comments) {
+        	// delete files
+        	List<PMSFile> attachments = comment.getAttachments();
+        	for (PMSFile attachment : attachments) {
+        		fileRepo.delete(attachment);
+        		// TODO
+        		// delete files from the OS. 
+        	}
+        	
         	// update task
         	PMSTask task = taskRepo.findById(comment.getTaskId()).orElse(null);
         	if (task == null) {
+        		log.debug("task == null, skip it.");
         		continue;
         	}
         	task.removeCommentId(comment.getId());
         	taskRepo.save(task);
         	
-        	beRemovedCommentIds.add(comment.getId());
-        }
-        
-        // delete comments
-        for (Long beRemovedCommentId : beRemovedCommentIds) {
-            commentRepo.deleteById(beRemovedCommentId);
-        }
+        	commentRepo.delete(comment);
+        }        
     }
     
     // return: [task0, task1, ...]
-    public List<PMSComment> getCommentsByTask(Long taskId) {
+    public List<PMSComment> getCommentsByTask(Long companyId, Long projectId, Long taskId) {
+    	// check if the company exists. 
+    	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
+    		throw new ResourceNotFoundException("No company found with id=" + companyId);
+    	}
+    	
+    	// check if the project exists. 
+    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    		throw new ResourceNotFoundException("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
+    	}
+    	
+    	// check if the task exists. 
     	PMSTask task = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()->{
+                	log.debug("No task found with id=" + taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
     	
         List<PMSComment> ret = new ArrayList<>();
         List<Long> commentIds = task.getCommentIds();
@@ -870,6 +995,8 @@ public class PMSEntityProvider {
             PMSComment comment = commentRepo.findById(commentId).orElseGet(null);
             if (comment != null) {
                 ret.add(comment);
+            } else {
+            	log.debug("comment with id={} is null.", commentId);
             }
         }
         
@@ -879,11 +1006,14 @@ public class PMSEntityProvider {
     public List<PMSComment> getComments(Long companyId, Long projectId, List<Long> commentIds) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
@@ -896,7 +1026,10 @@ public class PMSEntityProvider {
             ret = new ArrayList<>();
             for (Long commentId : commentIds) {
                 PMSComment comment = commentRepo.findById(commentId).orElseThrow(
-                        ()->new ResourceNotFoundException("No comment found with id=" + commentId));
+                        ()-> {
+                        	log.debug("No comment found with id=" + commentId);
+                        	return new ResourceNotFoundException("No comment found with id=" + commentId);
+                        });
                 ret.add(comment);
             }
         }
@@ -908,38 +1041,49 @@ public class PMSEntityProvider {
     public List<PMSComment> getCommentsForProjectOnly(Long companyId, Long projectId) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
-        PMSProject project = projRepo.findById(projectId).orElseThrow(()
-                ->new ResourceNotFoundException("No project found with id=" + projectId));
+        PMSProject project = projRepo.findById(projectId).orElseThrow(()-> {
+                	log.debug("No project found with id=" + projectId);
+                	return new ResourceNotFoundException("No project found with id=" + projectId);
+                });
         
         PMSTask task = project.getDefaultTask();
         
-        return getCommentsByTask(task.getId());
+        return getCommentsByTask(companyId, projectId, task.getId());
     }
 
     // return: [project, task0, task1, task2...]
     public List<List<PMSComment>> getCommentsByProject(Long companyId, Long projectId) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
     	PMSProject project = projRepo.findById(projectId)
-    			.orElseThrow(()->new ResourceNotFoundException("No project found with id=" + projectId));
+    			.orElseThrow(()-> {
+    				log.debug("No project found with id=" + projectId);
+    				return new ResourceNotFoundException("No project found with id=" + projectId);
+    			});
     	
     	List<List<PMSComment>> ret = new ArrayList<>();
 
@@ -951,7 +1095,7 @@ public class PMSEntityProvider {
     	// 2. add tasks comments
     	List<Long> taskIds = project.getTaskIds();
     	for (Long taskId : taskIds) {
-    		List<PMSComment> comments = getCommentsByTask(taskId);
+    		List<PMSComment> comments = getCommentsByTask(companyId, projectId, taskId);
     		ret.add(comments);
     	}
 
@@ -961,17 +1105,24 @@ public class PMSEntityProvider {
     public PMSComment updateComment(Long companyId, Long projectId, Long commentId, PMSComment comment) {
     	// check if the company exists. 
     	if (!compRepo.existsById(companyId)) {
+    		log.debug("No company found with id=" + companyId);
     		throw new ResourceNotFoundException("No company found with id=" + companyId);
     	}
     	
     	// check if the project exists. 
     	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
+    		log.debug("No project found with id=" + projectId 
+					+ " in company_id=" + companyId);
     		throw new ResourceNotFoundException("No project found with id=" + projectId 
 					+ " in company_id=" + companyId);
     	}
     	
     	PMSComment ret = commentRepo.findById(comment.getId())
-    			.orElseThrow(()->new ResourceNotFoundException("No comment found with id=" + comment.getId()));
+    			.orElseThrow(()-> {
+    				log.debug("No comment found with id=" + comment.getId());
+    				return new ResourceNotFoundException("No comment found with id=" + comment.getId());
+    			});
+    	
     	if (comment.getTitle() != null) {
     		ret.setTitle(comment.getTitle());
     	}

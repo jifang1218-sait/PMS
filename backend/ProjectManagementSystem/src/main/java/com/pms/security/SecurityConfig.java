@@ -1,4 +1,4 @@
-package com.pms;
+package com.pms.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.pms.constants.PMSRoleName;
-import com.pms.security.PMSAccessDeniedHandler;
-import com.pms.security.PMSAuthenticationProvider;
-import com.pms.security.PMSAuthenticationTokenFilter;
-import com.pms.security.PMSUnauthorizedHandler;
 
 //@Profile("psdev")
 @Configuration

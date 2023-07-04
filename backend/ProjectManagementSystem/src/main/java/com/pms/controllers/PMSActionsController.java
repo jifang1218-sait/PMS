@@ -64,21 +64,21 @@ public class PMSActionsController {
     @PostMapping(value="/depend/projects/{project_id}")
     public PMSProject addDependentProjects(@PathVariable("project_id") Long projectId, 
             @RequestBody List<Long> dependentProjectIds) {
-        return entityProvider.addDependentProjects(projectId, dependentProjectIds);
+        return entityProvider.addDependentProjectIds(projectId, dependentProjectIds);
     }
     
     @PreAuthorize("hasAnyAuthority('admin', 'manager', 'technician', 'viewer')")
     @PutMapping(value="/depend/projects/{project_id}")
     public PMSProject setDependentProjects(@PathVariable("projectId") Long projectId, 
             @RequestBody List<Long> dependentProjectIds) {
-        return entityProvider.setDependentProjects(projectId, dependentProjectIds);
+        return entityProvider.setDependentProjectIds(projectId, dependentProjectIds);
     }
     
     @PreAuthorize("hasAnyAuthority('admin', 'manager', 'technician', 'viewer')")
     @DeleteMapping(value="/depend/projects/{project_id}")
     public PMSProject removeDependentProjects(@PathVariable("projectId") Long projectId, 
             @RequestBody List<Long> dependentProjectIds) {
-        return entityProvider.removeDependentProjects(projectId, dependentProjectIds);
+        return entityProvider.removeDependentProjectIds(projectId, dependentProjectIds);
     }
     
     // task dependencies

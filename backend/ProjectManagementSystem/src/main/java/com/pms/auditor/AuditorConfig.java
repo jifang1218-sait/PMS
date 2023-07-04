@@ -1,4 +1,4 @@
-package com.pms;
+package com.pms.auditor;
 
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;

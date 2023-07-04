@@ -889,6 +889,138 @@ Return: 200
   "modifiedTime" : 1688050305911
 }
 
+=============================================================
+
+Get comments by a task. 
+Method: GET
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments
+Params: {company_id}, {project_id}, and {task_id} in url. 
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/1 
+
+Return: 200
+
+[ {
+  "id" : 1,
+  "title" : "new_title",
+  "desc" : "new_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835016,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688050305911
+}, 
+......
+{
+  "id" : 11052,
+  "title" : "comment_title",
+  "desc" : "comment_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687993431904,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687993431904
+} ]
+
+=============================================================
+
+Delete a comment 
+Method: DELETE
+URL: /companies/{company_id}/projects/{project_id}/comments/{comment_id}
+Params: {company_id}, {project_id}, and {comment_id} in url. 
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+delete a comment will delete the comment itself, remove it from its task and remove its attachments. 
+
+Example:
+curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/comments/1
+
+Return: 204 (NO_CONTENT)
+
+=============================================================
+
+Get comments by task 
+Method: GET
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments
+Params: {company_id}, {project_id}, and {task_id} in url. 
+Roles: admin, manager, technician, viewer
+Login required: true
+
+Example:
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/1/comments
+
+Return: 200 
+
+[ {
+  "id" : 1,
+  "title" : "new_title",
+  "desc" : "new_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "anonymousUser",
+  "createdTime" : 1687967835016,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688050305911
+},
+...... 
+{
+  "id" : 11052,
+  "title" : "comment_title",
+  "desc" : "comment_desc",
+  "attachments" : [ ],
+  "taskId" : 1,
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1687993431904,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1687993431904
+} ]
+
+=============================================================
+
+Method: POST
+URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments
+Params: {company_id}, {project_id}, and {task_id} in url, PMSComment object in request body.  
+Roles: admin, manager, technician, viewer
+Login required: true
+Note: 
+1. this function doesn't read id, attachments and taskId fields.
+
+Example:
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/companies/1/projects/1/tasks/2/comments -d '{"title":"task_comment_title", "desc":"task_comment_desc"}'
+
+Return: 201 Created
+
+{
+  "id" : 11152,
+  "title" : "task_comment_title",
+  "desc" : "task_comment_desc",
+  "attachments" : [ ],
+  "taskId" : 2,
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1688417302699,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688417302699
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
