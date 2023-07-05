@@ -157,6 +157,7 @@ public class PMSEntityProvider {
     		ret = fileRepo.findByRealFilename(PMSEntityConstants.kCompanyDefaultAvatarPath).orElse(ret);
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kCompanyDefaultAvatarPath, PMSFileType.Image);
+    		ret.setParentId(PMSEntityConstants.kDefaultFileParentId);
     		ret = fileRepo.save(ret);
     		log.debug("no default company avatar, create it.");
     	}
@@ -176,6 +177,7 @@ public class PMSEntityProvider {
     		ret = fileRepo.findByRealFilename(PMSEntityConstants.kProjectDefaultAvatarPath).orElse(ret);
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kProjectDefaultAvatarPath, PMSFileType.Image);
+    		ret.setParentId(PMSEntityConstants.kDefaultFileParentId);
     		ret = fileRepo.save(ret);
     		log.debug("no default project avatar, create it.");
     	}
@@ -195,11 +197,39 @@ public class PMSEntityProvider {
     		ret = fileRepo.findByRealFilename(PMSEntityConstants.kTaskDefaultAvatarPath).orElse(ret);
     	} else {
     		ret = new PMSFile(PMSEntityConstants.kTaskDefaultAvatarPath, PMSFileType.Image);
+    		ret.setParentId(PMSEntityConstants.kDefaultFileParentId);
     		ret = fileRepo.save(ret);
     		log.debug("no default task avatar, create it.");
     	}
     	
     	return ret;
+    }
+    
+    /**
+     * helper function, get the user's default avatar.  
+     * otherwise create and save the user's default avatar. 
+     * @return the user's default avatar object. 
+     */
+    private PMSFile getDefaultUserAvatar() {
+    	PMSFile ret = null;
+    	
+    	if (fileRepo.existsByRealFilename(PMSEntityConstants.kUserDefaultAvatarPath)) {
+    		ret = fileRepo.findByRealFilename(PMSEntityConstants.kUserDefaultAvatarPath).orElse(ret);
+    	} else {
+    		ret = new PMSFile(PMSEntityConstants.kUserDefaultAvatarPath, PMSFileType.Image);
+    		ret.setParentId(PMSEntityConstants.kDefaultFileParentId);
+    		ret = fileRepo.save(ret);
+    		log.debug("no default user avatar, create it.");
+    	}
+    	
+    	return ret;
+    }
+    
+    private PMSRole getRoleByName(PMSRoleName name) {
+    	return roleRepo.findByName(name).orElseThrow(()-> {
+    		log.debug("cannot find role=" + name.getValue());
+    		return new ResourceNotFoundException("cannot find role=" + name.getValue());
+    	});
     }
     
     // company
@@ -232,7 +262,9 @@ public class PMSEntityProvider {
         }
         
         if (comp.getAvatar() != null) {
-        	addFile(comp.getAvatar());
+        	PMSFile avatar = comp.getAvatar();
+        	avatar.setParentId(comp.getId());
+        	addFile(avatar);
         } else {
         	comp.setAvatar(getDefaultCompanyAvatar());
         }
@@ -279,7 +311,15 @@ public class PMSEntityProvider {
     	}
     	
         if (comp.getAvatar() != null) {
-            ret.setAvatar(comp.getAvatar());
+        	// remove old one if exists.
+        	PMSFile oldAvatar = ret.getAvatar();
+        	if (oldAvatar != null &&
+        		oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+        		deleteFile(oldAvatar.getId());
+        	}
+        	PMSFile newAvatar = comp.getAvatar();
+        	newAvatar.setParentId(comp.getId());
+            ret.setAvatar(newAvatar);
         }
         if (comp.getDesc() != null) {
             ret.setDesc(comp.getDesc());
@@ -356,7 +396,9 @@ public class PMSEntityProvider {
         
         if (project.getAvatar() != null) {
         	log.debug("project's avatar != null, will use the customized avatar.");
-        	addFile(project.getAvatar());
+        	PMSFile avatar = project.getAvatar();
+        	avatar.setParentId(project.getId());
+        	addFile(avatar);
         } else {
         	log.debug("project's avatar == null, use project default avatar.");
         	project.setAvatar(getDefaultProjectAvatar());
@@ -401,7 +443,15 @@ public class PMSEntityProvider {
         	ret.setPriority(project.getPriority());
         }
         if (project.getAvatar() != null) {
-            ret.setAvatar(project.getAvatar());
+        	PMSFile oldAvatar = ret.getAvatar();
+        	if (oldAvatar != null) {
+	        	if (oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+	        		deleteFile(oldAvatar.getId());
+	        	}
+        	}
+        	PMSFile newAvatar = project.getAvatar();
+        	newAvatar.setParentId(projectId);
+            ret.setAvatar(newAvatar);
         }
         if (project.getDesc() != null) {
             ret.setDesc(project.getDesc());
@@ -452,6 +502,16 @@ public class PMSEntityProvider {
         }
         PMSTask defaultTask = project.getDefaultTask();
         if (defaultTask != null) {
+        	// delete avatar. 
+        	PMSFile avatar = defaultTask.getAvatar();
+        	if (avatar != null &&
+        		avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+        		deleteFile(avatar.getId());
+        	}
+        	List<PMSFile> attachments = defaultTask.getAttachments();
+        	for (PMSFile attachment : attachments) {
+        		deleteFile(attachment.getId());
+        	}
             List<Long> commentIds = defaultTask.getCommentIds();
             cleanupComments(project.getCompanyId(), project.getId(), commentIds);
         }
@@ -629,7 +689,9 @@ public class PMSEntityProvider {
         
         // save avatar
         if (task.getAvatar() != null) {
-        	addFile(task.getAvatar());
+        	PMSFile avatar = task.getAvatar();
+        	avatar.setParentId(task.getId());
+        	addFile(avatar);
         } else {
         	task.setAvatar(getDefaultTaskAvatar());
         }
@@ -692,7 +754,13 @@ public class PMSEntityProvider {
     	}
     	
     	if (task.getAvatar() != null) {
-    		oldTask.setAvatar(task.getAvatar());
+    		PMSFile oldAvatar = oldTask.getAvatar();
+    		if (oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+    			fileRepo.deleteById(oldAvatar.getId());
+    		}
+    		PMSFile newAvatar = task.getAvatar();
+    		newAvatar.setParentId(oldTask.getId());
+    		oldTask.setAvatar(newAvatar);
         }
         
     	// start date
@@ -762,6 +830,19 @@ public class PMSEntityProvider {
         			log.debug("Cannot delete the task={} as other tasks(id={}} depend on it.", task.getId(), allTask.getId());
         			throw new DeletionFailureException("Cannot delete the task (" + task.getId() + ") as other tasks depend on it.");
         		}
+        	}
+        	
+        	// delete avatar
+        	PMSFile avatar = task.getAvatar();
+        	if (avatar != null &&
+        		avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+        		deleteFile(avatar.getId());
+        	}
+        	
+        	// delete attachments
+        	List<PMSFile> attachments = task.getAttachments();
+        	for (PMSFile attachment : attachments) {
+        		deleteFile(attachment.getId());
         	}
     		
     		// delete its comments
@@ -948,9 +1029,7 @@ public class PMSEntityProvider {
         	// delete files
         	List<PMSFile> attachments = comment.getAttachments();
         	for (PMSFile attachment : attachments) {
-        		fileRepo.delete(attachment);
-        		// TODO
-        		// delete files from the OS. 
+        		deleteFile(attachment.getId());
         	}
         	
         	// update task
@@ -1138,51 +1217,101 @@ public class PMSEntityProvider {
     	return ret;
     }
     
-    private void cleanupFiles(List<String> filePaths) {
-        // TODO
-    }
-    
     // users operation
     private PMSUser createAdminUser(PMSUser user) {
-    	user.setPassword(passwdEncoder.encode(user.getPassword()));
-        PMSUser ret = userRepo.save(user);
-        
-        return ret;
+    	// check if the user exists. 
+    	if (userRepo.existsByEmail(user.getEmail())) {
+    		log.debug("user email=" + user.getEmail() + " already exists.");
+    		throw new DuplicateObjectsException("user email=" + user.getEmail() + " already exists.");
+    	}
+    	
+    	if (user.getPassword() != null) {
+    		user.setPassword(passwdEncoder.encode(user.getPassword()));
+    	}
+    	
+    	if (user.getAvatar() != null) {
+    		user.getAvatar().setParentId(user.getId());
+    		fileRepo.save(user.getAvatar());
+    	} else {
+    		user.setAvatar(getDefaultUserAvatar());
+    	}
+    	
+    	// process roles. we won't create new instance, instead we use existing roles. 
+    	List<PMSRole> existingRoles = new ArrayList<>();
+    	List<PMSRole> newRoles = user.getRoles();
+    	for (PMSRole newRole : newRoles) {
+    		PMSRole existingRole = this.getRoleByName(newRole.getName());
+    		existingRoles.add(existingRole);
+    	}
+    	user.setRoles(existingRoles);
+    	
+    	return userRepo.save(user);
     }
     
     private PMSUser createNormalUser(PMSUser user, Long companyId) {
     	PMSCompany comp = compRepo.findById(companyId).orElseThrow(
-        		()->new ResourceNotFoundException("No company found with id=" + companyId));
+        		()-> {
+        			log.debug("No company found with id=" + companyId);
+        			return new ResourceNotFoundException("No company found with id=" + companyId);
+        		});
     	
-    	user.setPassword(passwdEncoder.encode(user.getPassword()));
-        PMSUser ret = userRepo.save(user);
-        
-        comp.getUserIds().add(ret.getId());
+    	// check if the user exists. 
+    	if (userRepo.existsByEmail(user.getEmail())) {
+    		log.debug("user email=" + user.getEmail() + " already exists.");
+    		throw new DuplicateObjectsException("user email=" + user.getEmail() + " already exists.");
+    	}
+    	
+    	if (user.getPassword() != null) {
+    		user.setPassword(passwdEncoder.encode(user.getPassword()));
+    	}
+    	
+    	if (user.getAvatar() != null) {
+    		user.getAvatar().setParentId(user.getId());
+    		fileRepo.save(user.getAvatar());
+    	} else {
+    		user.setAvatar(getDefaultUserAvatar());
+    	}
+    	
+    	// process roles. we won't create new instance, instead we use existing roles. 
+    	List<PMSRole> existingRoles = new ArrayList<>();
+    	List<PMSRole> newRoles = user.getRoles();
+    	for (PMSRole newRole : newRoles) {
+    		PMSRole existingRole = this.getRoleByName(newRole.getName());
+    		existingRoles.add(existingRole);
+    	}
+    	user.setRoles(existingRoles);
+    	
+    	PMSUser ret = userRepo.save(user);
+    	
+    	comp.getUserIds().add(ret.getId());
         compRepo.save(comp);
-        
+    	
         return ret;
     }
     
     public PMSUser createUser(PMSUser user, Long companyId) {
     	PMSUser ret = null;
     	
-    	// check if user already exists
-    	if (null != userRepo.findByEmail(user.getEmail()).orElse(null)) {
-    		throw new DuplicateObjectsException("user already exists with email=" + user.getEmail());
+    	// check if the user exists. 
+    	if (userRepo.existsByEmail(user.getEmail())) {
+    		log.debug("user email=" + user.getEmail() + " already exists.");
+    		throw new DuplicateObjectsException("user email=" + user.getEmail() + " already exists.");
     	}
     	
-    	// if companyId is -1 and role is admin, means admin role will be created.
-    	// construct admin role. 
-    	PMSRole admin = new PMSRole();
-    	admin.setName(PMSRoleName.admin);
+    	// if companyId is -1, means this user is of admin role. 
     	if (companyId == null || companyId.longValue() == -1 ) {
+    		// construct admin role. 
+        	PMSRole admin = this.getRoleByName(PMSRoleName.admin);
     		if (user.getRoles().contains(admin)) {
     			// create admin user
     			ret = createAdminUser(user);
     		} else {
-    			throw new RequestValueMismatchException();
+    			log.debug("companyId is -1 but there is no admin role info.");
+    			throw new RequestValueMismatchException("companyId is -1 but there is no admin role info.");
     		}
     	} else {
+    		// construct admin role. 
+    		PMSRole admin = this.getRoleByName(PMSRoleName.admin);
     		if (user.getRoles().contains(admin)) {
     			// create admin user
     			ret = createAdminUser(user);
@@ -1236,7 +1365,10 @@ public class PMSEntityProvider {
         
         for (Long id : ids) {
             PMSUser user = userRepo.findById(id).orElseThrow(
-                        () -> new ResourceNotFoundException("No user found with id="+id));
+                        () -> {
+                        	log.debug("No user found with id="+id);
+                        	return new ResourceNotFoundException("No user found with id="+id);
+                        });
             if (!ret.contains(user)) {
                 ret.add(user);
             }
@@ -1324,7 +1456,10 @@ public class PMSEntityProvider {
     
     public PMSTask removeUsersFromTask(Long taskId, List<Long> userIds) {
         PMSTask task = taskRepo.findById(taskId).orElseThrow(
-                ()->new ResourceNotFoundException("No task found with id=" + taskId));
+                ()-> {
+                	log.debug("No task found with id=" + taskId);
+                	return new ResourceNotFoundException("No task found with id=" + taskId);
+                });
         
         List<Long> currentUserIds = task.getUserIds();
         for (Long userId : userIds) {
@@ -1347,13 +1482,12 @@ public class PMSEntityProvider {
         return ret;
     }
     
-    public PMSUser updateUser(Long id, PMSUser user) {
-    	if (id != user.getId()) {
-    		throw new RequestValueMismatchException();
-    	}
-    	
-        PMSUser ret = userRepo.findById(id).orElseThrow(
-                ()->new ResourceNotFoundException("No user found with id=" + id));
+    public PMSUser updateUser(Long id, PMSUser user, Long companyId) {
+    	PMSUser ret = userRepo.findById(id).orElseThrow(
+                ()-> {
+                	log.debug("No user found with id=" + id);
+                	return new ResourceNotFoundException("No user found with id=" + id);
+                });
         
         if (user.getFirstName() != null) {
         	ret.setFirstName(user.getFirstName());
@@ -1362,21 +1496,37 @@ public class PMSEntityProvider {
         	ret.setLastName(user.getLastName());
         }
         if (user.getEmail() != null) {
-        	ret.setEmail(user.getEmail());
+        	if (userRepo.existsByEmail(user.getEmail())) {
+        		log.debug("cannot update user, user with email=" + user.getEmail() + " already exists.");
+        		throw new DuplicateObjectsException("cannot update user, user with email=" + user.getEmail() + " already exists.");
+        	} else {
+        		ret.setEmail(user.getEmail());
+        	}
         }
         if (user.getPassword() != null) {
         	ret.setPassword(passwdEncoder.encode(user.getPassword()));
         }
         
         if (user.getAvatar() != null) {
+        	PMSFile avatar = ret.getAvatar();
+        	if (avatar != null && avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
+        		deleteFile(avatar.getId());
+        	}
         	ret.setAvatar(user.getAvatar());
         }
         
         if (user.getRoles() != null) {
-        	ret.setRoles(user.getRoles());
+        	// process roles. we won't create new instance, instead we use existing roles. 
+        	List<PMSRole> existingRoles = new ArrayList<>();
+        	List<PMSRole> newRoles = user.getRoles();
+        	for (PMSRole newRole : newRoles) {
+        		PMSRole existingRole = this.getRoleByName(newRole.getName());
+        		existingRoles.add(existingRole);
+        	}
+        	ret.setRoles(existingRoles);
         }
 
-        return userRepo.save(user);
+        return userRepo.save(ret);
     }
     
     // delete user, remove the user from project/task
@@ -1391,21 +1541,42 @@ public class PMSEntityProvider {
     		}
     	}
     	
-    	// delete users.
+    	// delete user avatars. 
     	List<PMSFile> avatars = new ArrayList<>();
     	for (Long userId : userIds) {
     		// delete user's avatar.
     		avatars.clear();    		
     		PMSUser user = userRepo.findById(userId).orElse(null);
     		if (user != null) {
-    			avatars.add(user.getAvatar());
+    			PMSFile avatar = user.getAvatar();
+    			// it is a customized avatar. 
+    			if (avatar != null &&
+    					avatar.getParentId() != PMSEntityConstants.kDefaultFileParentId) {
+    				deleteFile(avatar.getId());
+    			}
     		}
-    		// remove avatar. 
-    		if (avatars.size() > 0) {
-    			fileRepo.deleteAll(avatars);
-    		}
-            userRepo.deleteById(userId);
     	}
+    	
+    	// remove users from company.
+    	List<PMSCompany> companies = compRepo.findAll();
+    	for (PMSCompany company : companies) {
+    		boolean needSave = false;
+    		List<Long> companyUserIds = company.getUserIds();
+    		for (Long userId : userIds) {
+    			if (companyUserIds.contains(userId)) {
+    				companyUserIds.remove(userId);
+    				needSave = true;
+    			}
+    		}
+    		if (needSave) {
+    			compRepo.save(company);
+    		}
+    	}
+    	
+    	// delete users. 
+    	for (Long userId : userIds) {
+    		userRepo.deleteById(userId);
+    	}	
     }
     
     public List<PMSProject> getProjectsByUserId(Long userId) {
@@ -1603,9 +1774,14 @@ public class PMSEntityProvider {
 	
 	public void deleteFile(Long fileId) {
 		if (fileRepo.existsById(fileId)) {
-			fileRepo.deleteById(fileId);
-			// TODO
-			// remove file from system. 
+			PMSFile file = fileRepo.findById(fileId).orElseGet(null);
+			if (file != null) {
+				String path = file.getRealFilename();
+				fileRepo.deleteById(fileId);
+				// remove file from system. 
+				File beDeleted = new File(path);
+			    beDeleted.delete();
+			}
 		} else {
 			throw new ResourceNotFoundException("File cannot be found with id=" + fileId);
 		}

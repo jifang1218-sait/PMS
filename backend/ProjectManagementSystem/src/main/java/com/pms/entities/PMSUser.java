@@ -50,26 +50,29 @@ public class PMSUser {
     private Long id;
     
     @Column(name="FNAME", nullable=false)
-    @NotNull
-    @Size(min=PMSEntityConstants.kMinUserNameLen)
+    @NotNull(message="first name cannot be null.")
+    @Size(min=PMSEntityConstants.kMinUserNameLen, 
+    	max=PMSEntityConstants.kMaxUserNameLen,
+    	message="firstName's length is [{min}, {max}]")
     private String firstName;
     
     @Column(name="LNAME", nullable=false)
-    @NotNull
-    @Size(min=PMSEntityConstants.kMinUserNameLen)
+    @NotNull(message="last name cannot be null.")
+    @Size(min=PMSEntityConstants.kMinUserNameLen,
+    		max=PMSEntityConstants.kMaxUserNameLen,
+    	message="lastName's length is [{min}, {max}]")
     private String lastName;
     
     @Column(name="EMAIL", nullable=false, unique=true)
-    @NotNull
+    @NotNull(message="email cannot be null.")
     @Email
     private String email;
     
     @Column(name="PASSWORD", nullable=false)
-    @NotNull
-    @Size(min=PMSEntityConstants.kMinUserPasswordLen)
+    @NotNull(message="password cannot be null.")
     private String password;
     
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne
     private PMSFile avatar;
     
     @ManyToMany

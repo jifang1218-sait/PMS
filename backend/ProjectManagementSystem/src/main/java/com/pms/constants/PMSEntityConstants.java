@@ -36,7 +36,9 @@ public interface PMSEntityConstants {
     
     // default company id is used for user with admin role. 
     static final long kDefaultCompanyId = -1L;
+    static final long kDefaultFileParentId = -1L;
     static final String kCompanyDefaultAvatarPath = "/upload/avatar/company_default_avatar.png";
     static final String kProjectDefaultAvatarPath = "/upload/avatar/project_default_avatar.png";
     static final String kTaskDefaultAvatarPath = "/upload/avatar/task_default_avatar.png";
+    static final String kUserDefaultAvatarPath = "/upload/avatar/user_default_avatar.png";
 }

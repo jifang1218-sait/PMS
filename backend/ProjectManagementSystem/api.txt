@@ -983,6 +983,7 @@ Return: 200
 
 =============================================================
 
+Create a comment for a task. 
 Method: POST
 URL: /companies/{company_id}/projects/{project_id}/tasks/{task_id}/comments
 Params: {company_id}, {project_id}, and {task_id} in url, PMSComment object in request body.  
@@ -1008,25 +1009,198 @@ Return: 201 Created
   "modifiedTime" : 1688417302699
 }
 
+=============================================================
 
+Create a user. 
+Method: POST
+URL: /users
+Params: PMSUser object in request body, company_id in request params. When create an admin user, do not specify company_id in request params(admin users don't have company).   
+Roles: admin, manager, technician, viewer
+Login required: true
+Note: 
+1. this function reads firstName, lastName, password, email, avatar, roles. 
 
+Ex. 
+curl -X POST -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/users?company_id=1 -d '{"firstName":"user_first_name", "lastName":"user_last_name", "email":"user_email@mail.com", "password":"password", "roles":["technician", "viewer"]}';
 
+Return: 201 Created
 
+{
+  "id" : 202,
+  "firstName" : "user_first_name",
+  "lastName" : "user_last_name",
+  "email" : "user_email@mail.com",
+  "password" : "$2a$10$fdHUhlq0GLS2Ch4wECjrc.lEK1b6io4p.TFuLyDXHooV3kXMxizwm",
+  "avatar" : {
+    "id" : 752,
+    "realFilename" : "/upload/avatar/user_default_avatar.png",
+    "displayFilename" : "/upload/avatar/user_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "parentId" : -1,
+    "createdBy" : "root@sait.com",
+    "createdTime" : 1688533547230,
+    "modifiedBy" : "root@sait.com",
+    "modifiedTime" : 1688533547230
+  },
+  "roles" : [ {
+    "id" : 3,
+    "name" : "technician",
+    "desc" : "technician:technician",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823665,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823665
+  }, {
+    "id" : 4,
+    "name" : "viewer",
+    "desc" : "viewer:viewer",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823692,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823692
+  } ],
+  "tags" : [ ],
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1688533547377,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688533547377
+}
 
+=============================================================
 
+Get a user
+Method: GET
+URL: /users/{user_id}
+Params: {user_id} in url.    
+Roles: admin, manager, technician, viewer
+Login required: true
 
+curl -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/users/202
 
+Return: 200
 
+{
+  "id" : 202,
+  "firstName" : "user_first_name",
+  "lastName" : "user_last_name",
+  "email" : "user_email@mail.com",
+  "password" : "$2a$10$fdHUhlq0GLS2Ch4wECjrc.lEK1b6io4p.TFuLyDXHooV3kXMxizwm",
+  "avatar" : {
+    "id" : 752,
+    "realFilename" : "/upload/avatar/user_default_avatar.png",
+    "displayFilename" : "/upload/avatar/user_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "parentId" : -1,
+    "createdBy" : "root@sait.com",
+    "createdTime" : 1688533547230,
+    "modifiedBy" : "root@sait.com",
+    "modifiedTime" : 1688533547230
+  },
+  "roles" : [ {
+    "id" : 3,
+    "name" : "technician",
+    "desc" : "technician:technician",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823665,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823665
+  }, {
+    "id" : 4,
+    "name" : "viewer",
+    "desc" : "viewer:viewer",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823692,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823692
+  } ],
+  "tags" : [ ],
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1688533547377,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688533547377
+}
 
+=============================================================
 
+Update a user
+Method: Put
+URL: /users/{user_id}
+Params: {company_id} in request params, PMSUser object in request body.     
+Roles: admin, manager, technician, viewer
+Login required: true
+Note:
+1. the user with admin role doesn't have any company (company_id == -1), so if change the user's role from non-admin to admin, the company_id in request param can be ommited; 
+	if change the user's role from admin to non-admin, the company_id in request param must be provided.
+2. this function reads firstName, lastName, password, email, avatar, roles. 
 
+curl -X PUT -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/users/202?company_id=1 -d '{"firstName":"user_first_name1", "lastName":"user_last_name1", "email":"user_email1@mail.com", "password":"password", "roles":["admin", "technician", "viewer"]}';
 
+Return: 200
 
+{
+  "id" : 202,
+  "firstName" : "user_first_name1",
+  "lastName" : "user_last_name1",
+  "email" : "user_email1@mail.com",
+  "password" : "$2a$10$V9MnpknaEDPzSP/UiXFzAuSkRh1FiBvWDrQCyj9hU8gjsPTFY5il6",
+  "avatar" : {
+    "id" : 752,
+    "realFilename" : "/upload/avatar/user_default_avatar.png",
+    "displayFilename" : "/upload/avatar/user_default_avatar.png",
+    "fileType" : "Image",
+    "size" : null,
+    "parentId" : -1,
+    "createdBy" : "root@sait.com",
+    "createdTime" : 1688533547230,
+    "modifiedBy" : "root@sait.com",
+    "modifiedTime" : 1688533547230
+  },
+  "roles" : [ {
+    "id" : 3,
+    "name" : "technician",
+    "desc" : "technician:technician",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823665,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823665
+  }, {
+    "id" : 1,
+    "name" : "admin",
+    "desc" : "admin:admin",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823434,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823434
+  }, {
+    "id" : 4,
+    "name" : "viewer",
+    "desc" : "viewer:viewer",
+    "createdBy" : "anonymousUser",
+    "createdTime" : 1687967823692,
+    "modifiedBy" : "anonymousUser",
+    "modifiedTime" : 1687967823692
+  } ],
+  "tags" : [ ],
+  "createdBy" : "root@sait.com",
+  "createdTime" : 1688533547377,
+  "modifiedBy" : "root@sait.com",
+  "modifiedTime" : 1688537477723
+}
 
+=============================================================
 
+Delete a user
+Method: DELETE
+URL: /users/{user_id}
+Params: {user_id} in url.    
+Roles: admin, manager, technician, viewer
+Login required: true
 
+curl -X DELETE -H {Content-Type} -H {Accept} -H {Authorization} http://localhost:8080/api/v1/entities/users/202
 
-
+Return: 204 NO_CONTENT
 
 
 

@@ -17,6 +17,7 @@ import com.pms.entities.PMSUser;
  */
 public interface PMSUserRepo extends JpaRepository<PMSUser, Long>
 {
+	boolean existsByEmail(String email);
 	Optional<PMSUser> findByEmail(String email);
 	
 //	@Query("SELECT u FROM PMSUser u WHERE u.roles.name = ?1")

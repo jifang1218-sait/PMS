@@ -304,14 +304,9 @@ public class PMSEntitiesController {
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PostMapping(value="/users")
-    public ResponseEntity<PMSUser> createUser(@RequestBody @Valid PMSUser user, 
-    		@RequestParam(name="company_id", required=false) Long companyId, 
-            BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
-        }
-        
-        Long compId = null;
+    public ResponseEntity<PMSUser> createUser(@RequestBody @Validated PMSUser user, 
+    		@RequestParam(name="company_id", required=false) Long companyId) {
+        Long compId = companyId;
         if (companyId == null) {
         	compId = Long.valueOf(PMSEntityConstants.kDefaultCompanyId);
         }
@@ -320,22 +315,19 @@ public class PMSEntitiesController {
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @GetMapping(value="/users/{user_id}")
-    public ResponseEntity<List<PMSUser>> getUser(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<PMSUser> getUser(@PathVariable("user_id") Long userId) {
         List<Long> userIds = new ArrayList<>();
         userIds.add(userId);
         
-        return new ResponseEntity<>(entityProvider.getUsersByIds(userIds), HttpStatus.OK);
+        return new ResponseEntity<>(entityProvider.getUsersByIds(userIds).get(0), HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")
     @PutMapping("/users/{user_id}")
     public ResponseEntity<PMSUser> updateUser(@PathVariable("user_id") Long userId, 
-            @RequestBody @Valid PMSUser user, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
-        }
-        
-        return new ResponseEntity<>(entityProvider.updateUser(userId, user), HttpStatus.OK);
+    		@RequestParam(name="company_id", required=false) Long companyId,  
+            @RequestBody @Validated PMSUser user) {
+        return new ResponseEntity<>(entityProvider.updateUser(userId, user, companyId), HttpStatus.OK);
     }
     
     @PreAuthorize("hasAnyAuthority('manager', 'technician', 'admin', 'viewer')")

@@ -25,10 +25,12 @@ import com.pms.constants.PMSRoleName;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Data
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class PMSRole
 {
@@ -84,5 +86,17 @@ public class PMSRole
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+    
+    public void setName(PMSRoleName name) {
+    	this.name = name;
+    }
+    
+    public void setName(String name) {
+    	this.name = PMSRoleName.valueOf(name);
+    }
+    
+    public PMSRole(String name) {
+    	this.name = PMSRoleName.valueOf(name);
     }
 }

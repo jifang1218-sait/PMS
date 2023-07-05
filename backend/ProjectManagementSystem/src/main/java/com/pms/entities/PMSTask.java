@@ -6,7 +6,6 @@ package com.pms.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -93,7 +92,7 @@ public class PMSTask {
     @Enumerated(EnumType.STRING)
     private PMSTaskStatus status;
     
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany
     private List<PMSFile> attachments;
     
     public PMSTask() {

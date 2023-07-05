@@ -46,6 +46,9 @@ public class PMSFile {
 	@Column(name="FILE_SIZE")
 	private Long size;
 	
+	@Column(name="PARENT_ID")
+	private Long parentId;
+	
 	@CreatedBy
     @Column(updatable=false)
     private String createdBy;
@@ -64,5 +67,6 @@ public class PMSFile {
     	this.displayFilename = fileName;
     	this.realFilename = fileName;
     	this.fileType = fileType;
+    	this.parentId = -1L;
     }
 }
