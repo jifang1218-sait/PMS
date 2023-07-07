@@ -89,15 +89,7 @@ public class PMSEntityProvider {
      * @return the collection to be removed (from old collection). 
      */
     private List<Long> updateIdSets(List<Long> oldIds, List<Long> newIds) {
-        List<Long> beRemovedIdSet = new ArrayList<>();
-        
-        for (Long oldId : oldIds) {
-            if (!newIds.contains(oldId)) {
-                beRemovedIdSet.add(oldId);
-            }
-        }
-        
-        return beRemovedIdSet;
+        // TODO
     }
     
     /**
@@ -109,15 +101,7 @@ public class PMSEntityProvider {
      */
     @SuppressWarnings("unused")
 	private List<String> updateStringSets(List<String> oldStrings, List<String> newStrings) {
-        List<String> beRemovedStringSet = new ArrayList<>();
-        
-        for (String oldString : oldStrings) {
-            if (!newStrings.contains(oldString)) {
-                beRemovedStringSet.add(oldString);
-            }
-        }
-        
-        return beRemovedStringSet;
+        // TODO
     }
     
     /**
@@ -290,55 +274,11 @@ public class PMSEntityProvider {
     }
  
     public PMSCompany updateCompany(Long id, PMSCompany comp) {
-    	PMSCompany ret = compRepo.findById(id).orElseThrow(
-                ()->{
-                	log.debug("no company with id= {}.", id);
-                	return new ResourceNotFoundException("No company found with id=" + id);
-                	});
-        
-    	// change name
-    	if (comp.getName() != null) {
-    		log.debug("new name != null.");
-    		if (!ret.getName().equals(comp.getName())) { // need to change name
-    			log.debug("new name != old name");
-    			if (compRepo.existsByName(comp.getName())) {
-    				log.debug("name " + comp.getName() + " exists, can't update company with this name.");
-    				throw new DuplicateObjectsException("company name="+ comp.getName() + " exists.");
-    			} else {
-    				ret.setName(comp.getName());
-    			}
-    		}
-    	}
-    	
-        if (comp.getAvatar() != null) {
-        	// remove old one if exists.
-        	PMSFile oldAvatar = ret.getAvatar();
-        	if (oldAvatar != null &&
-        		oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-        		deleteFile(oldAvatar.getId());
-        	}
-        	PMSFile newAvatar = comp.getAvatar();
-        	newAvatar.setParentId(comp.getId());
-            ret.setAvatar(newAvatar);
-        }
-        if (comp.getDesc() != null) {
-            ret.setDesc(comp.getDesc());
-        }
-        compRepo.save(ret);
-        
-        return ret;
+    	// TODO
     }
     
     public void cleanupCompanies(List<Long> companyIds) {
-        for (Long companyId : companyIds) {
-            PMSCompany comp = compRepo.findById(companyId).orElse(null);
-            if (comp == null) {
-            	continue;
-            }
-            List<Long> projectIds = comp.getProjectIds();
-            cleanupProjects(companyId, projectIds);
-            compRepo.deleteById(companyId);
-        }
+        // TODO
     }
     
     // project operations
@@ -418,107 +358,15 @@ public class PMSEntityProvider {
     }
 
     public PMSProject updateProject(Long companyId, Long projectId, PMSProject project) {
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("No company with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	PMSProject ret = projRepo.findById(projectId).orElseThrow(
-                ()->{
-                log.debug("no project with id={}.", projectId);	
-                return new ResourceNotFoundException("No project found with id=" + projectId);
-                });
-    	// change project name. 
-        if ((project.getName() != null) && (ret.getName().compareTo(project.getName()) != 0)) {
-        	log.debug("new name != null, new name != old name, need to change project name.");
-        	// need to change project name. 
-        	if (projRepo.existsByNameAndCompanyId(project.getName(), companyId)) {
-        		log.debug("new name:{}, duplicate to the existing name.", project.getName());
-        		throw new DuplicateObjectsException("project " + ret.getName() + " exists in the company with id=" + companyId);
-        	} else {
-        		ret.setName(project.getName());
-        	}   	
-        }
-        if (project.getPriority() != null) {
-        	ret.setPriority(project.getPriority());
-        }
-        if (project.getAvatar() != null) {
-        	PMSFile oldAvatar = ret.getAvatar();
-        	if (oldAvatar != null) {
-	        	if (oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-	        		deleteFile(oldAvatar.getId());
-	        	}
-        	}
-        	PMSFile newAvatar = project.getAvatar();
-        	newAvatar.setParentId(projectId);
-            ret.setAvatar(newAvatar);
-        }
-        if (project.getDesc() != null) {
-            ret.setDesc(project.getDesc());
-        }
-        return projRepo.save(ret);
+    	// TODO
     }
 
     public void cleanupProjects(Long companyId, List<Long> projectIds) {
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("No company with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	if (projectIds.size() == 0) {
-    		return;
-    	}
-
-    	PMSCompany company = compRepo.findById(companyId).orElseGet(null);
-    	List<PMSProject> projects = projRepo.findAllById(projectIds);
-    	for (PMSProject project : projects) {
-    		// check if other projects depend on it.
-    		List<PMSProject> allCompanyProjects = this.getProjectsByCompanyId(companyId);
-    		for (PMSProject allCompanyProject : allCompanyProjects) {
-        		if (allCompanyProject.getDependentProjectIds().contains(project.getId())) {
-        			log.debug("project {} depends on {}, cannot delete it.", allCompanyProject.getId(), project.getId());
-        			throw new DeletionFailureException("Cannot delete the project (" + project.getId() + ") as project " + allCompanyProject.getId() + " depends on it.");
-        		}
-        	}
-
-    		// delete its tasks
-        	List<Long> taskIds = project.getTaskIds();
-        	Long projectId = project.getId();
-            cleanupTasks(companyId, projectId, taskIds);
-            cleanupDefaultTask(project);
-            
-            // update company, remove project from the company
-            company.removeProjectId(projectId);
-            compRepo.save(company);
-            
-            // delete project
-            projRepo.deleteById(projectId);
-        }
+    	// TODO
     }
     
     private void cleanupDefaultTask(PMSProject project) {
-        if (project == null) {
-            return;
-        }
-        PMSTask defaultTask = project.getDefaultTask();
-        if (defaultTask != null) {
-        	// delete avatar. 
-        	PMSFile avatar = defaultTask.getAvatar();
-        	if (avatar != null &&
-        		avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-        		deleteFile(avatar.getId());
-        	}
-        	List<PMSFile> attachments = defaultTask.getAttachments();
-        	for (PMSFile attachment : attachments) {
-        		deleteFile(attachment.getId());
-        	}
-            List<Long> commentIds = defaultTask.getCommentIds();
-            cleanupComments(project.getCompanyId(), project.getId(), commentIds);
-        }
-        
-        // default task will be deleted when the project is deleted.
-        // no need to delete the task manually.
-        // taskRepo.deleteById(defaultTask.getId());
+        // TODO
     }
 
     public PMSProject addDependentProjectIds(Long projectId, List<Long> dependentProjectIds) {
@@ -713,150 +561,11 @@ public class PMSEntityProvider {
     }
     
     public PMSTask updateTask(Long companyId, Long projectId, Long taskId, PMSTask task) {
-    	// check if the company exists. 
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("no company found with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	// check if the project exists. 
-    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
-    		log.debug("no project with id={} found in company={}", projectId, companyId);
-    		throw new ResourceNotFoundException("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
-    	}
-    	
-    	// verify if the task exists. 
-    	if (!taskRepo.existsByIdAndProjectId(taskId, projectId)) {
-    		log.debug("no task with id={} exists in project={}", taskId, projectId);
-    		throw new ResourceNotFoundException("No task found with id=" + taskId 
-    					+ " in project_id=" + projectId + " , and company_id=" + companyId);
-    	}
-    	
-    	PMSTask oldTask = taskRepo.findById(taskId).orElseThrow(
-                ()->{
-                	log.debug("no task with id={}.", taskId);
-                	return new ResourceNotFoundException("No task found with id=" + taskId);
-                });
-    	// update name
-    	if (task.getName() != null 
-    			&& !task.getName().equals(oldTask.getName())) { // need to update name. 
-    		if (taskRepo.existsByNameAndProjectId(task.getName(), projectId)) { // new name exists. won't update. 
-    			log.debug("task with new name={} exists.", task.getName());
-    			throw new DuplicateObjectsException("new name " + task.getName() + " exists.");
-    		}
-    		oldTask.setName(task.getName());
-    	}
-    	
-    	// desc
-    	if (task.getDesc() != null) {
-    		oldTask.setDesc(task.getDesc());
-    	}
-    	
-    	if (task.getAvatar() != null) {
-    		PMSFile oldAvatar = oldTask.getAvatar();
-    		if (oldAvatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-    			fileRepo.deleteById(oldAvatar.getId());
-    		}
-    		PMSFile newAvatar = task.getAvatar();
-    		newAvatar.setParentId(oldTask.getId());
-    		oldTask.setAvatar(newAvatar);
-        }
-        
-    	// start date
-    	if (task.getStartDate() != null
-    			&& task.getStartDate().longValue() != oldTask.getStartDate().longValue()) {
-    		oldTask.setStartDate(task.getStartDate());
-    	}
-        
-        // end date
-    	if (task.getEndDate() != null
-    			&& task.getEndDate().longValue() != oldTask.getEndDate().longValue()) {
-    		oldTask.setEndDate(task.getEndDate());
-    	}
-    	
-    	// priority
-    	if (task.getPriority() != null 
-    			&& !task.getPriority().equals(oldTask.getPriority())) {
-    		oldTask.setPriority(task.getPriority());
-    	}
-    	
-    	// status
-    	if (task.getStatus() != null
-    			&& !task.getStatus().equals(oldTask.getStatus())) {
-    		oldTask.setStatus(task.getStatus());
-    	}
-        
-        return taskRepo.save(oldTask);
+    	// TODO
     }
     
     public void cleanupTasks(Long companyId, Long projectId, List<Long> taskIds) {
-    	// check if the company exists. 
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("no company found with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	// check if the project exists. 
-    	PMSProject project = projRepo.findByIdAndCompanyId(projectId, companyId)
-    			.orElseThrow(()->{
-    				log.debug("no project with id={} in company={}.", projectId, companyId);
-    				return new ResourceNotFoundException("no project with id=" + projectId 
-    						+ " ,in company=" + companyId);
-    			});
-    	
-        if (taskIds.size() == 0) {
-            return;
-        }
-        
-        List<PMSTask> tasks = this.getTasksByIds(taskIds);
-        for (PMSTask task : tasks) {
-        	// verify project_id
-        	if (task.getProjectId().longValue() != projectId.longValue()) {
-        		log.debug("task with id={}, its project_id={}, mismatch with the projectId={}.", 
-        				task.getId(), task.getProjectId(), projectId);
-        		throw new RequestValueMismatchException("task with id=" + task.getId() 
-        				+ " ,its project_id=" + task.getProjectId() 
-        				+ " ,mismatch with the projectId=" + projectId);
-        	}
-        		
-        	// check if there is dependency issue.
-        	List<Long> allTaskIds = project.getTaskIds();
-        	List<PMSTask> allTasks = this.getTasksByIds(allTaskIds);
-        	for (PMSTask allTask : allTasks) {
-        	    // if one of the dependent sets of other tasks contain the task, it can't be removed.
-        		if (!allTask.getId().equals(task.getId()) 
-        		        && allTask.getDependentTaskIds().contains(task.getId())) {
-        			log.debug("Cannot delete the task={} as other tasks(id={}} depend on it.", task.getId(), allTask.getId());
-        			throw new DeletionFailureException("Cannot delete the task (" + task.getId() + ") as other tasks depend on it.");
-        		}
-        	}
-        	
-        	// delete avatar
-        	PMSFile avatar = task.getAvatar();
-        	if (avatar != null &&
-        		avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-        		deleteFile(avatar.getId());
-        	}
-        	
-        	// delete attachments
-        	List<PMSFile> attachments = task.getAttachments();
-        	for (PMSFile attachment : attachments) {
-        		deleteFile(attachment.getId());
-        	}
-    		
-    		// delete its comments
-        	cleanupComments(companyId, projectId, task.getCommentIds());
-        	
-        	// we won't delete the project default task as it is managed by the project.
-        	if (task.getProjectId() != PMSEntityConstants.kDefaultTaskProjectId) {
-        	    taskRepo.deleteById(task.getId());
-        	}
-            
-            // update project, remove task from the project
-            project.removeTaskId(task.getId());
-            projRepo.save(project);
-        }
+    	// TODO
     }
     
     public PMSTask addDependentTasks(Long taskId, List<Long> dependentTaskIds) {
@@ -1010,39 +719,7 @@ public class PMSEntityProvider {
     }
 
     public void cleanupComments(Long companyId, Long projectId, List<Long> commentIds) {
-    	// check if the company exists. 
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("No company found with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	// check if the project exists. 
-    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
-    		log.debug("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
-    		throw new ResourceNotFoundException("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
-    	}
-    	
-        List<PMSComment> comments = commentRepo.findAllById(commentIds);
-        for (PMSComment comment : comments) {
-        	// delete files
-        	List<PMSFile> attachments = comment.getAttachments();
-        	for (PMSFile attachment : attachments) {
-        		deleteFile(attachment.getId());
-        	}
-        	
-        	// update task
-        	PMSTask task = taskRepo.findById(comment.getTaskId()).orElse(null);
-        	if (task == null) {
-        		log.debug("task == null, skip it.");
-        		continue;
-        	}
-        	task.removeCommentId(comment.getId());
-        	taskRepo.save(task);
-        	
-        	commentRepo.delete(comment);
-        }        
+    	// TODO 
     }
     
     // return: [task0, task1, ...]
@@ -1182,39 +859,7 @@ public class PMSEntityProvider {
     }
 
     public PMSComment updateComment(Long companyId, Long projectId, Long commentId, PMSComment comment) {
-    	// check if the company exists. 
-    	if (!compRepo.existsById(companyId)) {
-    		log.debug("No company found with id=" + companyId);
-    		throw new ResourceNotFoundException("No company found with id=" + companyId);
-    	}
-    	
-    	// check if the project exists. 
-    	if (!projRepo.existsByIdAndCompanyId(projectId, companyId)) {
-    		log.debug("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
-    		throw new ResourceNotFoundException("No project found with id=" + projectId 
-					+ " in company_id=" + companyId);
-    	}
-    	
-    	PMSComment ret = commentRepo.findById(comment.getId())
-    			.orElseThrow(()-> {
-    				log.debug("No comment found with id=" + comment.getId());
-    				return new ResourceNotFoundException("No comment found with id=" + comment.getId());
-    			});
-    	
-    	if (comment.getTitle() != null) {
-    		ret.setTitle(comment.getTitle());
-    	}
-    	if (comment.getDesc() != null) {
-    		ret.setDesc(comment.getDesc());
-    	}
-    	
-    	if (comment.getTaskId() != null) {
-    		ret.setTaskId(comment.getTaskId());
-    	}
-    	commentRepo.save(ret);
-    	
-    	return ret;
+    	// TODO
     }
     
     // users operation
@@ -1483,50 +1128,7 @@ public class PMSEntityProvider {
     }
     
     public PMSUser updateUser(Long id, PMSUser user, Long companyId) {
-    	PMSUser ret = userRepo.findById(id).orElseThrow(
-                ()-> {
-                	log.debug("No user found with id=" + id);
-                	return new ResourceNotFoundException("No user found with id=" + id);
-                });
-        
-        if (user.getFirstName() != null) {
-        	ret.setFirstName(user.getFirstName());
-        }
-        if (user.getLastName() != null) {
-        	ret.setLastName(user.getLastName());
-        }
-        if (user.getEmail() != null) {
-        	if (userRepo.existsByEmail(user.getEmail())) {
-        		log.debug("cannot update user, user with email=" + user.getEmail() + " already exists.");
-        		throw new DuplicateObjectsException("cannot update user, user with email=" + user.getEmail() + " already exists.");
-        	} else {
-        		ret.setEmail(user.getEmail());
-        	}
-        }
-        if (user.getPassword() != null) {
-        	ret.setPassword(passwdEncoder.encode(user.getPassword()));
-        }
-        
-        if (user.getAvatar() != null) {
-        	PMSFile avatar = ret.getAvatar();
-        	if (avatar != null && avatar.getParentId().longValue() != PMSEntityConstants.kDefaultFileParentId) {
-        		deleteFile(avatar.getId());
-        	}
-        	ret.setAvatar(user.getAvatar());
-        }
-        
-        if (user.getRoles() != null) {
-        	// process roles. we won't create new instance, instead we use existing roles. 
-        	List<PMSRole> existingRoles = new ArrayList<>();
-        	List<PMSRole> newRoles = user.getRoles();
-        	for (PMSRole newRole : newRoles) {
-        		PMSRole existingRole = this.getRoleByName(newRole.getName());
-        		existingRoles.add(existingRole);
-        	}
-        	ret.setRoles(existingRoles);
-        }
-
-        return userRepo.save(ret);
+    	// TODO 
     }
     
     // delete user, remove the user from project/task
@@ -1666,43 +1268,11 @@ public class PMSEntityProvider {
 	}
 
 	public PMSRole updateRole(Long roleId, PMSRole role) {
-		if (roleId.longValue() != role.getId().longValue()) {
-			throw new RequestValueMismatchException();
-		}
-		
-		PMSRole ret = getRole(roleId);
-		if (ret == null) {
-			throw new ResourceNotFoundException("No role found with id=" + roleId);
-		}
-		
-		/*if (role.getName() != null) {
-			ret.setName(role.getName());
-		}*/
-		
-		if (role.getDesc() != null) {
-			ret.setDesc(role.getDesc());
-		}
-		
-		roleRepo.save(ret);
-		
-		return ret;
+		// TODO
 	}
 	
 	public PMSRole updateRole(PMSRoleName roleName, PMSRole role) {
-		PMSRole ret = null;
-		
-		ret = getRole(roleName);
-		if (ret == null) {
-			throw new ResourceNotFoundException("No role found with name=" + roleName);
-		}
-		
-		if (role.getDesc() != null) {
-			ret.setDesc(role.getDesc());
-		}
-		
-		roleRepo.save(ret);
-		
-		return ret;
+		// TODO
 	}
 
 	public void deleteRole(Long roleId) {
@@ -1756,20 +1326,7 @@ public class PMSEntityProvider {
 	}
 	
 	public List<PMSTag> updateTags(List<PMSTag> tags) {
-		List<PMSTag> ret = null;
-		
-		List<PMSTag> allTags = tagRepo.findAll();
-
-		for (PMSTag tag : tags) {
-			if (!allTags.contains(tag)) {
-				allTags.add(tag);
-			}
-		}
-		
-		tagRepo.saveAll(tags);
-		ret = tags;
-		
-		return ret;
+		// TODO
 	}
 	
 	public void deleteFile(Long fileId) {
@@ -1787,75 +1344,4 @@ public class PMSEntityProvider {
 		}
 	}
 	
-	public PMSProject startProject(Long projectId) {
-		return null;
-	}
-	
-	public PMSProject stopProject(Long projectId) {
-		return null;
-	}
-	
-	public PMSTask startTask(Long taskId) {
-		return null;
-	}
-	
-	public PMSTask stopTask(Long taskId) {
-		return null;
-	}
-	
-	// file upload
-	public PMSFile upload(MultipartFile file, String displayName, PMSFileType fileType) {
-		
-	    // init directories
-		String strUploadDir = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-		strUploadDir += "../../upload";
-	    File uploadDir = new File(strUploadDir);
-	    if (!uploadDir.exists()) {
-	    	uploadDir.mkdirs();
-	    }
-	    
-	    // create avatars and files if neccessary. 
-	    String strAvatarDir = strUploadDir + "/avatars";
-	    File avatarDir = new File(strAvatarDir);
-	    if (!avatarDir.exists()) {
-	    	avatarDir.mkdirs();
-	    }
-	    String strFileDir = strUploadDir + "/files";
-	    File fileDir = new File(strFileDir);
-	    if (!fileDir.exists()) {
-	    	fileDir.mkdirs();
-	    }
-	    
-	    // use client's file name as display name if display name is not specified. 
-	    String filename = null;
-	    if (displayName != null) {
-	    	filename = displayName;
-	    } else {
-	    	filename = file.getOriginalFilename();
-	    }
-	    long size = file.getSize();
-	    
-	    // create & save entity.
-	    PMSFile entityFile = new PMSFile();
-	    entityFile.setFileType(fileType);
-	    entityFile.setDisplayFilename(filename);
-	    entityFile.setSize(size);
-	    entityFile.setRealFilename("" + System.currentTimeMillis());
-	    
-	    String str = null;
-	    if (fileType == PMSFileType.Image) {
-	    	str = avatarDir.getAbsolutePath() + File.separator + entityFile.getRealFilename();
-	    } else {
-	    	str = fileDir.getAbsolutePath() + File.separator + entityFile.getRealFilename();
-	    }
-
-	    try {
-		    file.transferTo(new File(str));
-		    entityFile = fileRepo.save(entityFile);
-	    } catch (Exception e) {
-	    	// TODO 
-	    }
-	    
-	    return entityFile;
-	}
 }
